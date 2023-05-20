@@ -30,6 +30,7 @@ RUN apk add --no-cache \
 		gettext \
 		git \
         linux-headers \
+		npm\
 	;
 
 RUN set -eux; \
@@ -106,6 +107,13 @@ RUN set -eux; \
 		composer clear-cache; \
     fi
 
+# run npm install before copying the rest of the application
+COPY package.json ./
+RUN set -eux; \
+    if [ -f package.json ]; then \
+        npm install; \
+    fi
+	
 # copy sources
 COPY . .
 RUN rm -Rf docker/
