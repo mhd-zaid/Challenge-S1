@@ -1,0 +1,10 @@
+{% if message is defined %}
+    <p>Un email vient de vous être envoyer<p>
+{% endif %}
+
+<h1>Votre n'a pas encore été activer, vérifier vos emails</h1>
+
+<p>Vous n'avez pas reçu d'email ? </p>
+<p>
+    <a href="{{path('back_app_send_confirm_email',{'id': user.id})}}">Renvoyer un email</a>
+</p>

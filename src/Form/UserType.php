@@ -5,12 +5,12 @@ namespace App\Form;
 use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Vich\UploaderBundle\Form\Type\VichImageType;
 
 class UserType extends AbstractType
 {
@@ -23,7 +23,7 @@ class UserType extends AbstractType
             ->add('firstname', TextType::class, [
                 'label' => 'Firstname',
             ])
-            ->add('email', EmailType::class, [
+            ->add('email', TextType::class, [
                 'label' => 'Email',
             ])
             ->add('plainPassword', PasswordType::class, [
@@ -35,14 +35,18 @@ class UserType extends AbstractType
             ->add('phone', TextType::class, [
                 'label' => 'Phone',
             ])
-            ->add('password', ChoiceType::class, [
+            ->add('roles', CollectionType::class, [
                 'label' => 'Roles',
-                'choices'  => [
-                    'ROLE_ADMIN' => 'ROLE_ADMIN',
-                    'ROLE_CUSTOMER' => 'ROLE_CUSTOMER',
-                    'ROLE_MECHANIC' => 'ROLE_MECHANIC',
-                    'ROLE_ACCOUNTANT' => 'ROLE_ACCOUNTANT',
-                ],
+                'entry_type' => ChoiceType::class,
+                'entry_options' => [
+                    'label' => false,
+                    'choices'  => [
+                        'ROLE_ADMIN' => 'ROLE_ADMIN',
+                        'ROLE_CUSTOMER' => 'ROLE_CUSTOMER',
+                        'ROLE_MECHANIC' => 'ROLE_MECHANIC',
+                        'ROLE_ACCOUNTANT' => 'ROLE_ACCOUNTANT',
+                    ],
+                ]
             ])
             
         ;

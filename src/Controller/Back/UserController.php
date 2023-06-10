@@ -5,11 +5,14 @@ namespace App\Controller\Back;
 use App\Entity\User;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
+use Twig\Environment;
 
 #[Route('/user')]
 class UserController extends AbstractController
@@ -23,15 +26,26 @@ class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, UserRepository $userRepository): Response
+    public function new(Request $request, UserRepository $userRepository,MailerInterface $mailer): Response
     {
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
-
+        dump($form);
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setValidationToken(Uuid::v4()->__toString());
             $userRepository->save($user, true);
+
+            $email = (new TemplatedEmail())
+            ->from("zaidmouhamad@gmail.com")
+            ->to($user->getEmail())
+            ->subject('Confirm email')
+            ->htmlTemplate('back/email/confirmEmail.html.twig')
+            ->context([
+                'user' => $user,
+            ]);
+
+            $mailer->send($email);
 
             return $this->redirectToRoute('back_app_user_index', [], Response::HTTP_SEE_OTHER);
         }
@@ -76,5 +90,21 @@ class UserController extends AbstractController
         }
 
         return $this->redirectToRoute('back_app_user_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/validate/{id}/{token}', name: 'app_user_validate', methods: ['GET'])]
+    public function confirmMail(Request $request, int $id,string $token, UserRepository $userRepository): Response
+    {
+        $user = $userRepository->findOneBy([
+            'id' => $id,
+            'validationToken' => $token
+        ]);
+
+        if (!empty($user)) {
+            $user->setIsValidated(true);
+            $userRepository->save($user, true);
+        }
+
+        return $this->redirectToRoute('back_default_index', [], Response::HTTP_SEE_OTHER);
     }
 }

@@ -33,7 +33,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(length: 180, unique: true)]
     #[Assert\NotBlank]
-    #[Assert\Unique]
     #[Assert\Email]
     private ?string $email = null;
 
@@ -58,7 +57,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?bool $isValidated = false;
 
     #[ORM\Column]
-    #[Assert\NotBlank]
     private ?string $validationToken = null;
 
     #[ORM\Column]
@@ -104,6 +102,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return array_unique($roles);
     }
 
+    public function addRole(string $role): self
+    {
+        if (!in_array($role, $this->roles, true)) {
+            $this->roles[] = $role;
+        }
+
+        return $this;
+    }
+    
     public function setRoles(array $roles): self
     {
         $this->roles = $roles;
@@ -126,7 +133,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getPlainPassword(): string
+    public function getPlainPassword(): ?string
     {
         return $this->plainPassword;
     }
@@ -228,6 +235,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return [
             'id' => $this->id,
+            'lastname'=>$this->lastname,
+            'firstname'=>$this->firstname,
             'email' => $this->email,
             'password' => $this->password,
             'address' => $this->address,
@@ -242,6 +251,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->id = $serialized['id'];
         $this->email = $serialized['email'];
         $this->password = $serialized['password'];
+        $this->lastname = $serialized['lastname'];
+        $this->firstname = $serialized['firstname'];
         $this->address = $serialized['address'];
         $this->phone = $serialized['phone'];
         $this->validationToken = $serialized['validationToken'];
