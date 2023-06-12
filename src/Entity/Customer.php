@@ -3,15 +3,15 @@
 namespace App\Entity;
 
 use App\Entity\Traits\TimestampableTrait;
-use App\Repository\UserRepository;
+use App\Repository\CustomerRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
-#[ORM\Entity(repositoryClass: UserRepository::class)]
-#[ORM\Table(name: '`user`')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+#[ORM\Entity(repositoryClass: CustomerRepository::class)]
+#[ORM\Table(name: '`customer`')]
+class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableTrait;
 
@@ -45,6 +45,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank]
     #[Assert\Regex('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z\d\W]{8,}$/')]
     private ?string $plainPassword = null;
+
+    #[ORM\Column(length: 255)]
+    private ?string $address = null;
+    
+    #[ORM\Column(length: 20)]
+    #[Assert\Length(max: 20)]
+    private ?string $phone = null;
 
     #[ORM\Column]
     private ?bool $isValidated = false;
@@ -131,7 +138,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this->plainPassword;
     }
 
-    public function setPlainPassword(?string $plainPassword): User
+    public function setPlainPassword(?string $plainPassword): Customer
     {
         $this->plainPassword = $plainPassword;
 
@@ -175,6 +182,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getAddress(): ?string
+    {
+        return $this->address;
+    }
+
+    public function setAddress(string $address): self
+    {
+        $this->address = $address;
+
+        return $this;
+    }
+
+    public function getPhone(): ?string
+    {
+        return $this->phone;
+    }
+
+    public function setPhone(string $phone): self
+    {
+        $this->phone = $phone;
+
+        return $this;
+    }
+
     public function getIsValidated(): ?bool
     {
         return $this->isValidated;
@@ -208,6 +239,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             'firstname'=>$this->firstname,
             'email' => $this->email,
             'password' => $this->password,
+            'address' => $this->address,
+            'phone' => $this->phone,
             'validationToken' => $this->validationToken,
             'isValidated' => $this->isValidated,
             'roles' => $this->roles,
