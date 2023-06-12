@@ -16,18 +16,6 @@ class UserFixtures extends Fixture
         $pwd = '$2y$13$cxyypcYcyj4sQhaeLhojvucbBwbWo789iF/Aqqsvm2Rpcu/jNxIf6';
 
         $object = (new User())
-            ->setEmail('customer@user.fr')
-            ->setLastname($faker->lastName)
-            ->setFirstname($faker->firstName)
-            ->setRoles([])
-            ->setPassword($pwd)
-            ->setValidationToken("")
-            ->setCreatedAt(new DateTime())
-            ->setUpdatedAt(new DateTime())
-        ;
-        $manager->persist($object);
-
-        $object = (new User())
             ->setEmail('accountant@user.fr')
             ->setLastname($faker->lastName)
             ->setFirstname($faker->firstName)
