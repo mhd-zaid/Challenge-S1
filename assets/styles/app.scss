@@ -3,4 +3,7 @@
 @tailwind utilities;
 body {
     background-color: lightgray;
+    a{
+        text-decoration: none;
+    }
 }
