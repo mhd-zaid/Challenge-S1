@@ -220,8 +220,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->password = $serialized['password'];
         $this->lastname = $serialized['lastname'];
         $this->firstname = $serialized['firstname'];
-        $this->address = $serialized['address'];
-        $this->phone = $serialized['phone'];
+        // $this->address = $serialized['address'];
+        // $this->phone = $serialized['phone'];
         $this->validationToken = $serialized['validationToken'];
         $this->isValidated = $serialized['isValidated'];
         $this->roles = $serialized['roles'];

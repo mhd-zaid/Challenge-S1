@@ -19,7 +19,7 @@ security:
             security: false
         main:
             lazy: true
-            provider: '{% if is_user_authenticated %}app_user_provider{% else %}app_customer_provider{% endif %}'
+            provider: 'app_user_provider'
             custom_authenticator: App\Security\AppCustomAuthenticator
             logout:
                 path: app_logout
