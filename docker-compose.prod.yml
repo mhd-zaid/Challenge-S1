@@ -22,7 +22,7 @@ services:
       DATABASE_URL: postgresql://${POSTGRES_USER:-root}:${POSTGRES_PASSWORD:-challenge-S1}@database:5432/${POSTGRES_DB:-app}?serverVersion=${POSTGRES_VERSION:-13}
       # Run "composer require symfony/mercure-bundle" to install and configure the Mercure integration
       MERCURE_URL: ${CADDY_MERCURE_URL:-http://caddy/.well-known/mercure}
-      MERCURE_PUBLIC_URL: https://92.243.27.180/.well-known/mercure
+      MERCURE_PUBLIC_URL: http://92.243.27.180/.well-known/mercure
       MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeMe!}
 
   caddy:
@@ -41,18 +41,8 @@ services:
       - caddy_data:/data
       - caddy_config:/config
     ports:
-      # HTTP
-      - target: 80
-        published: 80
-        protocol: tcp
-      # HTTPS
-      - target: 443
-        published: 443
-        protocol: tcp
-      # HTTP/3
-      - target: 443
-        published: 443
-        protocol: udp
+      - "80:80"
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile", "--watch"]
 
   database:
     image: postgres:${POSTGRES_VERSION:-13}-alpine
@@ -77,14 +67,8 @@ services:
       ADMINER_DEFAULT_PORT: 5432
       ADMINER_DEFAULT_DB: ${POSTGRES_DB:-app}
 
-###> symfony/mercure-bundle ###
-###< symfony/mercure-bundle ###
 volumes:
   php_socket:
   caddy_data:
   caddy_config:
-  ###> doctrine/doctrine-bundle ###
   db_data:
-  ###< doctrine/doctrine-bundle ###
-###> symfony/mercure-bundle ###
-###< symfony/mercure-bundle ###
