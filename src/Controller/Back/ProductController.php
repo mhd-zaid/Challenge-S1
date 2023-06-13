@@ -31,7 +31,7 @@ class ProductController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $productRepository->save($product, true);
 
-            return $this->redirectToRoute('app_product_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('back_app_product_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('back/product/new.html.twig', [
