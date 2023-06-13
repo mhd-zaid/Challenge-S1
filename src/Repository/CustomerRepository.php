@@ -5,9 +5,9 @@ namespace App\Repository;
 use App\Entity\Customer;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
-use Symfony\Component\Security\Core\Exception\UnsupportedCustomerException;
-use Symfony\Component\Security\Core\Customer\PasswordAuthenticatedCustomerInterface;
-use Symfony\Component\Security\Core\Customer\PasswordUpgraderInterface;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
+use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
+use Symfony\Component\Security\Core\User\PasswordUpgraderInterface;
 
 /**
  * @extends ServiceEntityRepository<Customer>
@@ -43,21 +43,21 @@ class CustomerRepository extends ServiceEntityRepository implements PasswordUpgr
     }
 
     /**
-     * Used to upgrade (rehash) the Customer's password automatically over time.
+     * Used to upgrade (rehash) the user's password automatically over time.
      */
-    public function upgradePassword(PasswordAuthenticatedCustomerInterface $Customer, string $newHashedPassword): void
+    public function upgradePassword(PasswordAuthenticatedUserInterface $customer, string $newHashedPassword): void
     {
-        if (!$Customer instanceof Customer) {
-            throw new UnsupportedCustomerException(sprintf('Instances of "%s" are not supported.', \get_class($Customer)));
+        if (!$customer instanceof Customer) {
+            throw new UnsupportedUserException(sprintf('Instances of "%s" are not supported.', \get_class($customer)));
         }
 
-        $Customer->setPassword($newHashedPassword);
+        $customer->setPassword($newHashedPassword);
 
-        $this->add($Customer, true);
+        $this->add($customer, true);
     }
 
 //    /**
-//     * @return Customer[] Returns an array of Customer objects
+//     * @return User[] Returns an array of User objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -71,7 +71,7 @@ class CustomerRepository extends ServiceEntityRepository implements PasswordUpgr
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?Customer
+//    public function findOneBySomeField($value): ?User
 //    {
 //        return $this->createQueryBuilder('u')
 //            ->andWhere('u.exampleField = :val')

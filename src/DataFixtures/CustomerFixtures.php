@@ -43,5 +43,6 @@ class CustomerFixtures extends Fixture
             ->setUpdatedAt(new DateTime())
         ;
         $manager->persist($object);
+        $manager->flush();
     }
 }
