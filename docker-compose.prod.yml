@@ -1,74 +1,14 @@
 version: "3.4"
 
+# Production environment override
 services:
   php:
-    build:
-      context: .
-      target: app_php
-      args:
-        SYMFONY_VERSION: ${SYMFONY_VERSION:-}
-        STABILITY: ${STABILITY:-stable}
-    depends_on:
-      - database
-    restart: unless-stopped
-    volumes:
-      - php_socket:/var/run/php
-    healthcheck:
-      interval: 10s
-      timeout: 3s
-      retries: 3
-      start_period: 30s
     environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-root}:${POSTGRES_PASSWORD:-challenge-S1}@database:5432/${POSTGRES_DB:-app}?serverVersion=${POSTGRES_VERSION:-13}
-      # Run "composer require symfony/mercure-bundle" to install and configure the Mercure integration
-      MERCURE_URL: ${CADDY_MERCURE_URL:-http://caddy/.well-known/mercure}
-      MERCURE_PUBLIC_URL: http://92.243.27.180/.well-known/mercure
-      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET:-!ChangeMe!}
+      APP_SECRET: ${APP_SECRET}
+      MERCURE_JWT_SECRET: ${CADDY_MERCURE_JWT_SECRET}
 
   caddy:
-    build:
-      context: .
-      target: app_caddy
-    depends_on:
-      - php
     environment:
-      SERVER_NAME: 92.243.27.180
-      MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeMe!}
-      MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET:-!ChangeMe!}
-    restart: unless-stopped
-    volumes:
-      - php_socket:/var/run/php
-      - caddy_data:/data
-      - caddy_config:/config
-    ports:
-      - "80:80"
-    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile", "--watch"]
-
-  database:
-    image: postgres:${POSTGRES_VERSION:-13}-alpine
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB:-app}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-challenge-S1}
-      POSTGRES_USER: ${POSTGRES_USER:-root}
-    volumes:
-      - db_data:/var/lib/postgresql/data:rw
-
-  adminer:
-    image: adminer
-    restart: always
-    depends_on:
-      - database
-    ports:
-      - 8080:8080
-    environment:
-      ADMINER_DEFAULT_USER: ${POSTGRES_USER:-root}
-      ADMINER_DEFAULT_PASSWORD: ${POSTGRES_PASSWORD:-challenge-S1}
-      ADMINER_DEFAULT_TYPE: postgresql
-      ADMINER_DEFAULT_PORT: 5432
-      ADMINER_DEFAULT_DB: ${POSTGRES_DB:-app}
-
-volumes:
-  php_socket:
-  caddy_data:
-  caddy_config:
-  db_data:
+      SERVER_NAME: http://0.0.0.0
+      MERCURE_PUBLISHER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET}
+      MERCURE_SUBSCRIBER_JWT_KEY: ${CADDY_MERCURE_JWT_SECRET}
