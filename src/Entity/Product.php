@@ -8,6 +8,7 @@ use App\Repository\ProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[Vich\Uploadable]
@@ -23,25 +24,35 @@ class Product
     private ?int $id = null;
 
     #[ORM\Column(length: 100)]
+    #[Assert\NotBlank(message: 'Le nom du Produit est obligatoire')]
+    #[Assert\Type(type: 'string', message: 'Le nom du Produit doit être une chaîne de caractères')]
     private ?string $title = null;
 
     #[ORM\Column]
+    #[Assert\NotNull(message: 'La quantité est obligatoire')]
+    #[Assert\Type(type: 'integer', message: 'La quantité doit être un nombre entier')]
     private ?int $quantity = null;
 
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $image = null;
-
     #[ORM\Column]
+    #[Assert\NotNull(message: 'Le prix est obligatoire')]
+    #[Assert\Type(type: 'integer', message: 'Le prix doit être un nombre entier')]
     private ?int $price = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\Type(type: 'string', message: 'La description doit être une chaîne de caractères')]
     private ?string $description = null;
 
     #[Vich\UploadableField(mapping: 'products', fileNameProperty: 'productImageName')]
+    #[Assert\File(
+        maxSize: '1024k',
+        mimeTypes: ['application/jpg', 'applicaion/jpeg'],
+        mimeTypesMessage: 'Veuillez télécharger un fichier jpg ou jpeg valide',
+    )]    
     private ?File $productImageFile = null;
 
     #[ORM\Column(nullable: true)]
     private ?string $productImageName = null;
+
 
     public function getId(): ?int
     {
@@ -68,18 +79,6 @@ class Product
     public function setQuantity(int $quantity): self
     {
         $this->quantity = $quantity;
-
-        return $this;
-    }
-
-    public function getImage(): ?string
-    {
-        return $this->image;
-    }
-
-    public function setImage(?string $image): self
-    {
-        $this->image = $image;
 
         return $this;
     }
