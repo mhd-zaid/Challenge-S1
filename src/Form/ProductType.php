@@ -15,7 +15,6 @@ class ProductType extends AbstractType
         $builder
             ->add('title')
             ->add('quantity')
-            ->add('image')
             ->add('price')
             ->add('description')
             ->add('productImageFile', VichImageType::class, [
