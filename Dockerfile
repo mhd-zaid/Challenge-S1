@@ -128,6 +128,11 @@ RUN set -eux; \
 		chmod +x bin/console; sync; \
     fi
 
+RUN set -eux; \
+    if [ -f package.json ]; then \
+		npm run build; \
+    fi
+
 # Dev image
 FROM app_php AS app_php_dev
 
