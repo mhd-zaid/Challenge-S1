@@ -6,6 +6,8 @@ use App\Entity\Traits\TimestampableTrait;
 use App\Entity\Traits\BlameableTrait;
 use App\Repository\ProductRepository;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
@@ -58,6 +60,14 @@ class Product
 
     #[ORM\Column(nullable: true)]
     private ?string $productImageName = null;
+
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: EstimateProduct::class)]
+    private Collection $estimateProducts;
+
+    public function __construct()
+    {
+        $this->estimateProducts = new ArrayCollection();
+    }
 
 
     public function getId(): ?int
@@ -177,6 +187,36 @@ class Product
         $this->id = $serialized['id'];
         $this->email = $serialized['email'];
         $this->password = $serialized['password'];
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EstimateProduct>
+     */
+    public function getEstimateProducts(): Collection
+    {
+        return $this->estimateProducts;
+    }
+
+    public function addEstimateProduct(EstimateProduct $estimateProduct): static
+    {
+        if (!$this->estimateProducts->contains($estimateProduct)) {
+            $this->estimateProducts->add($estimateProduct);
+            $estimateProduct->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEstimateProduct(EstimateProduct $estimateProduct): static
+    {
+        if ($this->estimateProducts->removeElement($estimateProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($estimateProduct->getProduct() === $this) {
+                $estimateProduct->setProduct(null);
+            }
+        }
+
         return $this;
     }
 }

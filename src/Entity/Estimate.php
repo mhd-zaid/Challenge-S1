@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\EstimateRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EstimateRepository::class)]
@@ -19,6 +21,14 @@ class Estimate
     #[ORM\ManyToOne(inversedBy: 'estimates')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Customer $client = null;
+
+    #[ORM\OneToMany(mappedBy: 'estimate', targetEntity: EstimateProduct::class, orphanRemoval: true)]
+    private Collection $estimateProducts;
+
+    public function __construct()
+    {
+        $this->estimateProducts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -57,6 +67,36 @@ class Estimate
     public function setClient(?Customer $client): static
     {
         $this->client = $client;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EstimateProduct>
+     */
+    public function getEstimateProducts(): Collection
+    {
+        return $this->estimateProducts;
+    }
+
+    public function addEstimateProduct(EstimateProduct $estimateProduct): static
+    {
+        if (!$this->estimateProducts->contains($estimateProduct)) {
+            $this->estimateProducts->add($estimateProduct);
+            $estimateProduct->setEstimate($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEstimateProduct(EstimateProduct $estimateProduct): static
+    {
+        if ($this->estimateProducts->removeElement($estimateProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($estimateProduct->getEstimate() === $this) {
+                $estimateProduct->setEstimate(null);
+            }
+        }
 
         return $this;
     }
