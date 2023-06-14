@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\CustomerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -62,6 +64,14 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     #[Assert\Unique]
     private array $roles = [];
+
+    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Estimate::class, orphanRemoval: true)]
+    private Collection $estimates;
+
+    public function __construct()
+    {
+        $this->estimates = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -258,6 +268,36 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
         $this->validationToken = $serialized['validationToken'];
         $this->isValidated = $serialized['isValidated'];
         $this->roles = $serialized['roles'];
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Estimate>
+     */
+    public function getEstimates(): Collection
+    {
+        return $this->estimates;
+    }
+
+    public function addEstimate(Estimate $estimate): static
+    {
+        if (!$this->estimates->contains($estimate)) {
+            $this->estimates->add($estimate);
+            $estimate->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEstimate(Estimate $estimate): static
+    {
+        if ($this->estimates->removeElement($estimate)) {
+            // set the owning side to null (unless already changed)
+            if ($estimate->getClient() === $this) {
+                $estimate->setClient(null);
+            }
+        }
 
         return $this;
     }
