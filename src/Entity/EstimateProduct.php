@@ -21,6 +21,15 @@ class EstimateProduct
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
+    #[ORM\Column]
+    private ?int $price = null;
+
+    #[ORM\Column]
+    private ?int $quantity = null;
+
+    #[ORM\Column]
+    private ?int $workforce = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -46,6 +55,42 @@ class EstimateProduct
     public function setProduct(?Product $product): static
     {
         $this->product = $product;
+
+        return $this;
+    }
+
+    public function getPrice(): ?int
+    {
+        return $this->price;
+    }
+
+    public function setPrice(int $price): static
+    {
+        $this->price = $price;
+
+        return $this;
+    }
+
+    public function getQuantity(): ?int
+    {
+        return $this->quantity;
+    }
+
+    public function setQuantity(int $quantity): static
+    {
+        $this->quantity = $quantity;
+
+        return $this;
+    }
+
+    public function getWorkforce(): ?int
+    {
+        return $this->workforce;
+    }
+
+    public function setWorkforce(int $workforce): static
+    {
+        $this->workforce = $workforce;
 
         return $this;
     }
