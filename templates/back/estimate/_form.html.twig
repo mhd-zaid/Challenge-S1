@@ -1,0 +1,48 @@
+{{ form_start(form) }}
+    {{ form_widget(form) }}
+    <button class="btn">{{ button_label|default('Save') }}</button>
+{{ form_end(form) }}
+
+{% block javascripts %}
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const addToListButton = document.getElementById('estimate_addToList');
+        const container = document.querySelector('.product-quantities-container');
+
+        let index = container.children.length; // Compteur pour suivre l'index des nouvelles lignes
+
+        addToListButton.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Créer un nouvel élément div pour la nouvelle ligne
+            const newRow = document.createElement('div');
+            newRow.classList.add('row');
+
+            // Construire le contenu HTML de la nouvelle ligne avec les champs requis
+            const html = `
+                <div class="form-group">
+                    <label for="form_productQuantities_${index}_product">Produit</label>
+                    <select id="form_productQuantities_${index}_product" name="form[productQuantities][${index}][product]" class="form-control">
+                    {% for product in products %}
+                        <option value="{{ product.id }}">{{ product.title }}</option>
+                    {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="form_productQuantities_${index}_quantity">Quantité</label>
+                    <input type="number" id="form_productQuantities_${index}_quantity" name="form[productQuantities][${index}][quantity]" class="form-control">
+                </div>
+            `;
+
+            // Ajouter le contenu HTML à la nouvelle ligne
+            newRow.innerHTML = html;
+
+            // Ajouter la nouvelle ligne au conteneur
+            container.appendChild(newRow);
+
+            index++; // Incrémenter l'index pour les prochaines lignes
+        });
+    });
+</script>
+
+{% endblock %}
