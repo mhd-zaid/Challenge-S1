@@ -55,6 +55,17 @@ class EstimateController extends AbstractController
             }
             
             // $estimateRepository->save($estimate, true);
+
+            // $products = $form->get('productQuantities')->getData();
+            // foreach($products as $value){
+            //     $product = $productRepository->find($value['product']->getId());
+            //     $product->setQuantity($product->getQuantity() - $value['quantity']);
+            //     $productRepository->save($product, true);
+            // }
+
+            $estimate->setClientId('100');
+            $estimate->setTitle($form->getData()->getTitle());
+            $estimateRepository->save($estimate, true);
             // return $this->redirectToRoute('app_estimate_index', [], Response::HTTP_SEE_OTHER);
         }
 
