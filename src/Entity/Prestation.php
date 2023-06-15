@@ -4,7 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Traits\BlameableTrait;
 use App\Entity\Traits\TimestampableTrait;
-use App\Repository\PrestationsRepository;
+use App\Repository\PrestationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
-#[ORM\Entity(repositoryClass: PrestationsRepository::class)]
+#[ORM\Entity(repositoryClass: PrestationRepository::class)]
 #[Vich\Uploadable]
 
 class Prestation
@@ -42,7 +42,7 @@ class Prestation
     #[Vich\UploadableField(mapping: 'prestations', fileNameProperty: 'prestationImageName')]
     #[Assert\File(
         maxSize: '1024k',
-        mimeTypes: ['application/jpg', 'applicaion/png'],
+        mimeTypes: ['image/jpg', 'image/jpeg', 'image/png'],
         mimeTypesMessage: 'Veuillez télécharger un fichier jpg ou png valide',
     )]
     private ?File $prestationImageFile = null;
@@ -57,18 +57,18 @@ class Prestation
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
     #[Assert\NotBlank(message: 'Le Total HT est obligatoire')]
-    #[Assert\Type(type: 'decimal', message: 'Le Total HT doit être un nombre décimal')]
-    private ?string $total_ht = null;
+    #[Assert\Type(type: 'float', message: 'Le Total HT doit être un nombre décimal')]
+    private ?float $total_ht = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
     #[Assert\NotBlank(message: 'Le Total TVA est obligatoire')]
-    #[Assert\Type(type: 'decimal', message: 'Le Total TVA doit être un nombre décimal')]
-    private ?string $total_tva = null;
+    #[Assert\Type(type: 'float', message: 'Le Total TVA doit être un nombre décimal')]
+    private ?float $total_tva = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
     #[Assert\NotBlank(message: 'Le Total TTC est obligatoire')]
-    #[Assert\Type(type: 'decimal', message: 'Le Total TTC doit être un nombre décimal')]
-    private ?string $total_ttc = null;
+    #[Assert\Type(type: 'float', message: 'Le Total TTC doit être un nombre décimal')]
+    private ?float $total_ttc = null;
 
     public function getId(): ?int
     {
@@ -151,52 +151,52 @@ class Prestation
         return $this;
     }
 
-    public function getTotalHt(): ?string
+    public function getTotalHt(): ?float
     {
         return $this->total_ht;
     }
 
-    public function setTotalHt(string $total_ht): static
+    public function setTotalHt(float $total_ht): static
     {
         $this->total_ht = $total_ht;
         return $this;
     }
 
-    public function getTotalTva(): ?string
+    public function getTotalTva(): ?float
     {
         return $this->total_tva;
     }
 
-    public function setTotalTva(string $total_tva): static
+    public function setTotalTva(float $total_tva): static
     {
         $this->total_tva = $total_tva;
         return $this;
     }
 
-    public function getTotalTtc(): ?string
+    public function getTotalTtc(): ?float
     {
         return $this->total_ttc;
     }
 
-    public function setTotalTtc(string $total_ttc): static
+    public function setTotalTtc(float $total_ttc): static
     {
         $this->total_ttc = $total_ttc;
         return $this;
     }
 
-//    public function serialize(): array
-//    {
-//        return [
-//            'id' => $this->id,
-//            'email' => $this->email,
-//            'password' => $this->password,
-//        ];
-//    }
-//    public function unserialize(array $serialized)
-//    {
-//        $this->id = $serialized['id'];
-//        $this->email = $serialized['email'];
-//        $this->password = $serialized['password'];
-//        return $this;
-//    }
+    public function serialize(): array
+    {
+        return [
+            'id' => $this->id,
+            'email' => $this->email,
+            'password' => $this->password,
+        ];
+    }
+    public function unserialize(array $serialized)
+    {
+        $this->id = $serialized['id'];
+        $this->email = $serialized['email'];
+        $this->password = $serialized['password'];
+        return $this;
+    }
 }
