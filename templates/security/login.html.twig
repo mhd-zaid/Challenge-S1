@@ -1,84 +1,121 @@
-
 {% extends 'base.html.twig' %}
 
 {% block title %}Log in!{% endblock %}
 
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('styles/app.scss') }}">
+    <script src="{{ asset('js/script.js') }}"></script>
+      <style>
+        /* Custom styles */
+        .container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+form {
+    margin-top: 30%;
+}
+        .form-container {
+            width: 50%;
+            padding: 40px;
+            background-color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-family: fantasy;
+        }
+
+        .form-container h3 {
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: initial;
+        }
+
+        .form-container label {
+            display: block;
+            margin-bottom: 10px;
+        }
+
+        .form-container input {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 20px;
+        }
+
+        .form-container button {
+            width: 80%;
+            padding: 10px;
+        }
+
+        .image-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+
+        .btn.btn-primary {
+    background-color: deepskyblue;
+    color: white;
+    border: white;
+}
+    </style>
+{% endblock %}
+
 {% block body %}
-
-
-    <head>
-        <meta charset="UTF-8">
-          <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
-        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axentix@0.5.3/dist/css/axentix.min.css">
-    
-      
-    </head>
-  
-        <header>
-            <nav class="navbar primary">
-<a href="{{ path('back_app_category_prestation_index') }}" class="navbar-brand">
-    <img classe= "img"  src="{{ asset('images/prestaAuto_Black.png') }}" alt="Logo" />
-</a>                <div class="navbar-menu ml-auto">
-                    <a class="navbar-link" href="#">Accueil</a>
-                    <a class="navbar-link" href="#">Link 2</a>
-                    <a class="navbar-link" href="#">Link 3</a>
-                    <a class="navbar-link" href="#">Link 4</a>
-                </div>
-            </nav>
-        </header>
-<body style="background-image: url('{{ asset('images/Group_1000003072.png') }}')">
- 
-
-         <div >
+<table class="container">
+    <tr>
+        <td class="image-container">
+            <img src="{{ asset('images/login.png') }}" alt="Image">
+        </td>
+        <td class="form-container">
             <form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+                {% if error %}
+                    <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                {% endif %}
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
-        </div>
-    {% endif %}
+                {% if app.user %}
+                    <div class="mb-3">
+                        You are logged in as {{ app.user.userIdentifier }}, <a href="{{ path('app_logout') }}">Logout</a>
+                    </div>
+                {% endif %}
 
+                <h1 class="titre">Connexion / Inscription</h1>
+                <h3 class="h3 mb-3 font-weight-normal">Saisissez votre email pour vous connecter ou créer un compte</h3>
 
-    <h1 class="h3 mb-3 font-weight-normal">Connexion / Inscription </h1>
-     <h3 class="h3 mb-3 font-weight-normal">Saisissez votre email pour vous connecter ou créer un compte </h3>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
+                <label for="inputEmail">Email</label>
+                <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
 
-    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
+                <label for="inputPassword">Password</label>
+                <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
 
-    {#
-        Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
-        See https://symfony.com/doc/current/security/remember_me.html
+                <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
-        <div class="checkbox mb-3">
-            <label>
-                <input type="checkbox" name="_remember_me"> Remember me
-            </label>
-        </div>
-    #}
+                {#
+                    Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
+                    See https://symfony.com/doc/current/security/remember_me.html
 
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
-    </div>         
-        
-        </body>
+                    <div class="checkbox mb-3">
+                        <label>
+                            <input type="checkbox" name="_remember_me"> Remember me
+                        </label>
+                    </div>
+                #}
 
-        <footer class="footer primary">
-            Copyright © 2019 - Example
-        </footer>
-
-       
-
-        <script src="https://cdn.jsdelivr.net/npm/axentix@0.5.3/dist/js/axentix.min.js"></script>
-        {% block javascripts %}{% endblock %}
-        <script src="{{ asset('js/scripts.js') }}"></script>
-   
-
+                <button class="btn btn-primary" type="submit">
+                    Se connecter/S'inscrire
+                </button>
+            </form>
+        </td>
+    </tr>
+</table>
 {% endblock %}
