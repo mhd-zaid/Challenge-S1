@@ -29,12 +29,6 @@ class UserType extends AbstractType
             ->add('plainPassword', PasswordType::class, [
                 'label' => 'plainPassword',
             ])
-            // ->add('address', TextType::class, [
-            //     'label' => 'Address',
-            // ])
-            // ->add('phone', TextType::class, [
-            //     'label' => 'Phone',
-            // ])
             ->add('roles', CollectionType::class, [
                 'label' => 'Roles',
                 'entry_type' => ChoiceType::class,
