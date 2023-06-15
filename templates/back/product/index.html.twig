@@ -11,7 +11,9 @@
                 <th>Id</th>
                 <th>Title</th>
                 <th>Quantity</th>
-                <th>Price</th>
+                <th>Total_ht</th>
+                <th>Total_tva</th>
+                <th>Total_ttc</th>
                 <th>Description</th>
                 <th>actions</th>
             </tr>
@@ -22,7 +24,9 @@
                 <td>{{ product.id }}</td>
                 <td>{{ product.title }}</td>
                 <td>{{ product.quantity }}</td>
-                <td>{{ product.price }}</td>
+                <td>{{ product.totalHt }}</td>
+                <td>{{ product.totalTva }}</td>
+                <td>{{ product.totalTtc }}</td>
                 <td>{{ product.description }}</td>
                 <td>
                     <a href="{{ path('back_app_product_show', {'id': product.id}) }}">show</a>
