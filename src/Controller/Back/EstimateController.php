@@ -44,7 +44,6 @@ class EstimateController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $customer = $customerRepository->findOneBy([
                 'email' => $form->get('email')->getData()
             ]);
@@ -54,6 +53,7 @@ class EstimateController extends AbstractController
             }
             $estimate->setClient($customer);
             $estimate->setTitle($form->getData()->getTitle());
+            $estimate->setValidityDate($form->get('validity_date')->getData());
             $estimateRepository->save($estimate, true);
 
             $products = $form->get('productQuantities')->getData();
