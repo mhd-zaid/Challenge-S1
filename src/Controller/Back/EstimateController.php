@@ -6,8 +6,10 @@ use App\Entity\Customer;
 use App\Entity\Estimate;
 use App\Form\EstimateType;
 use App\Entity\Product;
+use App\Entity\EstimateProduct;
 use App\Repository\ProductRepository;
 use App\Repository\EstimateRepository;
+use App\Repository\EstimateProductRepository;
 use App\Repository\CustomerRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,7 +36,7 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/new', name: 'app_estimate_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EstimateRepository $estimateRepository, ProductRepository $productRepository): Response
+    public function new(Request $request, EstimateRepository $estimateRepository, ProductRepository $productRepository, CustomerRepository $customerRepository, EstimateProductRepository $estimateProductRepository): Response
     {
         $estimate = new Estimate();
         $products = $productRepository->findAll();
@@ -42,31 +44,34 @@ class EstimateController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            //créer client ou non selon si il existe via le check de l'email
-            //enregistrer en BDD le DEVIS et les estimate product 
-            //pour cela il faut foreach sur productQUantities
-            //De plus il FAUT updater la quantité en BDD
-            $customer = $this->em->getRepository(CustomerRepository::class)->findBy([
+
+            $customer = $customerRepository->findOneBy([
                 'email' => $form->get('email')->getData()
             ]);
             if ($customer === null) {
-                $id = $this->generateCustomerId();
-                $customer = $this->createCustomer($form,$id);
+                $id = $this->generateCustomerId($customerRepository);
+                $customer = $this->createCustomer($form,$id, $customerRepository);
             }
-            
-            // $estimateRepository->save($estimate, true);
-
-            // $products = $form->get('productQuantities')->getData();
-            // foreach($products as $value){
-            //     $product = $productRepository->find($value['product']->getId());
-            //     $product->setQuantity($product->getQuantity() - $value['quantity']);
-            //     $productRepository->save($product, true);
-            // }
-
-            $estimate->setClientId('100');
+            $estimate->setClient($customer);
             $estimate->setTitle($form->getData()->getTitle());
             $estimateRepository->save($estimate, true);
-            // return $this->redirectToRoute('app_estimate_index', [], Response::HTTP_SEE_OTHER);
+
+            $products = $form->get('productQuantities')->getData();
+            foreach($products as $value){
+                $product = $productRepository->find($value['product']->getId());
+                $product->setQuantity($product->getQuantity() - $value['quantity']);
+                $productRepository->save($product, true);
+
+                $estimateProduct = new EstimateProduct();
+                $estimateProduct->setEstimate($estimate);
+                $estimateProduct->setProduct($product);
+                $estimateProduct->setPrice($product->getPrice());
+                $estimateProduct->setQuantity($value['quantity']);
+                $estimateProduct->setWorkforce($form->get('workforce')->getData());
+                $estimateProductRepository->save($estimateProduct, true);
+            }
+
+            return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('back/estimate/new.html.twig', [
@@ -112,10 +117,10 @@ class EstimateController extends AbstractController
         return $this->redirectToRoute('app_estimate_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    public function checkId(int $id): bool
+    public function checkId(int $id, CustomerRepository $customerRepository): bool
     {
-        $user = $this->em->getRepository(CustomerRepository::class)->find($id);
-
+        $user = $customerRepository->find($id);
+        dump($user);
         if($user === null){
             return false;
         }
@@ -123,26 +128,25 @@ class EstimateController extends AbstractController
         return true;
     }
 
-    public function generateCustomerId(): int
+    public function generateCustomerId(CustomerRepository $customerRepository): int
     {
         $id = 0;
         do {
             $id = random_int(10000, 20000);
-        } while (!$this->checkId($id));
-
+        } while ($this->checkId($id, $customerRepository));
         return $id;
     }
 
-    public function createCustomer(object $form,int $id): Customer
+    public function createCustomer(object $form,int $id, CustomerRepository $customerRepository): Customer
     {
-        $firstname = $form->get('firstname')->getData();
-        $lastname = $form->get('lastname')->getData();
+        // $firstname = $form->get('firstname')->getData();
+        // $lastname = $form->get('lastname')->getData();
         $customer = new Customer();
         $customer->setId($id);
-        $customer->setFirstname($firstname);
-        $customer->setLastname($lastname);
+        // $customer->setFirstname($firstname);
+        // $customer->setLastname($lastname);
 
-        $this->em->getRepository(CustomerRepository::class)->save($customer,true);
+        $customerRepository->save($customer,true);
 
         return $customer;
     }
