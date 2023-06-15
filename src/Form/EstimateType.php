@@ -16,37 +16,36 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use App\Validator\ProductQuantity;
 
 class EstimateType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
-{
-    $builder
-        ->add('title')
-        ->add('email', EmailType::class, [
-            'mapped' => false,
-            'label' => 'Email'
-        ])
-        ->add('workforce', IntegerType::class, [
-            'mapped' => false,
-            'label' => "Main d'oeuvre"
-        ])
-        ->add('productQuantities', CollectionType::class, [
-            'mapped' => false,
-            'entry_type' => ProductQuantityType::class,
-            'allow_add' => true,
-            'by_reference' => false,
-            'attr' => [
-                'class' => 'product-quantities-container', // Ajoutez une classe CSS au conteneur
-            ],
-            'entry_options' => [
-                'label' => false,
-            ],
-        ]);
-        // ->add('addToList', SubmitType::class, [
-        //     'label' => 'Ajouter à la liste'
-        // ]);
-}
+    {
+        $builder
+            ->add('title')
+            ->add('email', EmailType::class, [
+                'mapped' => false,
+                'label' => 'Email'
+            ])
+            ->add('workforce', IntegerType::class, [
+                'mapped' => false,
+                'label' => "Main d'oeuvre"
+            ])
+            ->add('productQuantities', CollectionType::class, [
+                'mapped' => false,
+                'entry_type' => ProductQuantityType::class,
+                'allow_add' => true,
+                'by_reference' => false,
+                'attr' => [
+                    'class' => 'product-quantities-container', // Ajoutez une classe CSS au conteneur
+                ],
+                'entry_options' => [
+                    'label' => false,
+                ],
+                'constraints' => [new ProductQuantity]
+            ]);
+    }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
