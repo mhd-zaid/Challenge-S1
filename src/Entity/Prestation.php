@@ -35,15 +35,15 @@ class Prestation
     private ?string $category = null;
 
     #[ORM\Column]
-    #[Assert\NotBlank(message: 'L\'estimation de la Durée est obligatoire')]
-    #[Assert\Type(type: 'integer', message: 'La Durée doit être un entier, une unité correspondant à 1/2 heure')]
+    #[Assert\NotBlank(message: 'L\'estimation de la Durée est obligatoire, elle doit être exprimée en minutes')]
+    #[Assert\Type(type: 'integer', message: 'La Durée doit être un entier, elle doit être exprimée en minutes')]
     private ?int $duration = null;
 
     #[Vich\UploadableField(mapping: 'prestations', fileNameProperty: 'prestationImageName')]
     #[Assert\File(
         maxSize: '1024k',
         mimeTypes: ['image/jpg', 'image/jpeg', 'image/png'],
-        mimeTypesMessage: 'Veuillez télécharger un fichier jpg ou png valide',
+        mimeTypesMessage: 'Veuillez télécharger un fichier jpg, jpeg ou png valide',
     )]
     private ?File $prestationImageFile = null;
 
@@ -151,34 +151,34 @@ class Prestation
         return $this;
     }
 
-    public function getTotalHt(): ?float
+    public function getTotalHT(): ?float
     {
         return $this->total_ht;
     }
 
-    public function setTotalHt(float $total_ht): static
+    public function setTotalHT(float $total_ht): static
     {
         $this->total_ht = $total_ht;
         return $this;
     }
 
-    public function getTotalTva(): ?float
+    public function getTotalTVA(): ?float
     {
         return $this->total_tva;
     }
 
-    public function setTotalTva(float $total_tva): static
+    public function setTotalTVA(float $total_tva): static
     {
         $this->total_tva = $total_tva;
         return $this;
     }
 
-    public function getTotalTtc(): ?float
+    public function getTotalTTC(): ?float
     {
         return $this->total_ttc;
     }
 
-    public function setTotalTtc(float $total_ttc): static
+    public function setTotalTTC(float $total_ttc): static
     {
         $this->total_ttc = $total_ttc;
         return $this;
