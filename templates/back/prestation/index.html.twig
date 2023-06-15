@@ -1,0 +1,50 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prestation index{% endblock %}
+
+{% block body %}
+    <h1>Prestation index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Duration</th>
+                <th>PrestationImageName</th>
+                <th>Technician</th>
+                <th>Total_ht</th>
+                <th>Total_tva</th>
+                <th>Total_ttc</th>
+                <th>CreatedAt</th>
+                <th>UpdatedAt</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for prestation in prestations %}
+            <tr>
+                <td>{{ prestation.id }}</td>
+                <td>{{ prestation.name }}</td>
+                <td>{{ prestation.category }}</td>
+                <td>{{ prestation.duration }}</td>
+                <td>{{ prestation.technician }}</td>
+                <td>{{ prestation.totalHt }}</td>
+                <td>{{ prestation.totalTva }}</td>
+                <td>{{ prestation.totalTtc }}</td>
+                <td>
+                    <a href="{{ path('back_app_prestation_show', {'id': prestation.id}) }}">show</a>
+                    <a href="{{ path('back_app_prestation_edit', {'id': prestation.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="12">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('back_app_prestation_new') }}">Create new</a>
+{% endblock %}

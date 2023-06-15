@@ -1,0 +1,11 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Prestation{% endblock %}
+
+{% block body %}
+    <h1>Create new Prestation</h1>
+
+    {{ include('back/prestation/_form.html.twig') }}
+
+    <a href="{{ path('back_app_prestation_index') }}">back to list</a>
+{% endblock %}
