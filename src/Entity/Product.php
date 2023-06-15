@@ -44,11 +44,6 @@ class Product
     #[Assert\Type(type: 'float', message: 'Le Total TVA doit être un nombre décimal')]
     private ?float $total_tva = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
-    #[Assert\NotBlank(message: 'Le Total TTC est obligatoire')]
-    #[Assert\Type(type: 'float', message: 'Le Total TTC doit être un nombre décimal')]
-    private ?float $total_ttc = null;
-
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Type(type: 'string', message: 'La description doit être une chaîne de caractères')]
     private ?string $description = null;
@@ -113,17 +108,6 @@ class Product
     public function setTotalTVA(float $total_tva): static
     {
         $this->total_tva = $total_tva;
-        return $this;
-    }
-
-    public function getTotalTTC(): ?float
-    {
-        return $this->total_ttc;
-    }
-
-    public function setTotalTTC(float $total_ttc): static
-    {
-        $this->total_ttc = $total_ttc;
         return $this;
     }
 

@@ -17,7 +17,6 @@ class ProductType extends AbstractType
             ->add('quantity')
             ->add('total_ht')
             ->add('total_tva')
-            ->add('total_ttc')
             ->add('description')
             ->add('productImageFile', VichImageType::class, [
                 'required' => false,
