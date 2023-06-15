@@ -36,7 +36,7 @@ class EstimateController extends AbstractController
             //enregistrer en BDD le DEVIS et les estimate product 
             //pour cela il faut foreach sur productQUantities
             //De plus il FAUT updater la quantité en BDD
-            dump($form->get('productQuantities'));
+            dump($form->get('productQuantities')->getData());
             // $estimateRepository->save($estimate, true);
             // return $this->redirectToRoute('app_estimate_index', [], Response::HTTP_SEE_OTHER);
         }
