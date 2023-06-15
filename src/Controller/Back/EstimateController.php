@@ -54,6 +54,7 @@ class EstimateController extends AbstractController
             $estimate->setClient($customer);
             $estimate->setTitle($form->getData()->getTitle());
             $estimate->setValidityDate($form->get('validity_date')->getData());
+            dump($estimate);
             $estimateRepository->save($estimate, true);
 
             $products = $form->get('productQuantities')->getData();
@@ -65,7 +66,8 @@ class EstimateController extends AbstractController
                 $estimateProduct = new EstimateProduct();
                 $estimateProduct->setEstimate($estimate);
                 $estimateProduct->setProduct($product);
-                $estimateProduct->setPrice($product->getPrice());
+                $estimateProduct->setTotalHt($product->getTotalHt());
+                $estimateProduct->setTotalTva($product->getTotalTva());
                 $estimateProduct->setQuantity($value['quantity']);
                 $estimateProduct->setWorkforce($form->get('workforce')->getData());
                 $estimateProductRepository->save($estimateProduct, true);
