@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\EstimateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: EstimateRepository::class)]
@@ -24,6 +25,9 @@ class Estimate
 
     #[ORM\OneToMany(mappedBy: 'estimate', targetEntity: EstimateProduct::class, orphanRemoval: true)]
     private Collection $estimateProducts;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $validity_date = null;
 
     public function __construct()
     {
@@ -97,6 +101,18 @@ class Estimate
                 $estimateProduct->setEstimate(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getValidityDate(): ?\DateTimeInterface
+    {
+        return $this->validity_date;
+    }
+
+    public function setValidityDate(\DateTimeInterface $validity_date): static
+    {
+        $this->validity_date = $validity_date;
 
         return $this;
     }
