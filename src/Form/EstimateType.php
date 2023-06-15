@@ -39,10 +39,13 @@ class EstimateType extends AbstractType
             'attr' => [
                 'class' => 'product-quantities-container', // Ajoutez une classe CSS au conteneur
             ],
-        ])
-        ->add('addToList', SubmitType::class, [
-            'label' => 'Ajouter à la liste'
+            'entry_options' => [
+                'label' => false,
+            ],
         ]);
+        // ->add('addToList', SubmitType::class, [
+        //     'label' => 'Ajouter à la liste'
+        // ]);
 }
 
     public function configureOptions(OptionsResolver $resolver): void
