@@ -16,7 +16,6 @@
                 <th>Technician</th>
                 <th>Total_ht</th>
                 <th>Total_tva</th>
-                <th>Total_ttc</th>
                 <th>CreatedAt</th>
                 <th>UpdatedAt</th>
                 <th>actions</th>
@@ -32,7 +31,6 @@
                 <td>{{ prestation.technician }}</td>
                 <td>{{ prestation.totalHt }}</td>
                 <td>{{ prestation.totalTva }}</td>
-                <td>{{ prestation.totalTtc }}</td>
                 <td>
                     <a href="{{ path('back_app_prestation_show', {'id': prestation.id}) }}">show</a>
                     <a href="{{ path('back_app_prestation_edit', {'id': prestation.id}) }}">edit</a>

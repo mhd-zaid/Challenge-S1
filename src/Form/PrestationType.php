@@ -19,7 +19,6 @@ class PrestationType extends AbstractType
             ->add('technician')
             ->add('total_ht')
             ->add('total_tva')
-            ->add('total_ttc')
             ->add('prestationImageFile', VichImageType::class, [
                 'required' => false,
                 'allow_delete' => true,
