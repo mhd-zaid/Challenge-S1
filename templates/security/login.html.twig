@@ -1,9 +1,36 @@
+
 {% extends 'base.html.twig' %}
 
 {% block title %}Log in!{% endblock %}
 
 {% block body %}
-<form method="post">
+
+
+    <head>
+        <meta charset="UTF-8">
+          <link rel="stylesheet" href="{{ asset('css/styles.css') }}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/axentix@0.5.3/dist/css/axentix.min.css">
+    
+      
+    </head>
+  
+        <header>
+            <nav class="navbar primary">
+<a href="{{ path('back_app_category_prestation_index') }}" class="navbar-brand">
+    <img classe= "img"  src="{{ asset('images/prestaAuto_Black.png') }}" alt="Logo" />
+</a>                <div class="navbar-menu ml-auto">
+                    <a class="navbar-link" href="#">Accueil</a>
+                    <a class="navbar-link" href="#">Link 2</a>
+                    <a class="navbar-link" href="#">Link 3</a>
+                    <a class="navbar-link" href="#">Link 4</a>
+                </div>
+            </nav>
+        </header>
+<body style="background-image: url('{{ asset('images/Group_1000003072.png') }}')">
+ 
+
+         <div >
+            <form method="post">
     {% if error %}
         <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
     {% endif %}
@@ -14,15 +41,15 @@
         </div>
     {% endif %}
 
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
+
+    <h1 class="h3 mb-3 font-weight-normal">Connexion / Inscription </h1>
+     <h3 class="h3 mb-3 font-weight-normal">Saisissez votre email pour vous connecter ou créer un compte </h3>
     <label for="inputEmail">Email</label>
     <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
     <label for="inputPassword">Password</label>
     <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
 
-    <input type="hidden" name="_csrf_token"
-           value="{{ csrf_token('authenticate') }}"
-    >
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">
 
     {#
         Uncomment this section and add a remember_me option below your firewall to activate remember me functionality.
@@ -39,4 +66,19 @@
         Sign in
     </button>
 </form>
+    </div>         
+        
+        </body>
+
+        <footer class="footer primary">
+            Copyright © 2019 - Example
+        </footer>
+
+       
+
+        <script src="https://cdn.jsdelivr.net/npm/axentix@0.5.3/dist/js/axentix.min.js"></script>
+        {% block javascripts %}{% endblock %}
+        <script src="{{ asset('js/scripts.js') }}"></script>
+   
+
 {% endblock %}

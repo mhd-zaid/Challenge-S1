@@ -2,8 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 body {
-    background-color: lightgray;
-    a{
+    a {
         text-decoration: none;
     }
+}
+
+img {
+    width: 20%;
 }
