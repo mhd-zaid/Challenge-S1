@@ -24,7 +24,7 @@ class ProductQuantityValidator extends ConstraintValidator
                 // dump($this->context);die;
                 $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ title }}', $productQuantity['product']->getTitle())
-                ->atPath('productQuantities')
+                ->atPath('productQuantities[0].quantity')
                 ->addViolation();
             }
         }
