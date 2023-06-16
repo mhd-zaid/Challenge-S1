@@ -4,10 +4,21 @@
 
 @import "colors.scss";
 @import "font.scss";
-body {
-    background-color: lightgray;
-    a{
-        text-decoration: none;
-        @include text-style-titre-1;
+main {
+    background-color: $color-background-2;
+}
+
+body{
+    & nav{
+        background-color: $color-p-1;
+        & div{
+            & :first-child{
+                background-color: $color-background-3;
+            }
+        }
+    }
+
+    & aside{
+        background-color: $color-background-3;
     }
 }
