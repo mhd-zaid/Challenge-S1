@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}CategoryPrestation index{% endblock %}
+
+{% block body %}
+    <h1>CategoryPrestation index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Description</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for category_prestation in category_prestations %}
+            <tr>
+                <td>{{ category_prestation.id }}</td>
+                <td>{{ category_prestation.title }}</td>
+                <td>{{ category_prestation.description }}</td>
+                <td>
+                    <a href="{{ path('back_app_category_prestation_show', {'id': category_prestation.id}) }}">show</a>
+                    <a href="{{ path('back_app_category_prestation_edit', {'id': category_prestation.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('back_app_category_prestation_new') }}">Create new</a>
+{% endblock %}
