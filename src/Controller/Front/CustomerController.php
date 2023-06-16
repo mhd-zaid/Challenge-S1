@@ -9,10 +9,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
 #[Route('/customer')]
 class CustomerController extends AbstractController
 {
+    private $mailer;
+
+    public function __construct(MailerInterface $mailer)
+    {
+        $this->mailer = $mailer;
+    }
 
     #[Route('/new', name: 'app_customer_new', methods: ['GET', 'POST'])]
     public function new(Request $request, CustomerRepository $customerRepository): Response
@@ -30,6 +39,7 @@ class CustomerController extends AbstractController
             $id = $this->generateCustomerId($customerRepository);
             $customer->setId($id);
         }
+        
             $customer->setLastname($form->get('lastname')->getData());
             $customer->setFirstname($form->get('firstname')->getData());
             $customer->setEmail($form->get('email')->getData());
@@ -37,6 +47,17 @@ class CustomerController extends AbstractController
             $customer->setAddress($form->get('address')->getData());
             $customer->setPhone($form->get('phone')->getData());
 
+            $customer->setValidationToken(Uuid::v4()->__toString());            
+            $email = (new TemplatedEmail())
+            ->from("zaidmouhamad@gmail.com")
+            ->to($customer->getEmail())
+            ->subject('Confirm email')
+            ->htmlTemplate('back/email/confirmEmail.html.twig')
+            ->context([
+                'user' => $customer,
+            ]);
+            $this->mailer->send($email);
+            
             $customerRepository->save($customer, true);
             return $this->redirectToRoute('front_app_customer_new', [], Response::HTTP_SEE_OTHER);
         }
