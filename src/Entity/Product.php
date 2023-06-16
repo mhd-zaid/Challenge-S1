@@ -5,6 +5,9 @@ namespace App\Entity;
 use App\Entity\Traits\TimestampableTrait;
 use App\Entity\Traits\BlameableTrait;
 use App\Repository\ProductRepository;
+use Doctrine\DBAL\Types\Types;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
@@ -33,10 +36,15 @@ class Product
     #[Assert\Type(type: 'integer', message: 'La quantité doit être un nombre entier')]
     private ?int $quantity = null;
 
-    #[ORM\Column]
-    #[Assert\NotNull(message: 'Le prix est obligatoire')]
-    #[Assert\Type(type: 'integer', message: 'Le prix doit être un nombre entier')]
-    private ?int $price = null;
+    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
+    #[Assert\NotBlank(message: 'Le Total HT est obligatoire')]
+    #[Assert\Type(type: 'float', message: 'Le Total HT doit être un nombre décimal')]
+    private ?float $total_ht = null;
+
+    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
+    #[Assert\NotBlank(message: 'Le Total TVA est obligatoire')]
+    #[Assert\Type(type: 'float', message: 'Le Total TVA doit être un nombre décimal')]
+    private ?float $total_tva = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Type(type: 'string', message: 'La description doit être une chaîne de caractères')]
@@ -45,18 +53,32 @@ class Product
     #[Vich\UploadableField(mapping: 'products', fileNameProperty: 'productImageName')]
     #[Assert\File(
         maxSize: '1024k',
-        mimeTypes: ['application/jpg', 'applicaion/jpeg'],
-        mimeTypesMessage: 'Veuillez télécharger un fichier jpg ou jpeg valide',
+        mimeTypes: ['image/jpg', 'image/jpeg', 'image/png'],
+        mimeTypesMessage: 'Veuillez télécharger un fichier jpg, jpeg ou png valide',
     )]    
     private ?File $productImageFile = null;
 
     #[ORM\Column(nullable: true)]
     private ?string $productImageName = null;
 
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: EstimateProduct::class)]
+    private Collection $estimateProducts;
+
+    public function __construct()
+    {
+        $this->estimateProducts = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;
     }
 
     public function getTitle(): ?string
@@ -83,15 +105,25 @@ class Product
         return $this;
     }
 
-    public function getPrice(): ?int
+    public function getTotalHT(): ?float
     {
-        return $this->price;
+        return $this->total_ht;
     }
 
-    public function setPrice(int $price): self
+    public function setTotalHT(float $total_ht): static
     {
-        $this->price = $price;
+        $this->total_ht = $total_ht;
+        return $this;
+    }
 
+    public function getTotalTVA(): ?float
+    {
+        return $this->total_tva;
+    }
+
+    public function setTotalTVA(float $total_tva): static
+    {
+        $this->total_tva = $total_tva;
         return $this;
     }
 
@@ -161,6 +193,36 @@ class Product
         $this->id = $serialized['id'];
         $this->email = $serialized['email'];
         $this->password = $serialized['password'];
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, EstimateProduct>
+     */
+    public function getEstimateProducts(): Collection
+    {
+        return $this->estimateProducts;
+    }
+
+    public function addEstimateProduct(EstimateProduct $estimateProduct): static
+    {
+        if (!$this->estimateProducts->contains($estimateProduct)) {
+            $this->estimateProducts->add($estimateProduct);
+            $estimateProduct->setProduct($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEstimateProduct(EstimateProduct $estimateProduct): static
+    {
+        if ($this->estimateProducts->removeElement($estimateProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($estimateProduct->getProduct() === $this) {
+                $estimateProduct->setProduct(null);
+            }
+        }
+
         return $this;
     }
 }

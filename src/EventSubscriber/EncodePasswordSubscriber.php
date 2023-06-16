@@ -3,6 +3,7 @@
 namespace App\EventSubscriber;
 
 use App\Entity\User;
+use App\Entity\Customer;
 use Doctrine\Bundle\DoctrineBundle\EventSubscriber\EventSubscriberInterface;
 use Doctrine\ORM\Events;
 use Doctrine\Persistence\Event\LifecycleEventArgs;
@@ -24,8 +25,8 @@ class EncodePasswordSubscriber implements EventSubscriberInterface
     {
         $object = $args->getObject();
 
-        /** @var User $object */
-        if ($object instanceof User) {
+        /** @var User | Customer $object */
+        if ($object instanceof User || $object instanceof Customer) {
             $this->updatePassword($object);
         }
     }
@@ -34,13 +35,13 @@ class EncodePasswordSubscriber implements EventSubscriberInterface
     {
         $object = $args->getObject();
 
-        /** @var User $object */
-        if ($object instanceof User) {
+        /** @var User | Customer $object */
+        if ($object instanceof User || $object instanceof Customer) {
             $this->updatePassword($object);
         }
     }
 
-    private function updatePassword(User $object): void
+    private function updatePassword(User | Customer $object): void
     {
         if ($object->getPlainPassword()) {
             $object->setPassword($this->passwordHasher->hashPassword($object, $object->getPlainPassword()));
