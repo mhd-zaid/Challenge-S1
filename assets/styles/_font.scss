@@ -1,0 +1,27 @@
+@mixin text-style-titre-1() {
+    font-size: 24px;
+    font-family: "Inter";
+    font-weight: 700;
+    font-style: normal;
+    text-decoration: none;
+    text-transform: none;
+}
+@mixin text-style-titre-2() {
+    font-size: 12px;
+    font-family: "Inter";
+    font-weight: 700;
+    font-style: normal;
+    text-decoration: none;
+    text-transform: none;
+}
+@mixin text-style-titre-3() {
+    font-size: 20px;
+    font-family: "DM Sans";
+    font-weight: 500;
+    font-style: normal;
+    text-decoration: none;
+    text-transform: none;
+}
+@mixin effect-style-presta() {
+    box-shadow: 0px 4px 4px rgba(0,0,0,0.250);
+}
