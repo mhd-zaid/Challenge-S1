@@ -3,5 +3,5 @@
 <p>Voici votre Client ID : {{ customer.id }}
 <p>Utilisez le pour vous inscrire</p>
 <p>
-    <a href="{{url('front_app_customer_new')}}">Click here to activate your account</a>
+    <a href="{{url('front_app_customer_new', {'id': customer.id})}}">Click here to activate your account</a>
 </p>
