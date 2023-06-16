@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\CustomerRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -16,22 +18,21 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     use TimestampableTrait;
 
     #[ORM\Id]
-    #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
     
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable : true)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2,minMessage:'Le nom doit comporter au moins 2 caractères')]
     private ?string $lastname = null;
     
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable : true)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2,minMessage:'Le prénom doit comporter au moins 2 caractères')]
     private ?string $firstname = null;
 
-    #[ORM\Column(length: 180, unique: true)]
+    #[ORM\Column(length: 180, unique: true, nullable : true)]
     #[Assert\NotBlank]
     #[Assert\Email]
     private ?string $email = null;
@@ -39,33 +40,47 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     /**
      * @var string The hashed password
      */
-    #[ORM\Column]
+    #[ORM\Column(nullable : true)]
     private ?string $password = null;
 
     #[Assert\NotBlank]
     #[Assert\Regex('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z\d\W]{8,}$/')]
     private ?string $plainPassword = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable : true)]
     private ?string $address = null;
     
-    #[ORM\Column(length: 20)]
+    #[ORM\Column(length: 20, nullable : true)]
     #[Assert\Length(max: 20)]
     private ?string $phone = null;
 
     #[ORM\Column]
     private ?bool $isValidated = false;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable : true)]
     private ?string $validationToken = null;
 
     #[ORM\Column]
     #[Assert\Unique]
     private array $roles = [];
 
+    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Estimate::class, orphanRemoval: true)]
+    private Collection $estimates;
+
+    public function __construct()
+    {
+        $this->estimates = new ArrayCollection();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function setId(int $id): self
+    {
+        $this->id = $id;
+        return $this;    
     }
 
     public function getEmail(): ?string
@@ -258,6 +273,36 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
         $this->validationToken = $serialized['validationToken'];
         $this->isValidated = $serialized['isValidated'];
         $this->roles = $serialized['roles'];
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Estimate>
+     */
+    public function getEstimates(): Collection
+    {
+        return $this->estimates;
+    }
+
+    public function addEstimate(Estimate $estimate): static
+    {
+        if (!$this->estimates->contains($estimate)) {
+            $this->estimates->add($estimate);
+            $estimate->setClient($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEstimate(Estimate $estimate): static
+    {
+        if ($this->estimates->removeElement($estimate)) {
+            // set the owning side to null (unless already changed)
+            if ($estimate->getClient() === $this) {
+                $estimate->setClient(null);
+            }
+        }
 
         return $this;
     }
