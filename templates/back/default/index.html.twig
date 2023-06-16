@@ -1,8 +1,15 @@
 {% extends 'back/base.html.twig' %}
 
-{% block title %}{{ 'Hello' | trans }}{% endblock %}
+{% block title %}{{ 'Dashboard' | trans }}{% endblock %}
 
 {% block main %}
-    Administration
-    {{'Hello' | trans }}
+   <div id="chart-dashboard">
+        {{ render_chart(chart, {'class': 'my-chart'}) }}
+    </div>
+   <div class>
+        
+   </div>
+   <div class>
+        
+   </div> 
 {% endblock %}

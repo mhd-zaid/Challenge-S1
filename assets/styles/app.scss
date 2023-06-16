@@ -21,4 +21,8 @@ body{
     & aside{
         background-color: $color-background-3;
     }
+
+    & #chart-dashboard{
+        width: 250px;
+    }
 }
