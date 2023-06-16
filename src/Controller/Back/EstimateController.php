@@ -11,20 +11,26 @@ use App\Repository\ProductRepository;
 use App\Repository\EstimateRepository;
 use App\Repository\EstimateProductRepository;
 use App\Repository\CustomerRepository;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Uid\Uuid;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Component\Mailer\MailerInterface;
 
 #[Route('/estimate')]
 class EstimateController extends AbstractController
 {
     private $em;
+    private $mailer;
 
-    public function __construct(EntityManagerInterface $em)
+    public function __construct(EntityManagerInterface $em, MailerInterface $mailer)
     {
         $this->em = $em;
+        $this->mailer = $mailer;
     }
 
     #[Route('/', name: 'app_estimate_index', methods: ['GET'])]
@@ -47,6 +53,8 @@ class EstimateController extends AbstractController
             $customer = $customerRepository->findOneBy([
                 'email' => $form->get('email')->getData()
             ]);
+            $isCustomerExist = $customer ? true: false;
+
             if ($customer === null) {
                 $id = $this->generateCustomerId($customerRepository);
                 $customer = $this->createCustomer($form,$id, $customerRepository);
@@ -54,9 +62,30 @@ class EstimateController extends AbstractController
             $estimate->setClient($customer);
             $estimate->setTitle($form->getData()->getTitle());
             $estimate->setValidityDate($form->get('validity_date')->getData());
-            dump($estimate);
             $estimateRepository->save($estimate, true);
-
+            //isCLientExised -> jenvoie mail d'inscripion + devis sinon juste devis 
+            $emailCustomer = $form->get('email')->getData();
+            if($isCustomerExist){
+            $email = (new TemplatedEmail())
+            ->from("zaidmouhamad@gmail.com")
+            ->to($emailCustomer)
+            ->subject('Confirm email')
+            ->htmlTemplate('back/email/devisEmail.html.twig')
+            ->context([
+                'customer' => $customer,
+            ]);
+            $this->mailer->send($email);
+            }else{
+                $email = (new TemplatedEmail())
+                ->from("zaidmouhamad@gmail.com")
+                ->to($emailCustomer)
+                ->subject('Confirm email')
+                ->htmlTemplate('back/email/inscriptionEmail.html.twig')
+                ->context([
+                    'customer' => $customer,
+                ]);
+                $this->mailer->send($email);
+            }
             $products = $form->get('productQuantities')->getData();
             foreach($products as $value){
                 $product = $productRepository->find($value['product']->getId());
@@ -141,13 +170,10 @@ class EstimateController extends AbstractController
 
     public function createCustomer(object $form,int $id, CustomerRepository $customerRepository): Customer
     {
-        // $firstname = $form->get('firstname')->getData();
-        // $lastname = $form->get('lastname')->getData();
         $customer = new Customer();
         $customer->setId($id);
-        // $customer->setFirstname($firstname);
-        // $customer->setLastname($lastname);
-
+        $customer->setValidationToken(Uuid::v4()->__toString());        
+    
         $customerRepository->save($customer,true);
 
         return $customer;
