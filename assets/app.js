@@ -12,3 +12,10 @@ import './styles/app.scss';
 import './bootstrap';
 import a2lix_lib from '@a2lix/symfony-collection/dist/a2lix_sf_collection.min'
 a2lix_lib.sfCollection.init()
+
+import {
+    Tab,
+    initTE,
+  } from "tw-elements";
+  
+  initTE({ Tab });
