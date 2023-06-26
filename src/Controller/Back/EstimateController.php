@@ -24,8 +24,6 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
-use App\Services\PdfGenerator;
-use Mpdf;
 
 #[Route('/estimate')]
 class EstimateController extends AbstractController
@@ -48,7 +46,7 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/new', name: 'app_estimate_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, ProductRepository $productRepository, CustomerRepository $customerRepository, EstimateProductRepository $estimateProductRepository, InvoiceProductRepository $invoiceProductRepository, PdfGenerator $pdfGenerator): Response
+    public function new(Request $request, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, ProductRepository $productRepository, CustomerRepository $customerRepository, EstimateProductRepository $estimateProductRepository, InvoiceProductRepository $invoiceProductRepository): Response
     {
         $estimate = new Estimate();
         $invoice = new Invoice();
