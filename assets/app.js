@@ -17,5 +17,11 @@ import {
     Tab,
     initTE,
   } from "tw-elements";
+
+import 'flowbite';
   
   initTE({ Tab });
+
+window.addEventListener("load", function(event) {
+  document.querySelector('[data-dropdown-toggle="dropdown"]').click();
+});
