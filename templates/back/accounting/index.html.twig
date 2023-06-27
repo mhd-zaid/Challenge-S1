@@ -3,160 +3,104 @@
 {% block title %}Accounting index{% endblock %}
 
 {% block main %}
-   <ul class="mb-5 flex list-none flex-row flex-wrap border-b-0 pl-0 w-8/12 space-x-24 ml-60" role="tablist" data-te-nav-ref>
-        <li role="presentation" class="flex-auto text-center bg-white shadow-md sm:rounded-lg">
-            <a
-            href="#tabs-invoice-pending-payment"
-            class="my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-neutral-100 focus:isolate focus:border-transparent data-[te-nav-active]:border-slate-300 data-[te-nav-active]:border-slate-300 dark:text-neutral-400 dark:hover:bg-transparent dark:data-[te-nav-active]:border-primary-400 dark:data-[te-nav-active]:text-primary-400"
-            data-te-toggle="pill"
-            data-te-target="#tabs-invoice-pending-payment"
-            data-te-nav-active
-            role="tab"
-            aria-controls="tabs-invoice-pending-payment"
-            aria-selected="true"
-            >Factures en attente de paiement</a
-            >
-        </li>
-        <li role="presentation" class="flex-auto text-center bg-white shadow-md sm:rounded-lg">
-            <a
-            href="#tabs-invoice-paid"
-            class="focus:border-transparen my-2 block border-x-0 border-b-2 border-t-0 border-transparent px-7 pb-3.5 pt-4 text-xs font-medium uppercase leading-tight text-neutral-500 hover:isolate hover:border-transparent hover:bg-neutral-100 focus:isolate data-[te-nav-active]:border-slate-300 data-[te-nav-active]:border-slate-300 dark:text-neutral-400 dark:hover:bg-transparent dark:data-[te-nav-active]:border-primary-400 dark:data-[te-nav-active]:text-primary-400"
-            data-te-toggle="pill"
-            data-te-target="#tabs-invoice-paid"
-            role="tab"
-            aria-controls="tabs-invoice-paid"
-            aria-selected="false"
-            >Factures payées</a
-            >
-        </li>
-    </ul>
+<div class="flex items-center justify-center p-4">
+  <button id="dropdownDefault" data-dropdown-toggle="dropdown"
+    class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+    type="button">
+    Filter
+    <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+    </svg>
+  </button>
 
-<!--Tabs content-->
-    <div class="mb-6">
-        <div
-            class="hidden opacity-100 transition-opacity duration-150 ease-linear data-[te-tab-active]:block"
-            id="tabs-invoice-pending-payment"
-            role="tabpanel"
-            aria-labelledby="tabs-invoice-pending-payment"
-            data-te-tab-active>
-            <div class="relative bg-gray-50 overflow-x-auto shadow-md sm:rounded-lg mt-14 px-8">
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
-                    <thead class="text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
-                    <tr class="border-b-2 border-gray-500">
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Devis n°
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Véhicule
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Date du devis
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Date de validité
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Montant
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Statut
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                        <th scope="col" class="px-6 py-3">
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            01
-                        </th>
-                        <td class="px-6 py-4 text-center">
-                            LL-NNN-LL
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            12/06/2023
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            12/06/2023
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            74,88 €
-                        </td>
-                        <td class="px-6 py-4 text-center flex justify-center">
-                            <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-waiting.svg" alt="">
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-        <div
-            class="hidden opacity-0 transition-opacity duration-150 ease-linear data-[te-tab-active]:block"
-            id="tabs-invoice-paid"
-            role="tabpanel"
-            aria-labelledby="tabs-invoice-paid">
-            <div class="relative bg-gray-50 overflow-x-auto shadow-md sm:rounded-lg mt-14 px-8">
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
-                    <thead class="text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
-                    <tr class="border-b-2 border-gray-500">
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Devis n°
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Véhicule
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Date du devis
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Date de validité
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Montant
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Statut
-                        </th>
-                        <th scope="col" class="px-6 py-3">
-                        <th scope="col" class="px-6 py-3">
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                        <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            01
-                        </th>
-                        <td class="px-6 py-4 text-center">
-                            LL-NNN-LL
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            12/06/2023
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            12/06/2023
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            74,88 €
-                        </td>
-                        <td class="px-6 py-4 text-center flex justify-center">
-                            <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-valid.svg" alt="">
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
-                        </td>
-                    </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+  <!-- Dropdown menu -->
+  <div id="dropdown" class="z-10 hidden w-56 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
+    <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
+      <li class="flex items-center">
+        <input id="apple" type="checkbox" value=""
+          class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+
+        <label for="apple" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+          Status
+        </label>
+      </li>
+
+      <li class="flex items-center">
+        <input id="fitbit" type="checkbox" value=""
+          class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+
+        <label for="fitbit" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+          Date
+        </label>
+      </li>
+
+      <li class="flex items-center">
+        <input id="dell" type="checkbox" value=""
+          class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+
+        <label for="dell" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+          Devis N°
+        </label>
+      </li>
+    </ul>
+  </div>
+</div>
+
+<div class="relative bg-gray-50 overflow-x-auto shadow-md sm:rounded-lg mt-14 px-8">
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
+        <thead class="text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
+        <tr class="border-b-2 border-gray-500">
+            <th scope="col" class="px-6 py-3 text-center">
+                Devis n°
+            </th>
+            <th scope="col" class="px-6 py-3 text-center">
+                Véhicule
+            </th>
+            <th scope="col" class="px-6 py-3 text-center">
+                Date du devis
+            </th>
+            <th scope="col" class="px-6 py-3 text-center">
+                Date de validité
+            </th>
+            <th scope="col" class="px-6 py-3 text-center">
+                Montant
+            </th>
+            <th scope="col" class="px-6 py-3 text-center">
+                Statut
+            </th>
+            <th scope="col" class="px-6 py-3">
+            <th scope="col" class="px-6 py-3">
+        </tr>
+        </thead>
+        <tbody>
+        <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                01
+            </th>
+            <td class="px-6 py-4 text-center">
+                LL-NNN-LL
+            </td>
+            <td class="px-6 py-4 text-center">
+                12/06/2023
+            </td>
+            <td class="px-6 py-4 text-center">
+                12/06/2023
+            </td>
+            <td class="px-6 py-4 text-center">
+                74,88 €
+            </td>
+            <td class="px-6 py-4 text-center flex justify-center">
+                <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-waiting.svg" alt="">
+            </td>
+            <td class="px-6 py-4 text-center">
+                <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
+            </td>
+            <td class="px-6 py-4 text-center">
+                <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</div>
 {% endblock %}
