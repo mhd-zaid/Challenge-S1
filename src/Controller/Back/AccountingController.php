@@ -2,24 +2,44 @@
 
 namespace App\Controller\Back;
 
-use App\Entity\Product;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
-use Symfony\UX\Chartjs\Model\Chart;
+
 
 class AccountingController extends AbstractController
 {
     
     #[Route('/accounting', name: 'app_accounting_index', methods: ['GET'])]
-    public function index(ChartBuilderInterface $chartBuilder): Response
+    public function index(): Response
     {
-
-        //Afficher Les Factures et pouvoir filtrer
         //Export CSV Comptable
+    
+        return $this->render('back/accounting/index.html.twig');
+    }
 
+    #[Route('/accounting/filter', name: 'app_accounting_filter', methods: ['GET'])]
+    public function filter(Request $request): Response
+    {   
+        $filters = [
+            'status' => $request->query->get('states'),
+            'dateStart' => $request->query->get('dateStart'),
+            'dateEnd' => $request->query->get('dateEnd'),
+            'estimate' => $request->query->get('estimate'),
+        ];
+        
+        $filteredParams = array_filter($filters, function($value) {
+            return !empty($value);
+        });
+
+        if (empty($filteredParams)) {
+            
+            return $this->redirectToRoute('back_app_accounting_index');
+        }
+        
+
+        
         return $this->render('back/accounting/index.html.twig');
     }
 }
