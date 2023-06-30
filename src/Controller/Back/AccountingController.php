@@ -2,6 +2,8 @@
 
 namespace App\Controller\Back;
 
+use App\Entity\Invoice;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,15 +14,16 @@ class AccountingController extends AbstractController
 {
     
     #[Route('/accounting', name: 'app_accounting_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(EntityManagerInterface $em): Response
     {
         //Export CSV Comptable
-    
-        return $this->render('back/accounting/index.html.twig');
+        $invoices  = $em->getRepository(Invoice::class)->findAll();
+
+        return $this->render('back/accounting/index.html.twig',['invoices'=>$invoices]);
     }
 
     #[Route('/accounting/filter', name: 'app_accounting_filter', methods: ['GET'])]
-    public function filter(Request $request): Response
+    public function filter(Request $request,EntityManagerInterface $em): Response
     {   
         $filters = [
             'status' => $request->query->get('states'),
@@ -38,8 +41,8 @@ class AccountingController extends AbstractController
             return $this->redirectToRoute('back_app_accounting_index');
         }
         
-
+        $invoices  = $em->getRepository(Invoice::class)->findByFilter($filteredParams);
         
-        return $this->render('back/accounting/index.html.twig');
+        return $this->render('back/accounting/index.html.twig',['invoices'=>$invoices]);
     }
 }

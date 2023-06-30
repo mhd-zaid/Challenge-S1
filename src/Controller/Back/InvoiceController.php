@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Back;
 
 use App\Entity\Invoice;
 use App\Form\InvoiceType;
@@ -16,7 +16,7 @@ class InvoiceController extends AbstractController
     #[Route('/', name: 'app_invoice_index', methods: ['GET'])]
     public function index(InvoiceRepository $invoiceRepository): Response
     {
-        return $this->render('invoice/index.html.twig', [
+        return $this->render('back/invoice/index.html.twig', [
             'invoices' => $invoiceRepository->findAll(),
         ]);
     }
@@ -31,10 +31,10 @@ class InvoiceController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $invoiceRepository->save($invoice, true);
 
-            return $this->redirectToRoute('app_invoice_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('back_app_invoice_index', [], Response::HTTP_SEE_OTHER);
         }
-
-        return $this->renderForm('invoice/new.html.twig', [
+        
+        return $this->renderForm('back/invoice/new.html.twig', [
             'invoice' => $invoice,
             'form' => $form,
         ]);
@@ -43,7 +43,7 @@ class InvoiceController extends AbstractController
     #[Route('/{id}', name: 'app_invoice_show', methods: ['GET'])]
     public function show(Invoice $invoice): Response
     {
-        return $this->render('invoice/show.html.twig', [
+        return $this->render('back/invoice/show.html.twig', [
             'invoice' => $invoice,
         ]);
     }
@@ -57,10 +57,10 @@ class InvoiceController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $invoiceRepository->save($invoice, true);
 
-            return $this->redirectToRoute('app_invoice_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('back_app_invoice_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('invoice/edit.html.twig', [
+        return $this->renderForm('back/invoice/edit.html.twig', [
             'invoice' => $invoice,
             'form' => $form,
         ]);
@@ -73,6 +73,6 @@ class InvoiceController extends AbstractController
             $invoiceRepository->remove($invoice, true);
         }
 
-        return $this->redirectToRoute('app_invoice_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('back_app_invoice_index', [], Response::HTTP_SEE_OTHER);
     }
 }
