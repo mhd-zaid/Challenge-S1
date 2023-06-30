@@ -51,8 +51,8 @@
             <option value="paid">
               Paid
             </option>
-            <option value="waiting">
-              Waiting
+            <option value="pending">
+              Pending
             </option>
         </select>
       </div>
@@ -83,6 +83,15 @@
         </label>
         <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="submit">
       </div>
+      {% if app.request.get('_route') == 'back_app_accounting_filter' %}
+        <div id="filter-submit" class="mb-3">
+          <a href="{{path('back_app_accounting_index')}}">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="submit">
+              Effacer le filtre
+            </label>
+          </a>
+        </div>
+      {% endif %}
     </form>
   </div>
 </div>
@@ -95,16 +104,16 @@
                 Devis n°
             </th>
             <th scope="col" class="px-6 py-3 text-center">
-                Véhicule
+                Client Id
             </th>
             <th scope="col" class="px-6 py-3 text-center">
-                Date du devis
+                Nom Client
             </th>
             <th scope="col" class="px-6 py-3 text-center">
-                Date de validité
+                Prénom Client
             </th>
             <th scope="col" class="px-6 py-3 text-center">
-                Montant
+                Email Client
             </th>
             <th scope="col" class="px-6 py-3 text-center">
                 Statut
@@ -114,32 +123,48 @@
         </tr>
         </thead>
         <tbody>
+        {% if invoices is empty %}
         <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                01
-            </th>
-            <td class="px-6 py-4 text-center">
-                LL-NNN-LL
+          <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center" colspan="6">
+            Aucune Facture Trouvée
+          </td>
+        </tr>
+        {% endif %}
+        
+        {% for invoice in invoices %}
+          <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                {{invoice.id}}
+            </td>
+            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                {{invoice.client.id}}
+            </td>
+            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                {{invoice.client.lastname}}
+            </td>
+            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                {{invoice.client.firstname}}
+            </td>
+            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                {{invoice.client.email}}
+            </td>
+             <td class="px-6 py-4 text-center">
+                {% if invoice.status == "PENDING" %}
+                  <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-waiting.svg" alt="">
+                {% else %}
+                  <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-valid.svg" alt="">
+                {% endif %}
             </td>
             <td class="px-6 py-4 text-center">
-                12/06/2023
-            </td>
-            <td class="px-6 py-4 text-center">
-                12/06/2023
-            </td>
-            <td class="px-6 py-4 text-center">
-                74,88 €
-            </td>
-            <td class="px-6 py-4 text-center flex justify-center">
-                <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-waiting.svg" alt="">
-            </td>
-            <td class="px-6 py-4 text-center">
-                <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
+                <a href="{{path('back_app_invoice_show',{'id': invoice.id})}}">
+                  <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
+                </a>
             </td>
             <td class="px-6 py-4 text-center">
                 <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
             </td>
-        </tr>
+          </tr>
+        {% endfor %}
         </tbody>
     </table>
 </div>
@@ -155,7 +180,7 @@
 
     hideForm();
     displaysubmit([statesField,dateField,estimateField])
-
+    
     statesCheckbox.addEventListener("change", function() {
       showOrHideFilterInput(statesCheckbox,statesField,'block');
       displaysubmit([statesField,dateField,estimateField])

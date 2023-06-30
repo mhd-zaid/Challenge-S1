@@ -39,6 +39,33 @@ class InvoiceRepository extends ServiceEntityRepository
         }
     }
 
+    public function findByFilter(array $filters): array
+    {
+        $queryBuilder = $this->createQueryBuilder('i');
+
+        if (isset($filters['status'])) {
+            $queryBuilder->andWhere('i.status = :status')
+                ->setParameter('status', strtoupper($filters['status']));
+        }
+
+        if (isset($filters['dateStart'])) {
+            $queryBuilder->andWhere('i.date >= :dateStart')
+                ->setParameter('dateStart', $filters['dateStart']);
+        }
+
+        if (isset($filters['dateEnd'])) {
+            $queryBuilder->andWhere('i.date <= :dateEnd')
+                ->setParameter('dateEnd', $filters['dateEnd']);
+        }
+
+        if (isset($filters['estimate'])) {
+            $queryBuilder->andWhere('i.estimate = :estimate')
+                ->setParameter('estimate', $filters['estimate']);
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Invoice[] Returns an array of Invoice objects
 //     */
