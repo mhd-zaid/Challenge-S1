@@ -3,47 +3,87 @@
 {% block title %}Accounting index{% endblock %}
 
 {% block main %}
-<div class="flex items-center justify-center p-4">
-  <button id="dropdownDefault" data-dropdown-toggle="dropdown"
-    class="text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
-    type="button">
-    Filter
-    <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
-    </svg>
-  </button>
+<div class="flex items-start justify-start space-x-40 p-4">
+  <div class="w-60">
+    <button id="dropdownDefault" data-dropdown-toggle="dropdown"
+      class="w-full text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+      type="button">
+      <span class="ml-12">Filter</span>
+      <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+      </svg>
+    </button>
 
-  <!-- Dropdown menu -->
-  <div id="dropdown" class="z-10 hidden w-56 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
-    <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
-      <li class="flex items-center">
-        <input id="apple" type="checkbox" value=""
-          class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-
-        <label for="apple" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-          Status
-        </label>
-      </li>
-
-      <li class="flex items-center">
-        <input id="fitbit" type="checkbox" value=""
-          class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-
-        <label for="fitbit" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-          Date
-        </label>
-      </li>
-
-      <li class="flex items-center">
-        <input id="dell" type="checkbox" value=""
-          class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-
-        <label for="dell" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+    <!-- Dropdown menu -->
+    <div id="dropdown" class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
+      <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
+        <li class="flex items-center">
+          <input id="states" type="checkbox"
+            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+          <label for="apple" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+            Status
+          </label>
+        </li>
+        <li class="flex items-center">
+          <input id="date" type="checkbox"
+            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+          <label for="fitbit" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+            Date
+          </label>
+        </li>
+        <li class="flex items-center">
+          <input id="estimate" type="checkbox"
+            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+          <label for="estimate" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+            Devis N°
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div id= "filter-form" class="w-full w-48">
+    <form class="flex flex-wrap space-x-1 px-8 pt-6 pb-8 mb-4" action="{{path('back_app_accounting_filter')}}" method="GET">
+      <div id = "filter-states" class="mb-3">
+        <label for="states" class="sr-only">Choose a state</label>
+        <select name ="states" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-r-lg border-l-gray-100 dark:border-l-gray-700 border-l-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <option value="">Choose a status</option>
+            <option value="paid">
+              Paid
+            </option>
+            <option value="waiting">
+              Waiting
+            </option>
+        </select>
+      </div>
+      <div id = "filter-date" date-rangepicker class="flex items-center">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
+        </div>
+        <input name="dateStart" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date start">
+      </div>
+      <span class="mx-4 text-gray-500">to</span>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
+        </div>
+        <input name="dateEnd" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date end">
+    </div>
+    </div>
+      <div id = "filter-estimate" class="mb-3">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="estimate">
           Devis N°
         </label>
-      </li>
-    </ul>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="estimate" type="text" placeholder="Estimate">
+      </div>
+      <div id="filter-submit" class="mb-3">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="submit">
+          Filter
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="submit">
+      </div>
+    </form>
   </div>
 </div>
 
@@ -103,4 +143,61 @@
         </tbody>
     </table>
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const statesCheckbox = document.getElementById("states");
+    const dateCheckbox = document.getElementById("date");
+    const estimateCheckbox = document.getElementById("estimate");
+    const statesField = document.getElementById("filter-states");
+    const dateField = document.getElementById("filter-date");
+    const estimateField = document.getElementById("filter-estimate");
+
+
+    hideForm();
+    displaysubmit([statesField,dateField,estimateField])
+
+    statesCheckbox.addEventListener("change", function() {
+      showOrHideFilterInput(statesCheckbox,statesField,'block');
+      displaysubmit([statesField,dateField,estimateField])
+    });
+
+    dateCheckbox.addEventListener("change", function() {
+      showOrHideFilterInput(dateCheckbox,dateField,'flex');
+      displaysubmit([statesField,dateField,estimateField])
+    });
+
+    estimateCheckbox.addEventListener("change", function() {
+      showOrHideFilterInput(estimateCheckbox,estimateField,'block');
+      displaysubmit([statesField,dateField,estimateField])
+    });
+  });
+
+  function hideForm(){
+    document.getElementById('filter-states').style.display = 'none';
+    document.getElementById('filter-date').style.display = 'none';
+    document.getElementById('filter-estimate').style.display = 'none';
+    document.getElementById('filter-submit').style.display = 'none';
+  }
+
+  function showOrHideFilterInput(checkbox,input,displayType){
+    input.style.display = checkbox.checked ? displayType : "none";
+  }
+
+  function displaysubmit(fields)
+  {
+    const submitField = document.getElementById('filter-submit');
+    let boutonDisplay = false
+    for (let field of fields) {
+      if(field.style.display != 'none' )
+      {
+        submitField.style.display = 'block';
+        boutonDisplay = true;
+      }
+    }
+
+    if(! boutonDisplay){
+      submitField.style.display = 'none';
+    }
+  }
+</script>
 {% endblock %}
