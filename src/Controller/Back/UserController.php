@@ -91,20 +91,4 @@ class UserController extends AbstractController
 
         return $this->redirectToRoute('back_app_user_index', [], Response::HTTP_SEE_OTHER);
     }
-
-    #[Route('/validate/{id}/{token}', name: 'app_user_validate', methods: ['GET'])]
-    public function confirmMail(Request $request, int $id,string $token, UserRepository $userRepository): Response
-    {
-        $user = $userRepository->findOneBy([
-            'id' => $id,
-            'validationToken' => $token
-        ]);
-
-        if (!empty($user)) {
-            $user->setIsValidated(true);
-            $userRepository->save($user, true);
-        }
-
-        return $this->redirectToRoute('back_default_index', [], Response::HTTP_SEE_OTHER);
-    }
 }

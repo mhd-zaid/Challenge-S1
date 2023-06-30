@@ -9,26 +9,37 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
+use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\EqualTo;
 use App\Validator\CustomerEmail;
+use App\Validator\PasswordMatch;
+use App\Validator\ClientId;
+use App\Validator\ClientExist;
 
 class CustomerType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
-        $builder
-            ->add('id')
+        if(isset($_GET['id']) && $_GET['id']){
+         
+            $builder
+                ->add('id', TextType::class, [
+                    'constraints' => [new ClientId, new ClientExist]
+                ]);
+        }
+            $builder
             ->add('firstname')
             ->add('lastname')
             ->add('email', EmailType::class, [
-                'constraints' => [new CustomerEmail]
+                // 'constraints' => [new CustomerEmail]
             ])
             ->add('plainPassword', PasswordType::class, [
-                'label' => 'plainPassword',
+            'constraints' => [new PasswordMatch]
             ])
-            ->add('validatedPassword', TextType::class, [
+            ->add('password', PasswordType::class, [
                 'mapped' => false,
-                "label" => 'Validate Password'
-            ])
+                ])
             ->add('address')
             ->add('phone')
         ;

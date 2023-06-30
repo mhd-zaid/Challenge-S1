@@ -6,10 +6,14 @@ use App\Entity\Customer;
 use App\Entity\Estimate;
 use App\Form\EstimateType;
 use App\Entity\Product;
+use App\Entity\Invoice;
 use App\Entity\EstimateProduct;
+use App\Entity\InvoiceProduct;
 use App\Repository\ProductRepository;
 use App\Repository\EstimateRepository;
+use App\Repository\InvoiceRepository;
 use App\Repository\EstimateProductRepository;
+use App\Repository\InvoiceProductRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -42,14 +46,17 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/new', name: 'app_estimate_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EstimateRepository $estimateRepository, ProductRepository $productRepository, CustomerRepository $customerRepository, EstimateProductRepository $estimateProductRepository): Response
+    public function new(Request $request, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, ProductRepository $productRepository, CustomerRepository $customerRepository, EstimateProductRepository $estimateProductRepository, InvoiceProductRepository $invoiceProductRepository): Response
     {
         $estimate = new Estimate();
+        $invoice = new Invoice();
+
         $products = $productRepository->findAll();
         $form = $this->createForm(EstimateType::class, $estimate);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+
             $customer = $customerRepository->findOneBy([
                 'email' => $form->get('email')->getData()
             ]);
@@ -63,6 +70,10 @@ class EstimateController extends AbstractController
             $estimate->setTitle($form->getData()->getTitle());
             $estimate->setValidityDate($form->get('validity_date')->getData());
             $estimateRepository->save($estimate, true);
+
+            $invoice->setClient($customer);
+            $invoice->setStatus('PENDING');
+            $invoiceRepository->save($invoice, true);
             //isCLientExised -> jenvoie mail d'inscripion + devis sinon juste devis 
             $emailCustomer = $form->get('email')->getData();
             if($isCustomerExist){
@@ -100,6 +111,15 @@ class EstimateController extends AbstractController
                 $estimateProduct->setQuantity($value['quantity']);
                 $estimateProduct->setWorkforce($form->get('workforce')->getData());
                 $estimateProductRepository->save($estimateProduct, true);
+
+                $total = (($product->getTotalTva() / 100) * $product->getTotalHt()) + $product->getTotalHt() + $form->get('workforce')->getData();
+
+                $invoiceProduct = new InvoiceProduct();
+                $invoiceProduct->setProduct($product);
+                $invoiceProduct->setInvoice($invoice);
+                $invoiceProduct->setTotal($total);
+                $invoiceProduct->setQuantity($value['quantity']);
+                $invoiceProductRepository->save($invoiceProduct, true);
             }
 
             return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);

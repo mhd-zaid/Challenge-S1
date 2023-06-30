@@ -5,9 +5,9 @@ namespace App\Validator;
 use Symfony\Component\Validator\Constraint;
 
 #[\Attribute]
-class CustomerEmail extends Constraint
+class PasswordMatch extends Constraint
 {
-    public string $message = 'The email {{ title }}" already exists';
+    public string $message = 'The password does not match.';
     // If the constraint has configuration options, define them as public properties
     public string $mode = 'strict';
 
