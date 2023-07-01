@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap%27');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Inter:wght@400;500;600;700&display=swap%27');
+
+@mixin text-style-titre-0() {
+    font-size: 40px;
+    font-family: 'Inter';
+    font-weight: 700;
+    font-style: normal;
+    line-height: 48px;
+    text-decoration: none;
+    text-transform: none;
+}
+@mixin text-style-titre-1() {
+    font-size: 24px;
+    font-family: "Inter";
+    font-weight: 700;
+    font-style: normal;
+    text-decoration: none;
+    text-transform: none;
+}
+@mixin text-style-titre-2() {
+    font-size: 20px;
+    font-family: "DM Sans";
+    font-weight: 500;
+    font-style: normal;
+    text-decoration: none;
+    text-transform: none;
+}
+@mixin text-style-titre-3() {
+    font-size: 12px;
+    font-family: "Inter";
+    font-weight: 700;
+    font-style: normal;
+    text-decoration: none;
+    text-transform: none;
+}

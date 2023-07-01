@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+<nav class="fixed top-0 left-64 z-50 w-full">
+    <div class="px-3 py-3 lg:px-5 lg:pl-3 flex">
+            <form class="w-[762.32px]">
+                <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
+                    <input type="search" id="default-search" class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Mockups, Logos..." required>
+                    <button type="submit" class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
+                </div>
+            </form>
+
+    </div>
+</nav>
+
+<aside id="logo-sidebar" class="fixed top-0 left-0 z-40 w-64 h-screen transition-transform -translate-x-full sm:translate-x-0" aria-label="Sidebar">
+    <div class="flex flex-col h-full px-3 pb-4 ">
+        <div class="top-0">
+            <button data-drawer-target="logo-sidebar" data-drawer-toggle="logo-sidebar" aria-controls="logo-sidebar" type="button" class="inline-flex items-center p-2 text-sm text-gray-500 rounded-lg sm:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-700 dark:focus:ring-gray-600">
+                <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                    <path clip-rule="evenodd" fill-rule="evenodd" d="M2 4.75A.75.75 0 012.75 4h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 4.75zm0 10.5a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5h-7.5a.75.75 0 01-.75-.75zM2 10a.75.75 0 01.75-.75h14.5a.75.75 0 010 1.5H2.75A.75.75 0 012 10z"></path>
+                </svg>
+            </button>
+            <a href="{{path('front_default_index')}}" class="flex ml-2">
+                <img src="{{app.request.baseURL}}/uploads/images/global/logo.svg" class="h-16 mr-3" alt="Logo" />
+            </a>
+        </div>
+        
+        <ul class="font-medium mt-12 ml-4">
+            <li>
+                <a href="{{path('back_default_index')}}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                   <img src="{{app.request.baseURL}}/uploads/images/global/dashboard.svg" class="ml-1 h-6" alt="Dashboard" />
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{path('back_app_estimate_index')}}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="{{app.request.baseURL}}/uploads/images/global/estimate.svg" class="h-6" alt="Estimate"/>
+                    <span>Estimate</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{path('back_app_invoice_index')}}" class="flex items-start space-x-2.5 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="{{app.request.baseURL}}/uploads/images/global/invoice.svg" class="ml-1 h-6" alt="Invoice" />
+                    <span>Invoice</span>
+                </a>
+            </li>
+            <li>
+                <a href="#" class="flex items-start space-x-4 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="{{app.request.baseURL}}/uploads/images/global/customer.svg" class="ml-1 h-6" alt="Customer" />
+                    <span>Customer</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{path('back_app_prestation_index')}}" class="flex items-start p-2 space-x-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="{{app.request.baseURL}}/uploads/images/global/prestation.svg" class="ml-1 h-6" alt="Prestation" />
+                    <span>Prestation</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{path('back_app_product_index')}}" class="flex items-start space-x-3 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="{{app.request.baseURL}}/uploads/images/global/product.svg" class="ml-1 h-6" alt="Product" />
+                    <span>Product</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{path('back_app_accounting_index')}}" class="flex items-start space-x-3 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="{{app.request.baseURL}}/uploads/images/global/accounting.svg" class="ml-1 h-6" alt="Product" />
+                    <span>Accounting</span>
+                </a>
+            </li>
+        </ul>
+        <ul class="font-medium top-[800px] absolute ml-4">
+            <li>
+                <a href="#" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="{{app.request.baseURL}}/uploads/images/global/account.svg" class="h-6" alt="Account" />
+                    <span>My Account</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{path('app_logout')}}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="{{app.request.baseURL}}/uploads/images/global/logout.svg" class="h-6" alt="Log Out" />
+                    <span>Log Out</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</aside>
+
+<main class="p-4 sm:ml-64 mt-14 h-full">
+    <div class="p-4 dark:border-gray-700 mt-14">
+        {% block main %}{% endblock %}
+    </div>
+</main>
+{% endblock %}
