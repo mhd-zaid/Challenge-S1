@@ -58,9 +58,9 @@ class InvoiceRepository extends ServiceEntityRepository
                 ->setParameter('dateEnd', $filters['dateEnd']);
         }
 
-        if (isset($filters['estimate'])) {
-            $queryBuilder->andWhere('i.estimate = :estimate')
-                ->setParameter('estimate', $filters['estimate']);
+        if (isset($filters['customer'])) {
+            $queryBuilder->andWhere('i.client = :customer')
+                ->setParameter('customer', $filters['customer']);
         }
 
         return $queryBuilder->getQuery()->getResult();
