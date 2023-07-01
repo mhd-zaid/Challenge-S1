@@ -33,10 +33,10 @@
           </label>
         </li>
         <li class="flex items-center">
-          <input id="estimate" type="checkbox"
+          <input id="customer" type="checkbox"
             class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
-          <label for="estimate" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
-            Devis N°
+          <label for="customer" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+            Client Code
           </label>
         </li>
       </ul>
@@ -71,11 +71,11 @@
         <input name="dateEnd" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date end">
     </div>
     </div>
-      <div id = "filter-estimate" class="mb-3">
-        <label class="block text-gray-700 text-sm font-bold mb-2" for="estimate">
-          Devis N°
+      <div id = "filter-customer" class="mb-3">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="customer">
+          Customer Code
         </label>
-        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="estimate" type="text" placeholder="Estimate">
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="customer" type="number" placeholder="Client Code">
       </div>
       <div id="filter-submit" class="mb-3">
         <label class="block text-gray-700 text-sm font-bold mb-2" for="submit">
@@ -94,6 +94,17 @@
       {% endif %}
     </form>
   </div>
+  {% if filter is defined %}
+    <a href="{{path('back_app_accounting_export',{'filter': filter})}}">
+  {% else %}
+    <a href="{{path('back_app_accounting_export')}}">
+  {% endif %}
+  
+    <button class="text-white bg-primary-700 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center space-x-4">
+      <span class="ml-4">Exporter</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M21.17 3.25q.33 0 .59.25q.24.24.24.58v15.84q0 .34-.24.58q-.26.25-.59.25H7.83q-.33 0-.59-.25q-.24-.24-.24-.58V17H2.83q-.33 0-.59-.24Q2 16.5 2 16.17V7.83q0-.33.24-.59Q2.5 7 2.83 7H7V4.08q0-.34.24-.58q.26-.25.59-.25M7 13.06l1.18 2.22h1.79L8 12.06l1.93-3.17H8.22L7.13 10.9l-.04.06l-.03.07q-.26-.53-.56-1.07q-.25-.53-.53-1.07H4.16l1.89 3.19L4 15.28h1.78m8.1 4.22V17H8.25v2.5m5.63-3.75v-3.12H12v3.12m1.88-4.37V8.25H12v3.13M13.88 7V4.5H8.25V7m12.5 12.5V17h-5.62v2.5m5.62-3.75v-3.12h-5.62v3.12m5.62-4.37V8.25h-5.62v3.13M20.75 7V4.5h-5.62V7Z"/></svg>
+    </button>
+  </a>
 </div>
 
 <div class="relative bg-gray-50 overflow-x-auto shadow-md sm:rounded-lg mt-14 px-8">
@@ -172,35 +183,35 @@
   document.addEventListener("DOMContentLoaded", function() {
     const statesCheckbox = document.getElementById("states");
     const dateCheckbox = document.getElementById("date");
-    const estimateCheckbox = document.getElementById("estimate");
+    const customerCheckbox = document.getElementById("customer");
     const statesField = document.getElementById("filter-states");
     const dateField = document.getElementById("filter-date");
-    const estimateField = document.getElementById("filter-estimate");
+    const customerField = document.getElementById("filter-customer");
 
 
     hideForm();
-    displaysubmit([statesField,dateField,estimateField])
+    displaysubmit([statesField,dateField,customerField])
     
     statesCheckbox.addEventListener("change", function() {
       showOrHideFilterInput(statesCheckbox,statesField,'block');
-      displaysubmit([statesField,dateField,estimateField])
+      displaysubmit([statesField,dateField,customerField])
     });
 
     dateCheckbox.addEventListener("change", function() {
       showOrHideFilterInput(dateCheckbox,dateField,'flex');
-      displaysubmit([statesField,dateField,estimateField])
+      displaysubmit([statesField,dateField,customerField])
     });
 
-    estimateCheckbox.addEventListener("change", function() {
-      showOrHideFilterInput(estimateCheckbox,estimateField,'block');
-      displaysubmit([statesField,dateField,estimateField])
+    customerCheckbox.addEventListener("change", function() {
+      showOrHideFilterInput(customerCheckbox,customerField,'block');
+      displaysubmit([statesField,dateField,customerField])
     });
   });
 
   function hideForm(){
     document.getElementById('filter-states').style.display = 'none';
     document.getElementById('filter-date').style.display = 'none';
-    document.getElementById('filter-estimate').style.display = 'none';
+    document.getElementById('filter-customer').style.display = 'none';
     document.getElementById('filter-submit').style.display = 'none';
   }
 

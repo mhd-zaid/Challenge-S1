@@ -33,7 +33,18 @@ RUN apk add --no-cache \
         linux-headers \
 		npm\
 		go\
+		gd \
 	;
+RUN apk add --no-cache \
+    freetype-dev \
+    libjpeg-turbo-dev \
+    libpng-dev \
+    libwebp-dev \
+    libxpm-dev \
+    gd
+
+RUN docker-php-ext-configure gd \
+    && docker-php-ext-install -j$(nproc) gd
 
 RUN set -eux; \
 	apk add --no-cache --virtual .build-deps \
