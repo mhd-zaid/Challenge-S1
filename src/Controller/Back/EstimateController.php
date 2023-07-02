@@ -24,29 +24,44 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Component\Security\Core\Security;
+use Doctrine\Common\Collections\ArrayCollection;
+use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+use Knp\Snappy\Pdf;
 
 #[Route('/estimate')]
 class EstimateController extends AbstractController
 {
     private $em;
     private $mailer;
+    private $security;
 
-    public function __construct(EntityManagerInterface $em, MailerInterface $mailer)
+    public function __construct(EntityManagerInterface $em, MailerInterface $mailer, Security $security)
     {
         $this->em = $em;
         $this->mailer = $mailer;
+        $this->security = $security;
     }
 
     #[Route('/', name: 'app_estimate_index', methods: ['GET'])]
-    public function index(EstimateRepository $estimateRepository): Response
+    public function index(EstimateRepository $estimateRepository, Request $request): Response
     {
-        return $this->render('back/estimate/index.html.twig', [
-            'estimates' => $estimateRepository->findAll(),
-        ]);
+        if($this->isGranted('ROLE_ADMIN')){
+            dump($estimateRepository->findAll());
+            return $this->render('back/estimate/index.html.twig', [
+                'estimates' => $estimateRepository->findAll(),
+            ]);
+        }else{
+            $estimates = $estimateRepository->findBy(['client' => $this->security->getUser()]);
+            dump($estimates);
+            return $this->render('back/estimate/index.html.twig', [
+                'estimates' => $estimates,
+            ]);
+        }
     }
 
     #[Route('/new', name: 'app_estimate_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, ProductRepository $productRepository, CustomerRepository $customerRepository, EstimateProductRepository $estimateProductRepository, InvoiceProductRepository $invoiceProductRepository): Response
+    public function new(Pdf $pdf, Request $request, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, ProductRepository $productRepository, CustomerRepository $customerRepository, EstimateProductRepository $estimateProductRepository, InvoiceProductRepository $invoiceProductRepository): Response
     {
         $estimate = new Estimate();
         $invoice = new Invoice();
@@ -56,12 +71,12 @@ class EstimateController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
+            dump($form->get('productQuantities')->getData());
+            die;
             $customer = $customerRepository->findOneBy([
                 'email' => $form->get('email')->getData()
             ]);
             $isCustomerExist = $customer ? true: false;
-
             if ($customer === null) {
                 $id = $this->generateCustomerId($customerRepository);
                 $customer = $this->createCustomer($form,$id, $customerRepository);
@@ -74,17 +89,30 @@ class EstimateController extends AbstractController
             $invoice->setClient($customer);
             $invoice->setStatus('PENDING');
             $invoiceRepository->save($invoice, true);
-            //isCLientExised -> jenvoie mail d'inscripion + devis sinon juste devis 
             $emailCustomer = $form->get('email')->getData();
+
             if($isCustomerExist){
+            $html = $this->renderView('back/pdf/estimate.html.twig', [
+                'estimate' => $estimate,
+                'customer' => $customer,
+                'workforce' => $form->get('workforce')->getData(),
+                'products' => $form->get('productQuantities')->getData(),
+            ]);
+            $pdfResponse = new PdfResponse(
+                $pdf->getOutputFromHtml($html),
+                'file.pdf'
+            );
+            $pdfContent = $pdfResponse->getContent();
             $email = (new TemplatedEmail())
             ->from("zaidmouhamad@gmail.com")
             ->to($emailCustomer)
-            ->subject('Confirm email')
+            ->subject('Votre Devis
+            ')
             ->htmlTemplate('back/email/devisEmail.html.twig')
             ->context([
                 'customer' => $customer,
-            ]);
+            ])
+            ->attach($pdfContent, 'file.pdf');
             $this->mailer->send($email);
             }else{
                 $email = (new TemplatedEmail())
@@ -132,12 +160,28 @@ class EstimateController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_estimate_show', methods: ['GET'])]
-    public function show(Estimate $estimate): Response
+    #[Route('/{id}', name: 'app_estimate_download', methods: ['GET'])]
+    public function download(Estimate $estimate, Pdf $pdf, EstimateProductRepository $estimateProductRepository, ProductRepository $productRepository): Response
     {
-        return $this->render('back/estimate/show.html.twig', [
+        $estimateProduct = $estimateProductRepository->findBy(['estimate' => $estimate]);
+        $estimateData = [];
+        foreach($estimateProduct as $product){
+            $productData = $product->getProduct();
+            $estimateData[] = [
+                'product' => $productData,
+                'quantity' => $product->getQuantity(),
+            ];
+        }
+        $html = $this->renderView('back/pdf/estimate.html.twig', [
             'estimate' => $estimate,
+            'customer' => $estimate->getClient(),
+            'workforce' => $estimateProduct[0]->getWorkforce(),
+            'products' => $estimateData,
         ]);
+        return new PdfResponse(
+            $pdf->getOutputFromHtml($html),
+            'file.pdf'
+        );
     }
 
     #[Route('/{id}/edit', name: 'app_estimate_edit', methods: ['GET', 'POST'])]
@@ -171,7 +215,6 @@ class EstimateController extends AbstractController
     public function checkId(int $id, CustomerRepository $customerRepository): bool
     {
         $user = $customerRepository->find($id);
-        dump($user);
         if($user === null){
             return false;
         }

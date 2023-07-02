@@ -1,35 +1,35 @@
 {% extends 'back/base.html.twig' %}
 
-{% block title %}Estimate index{% endblock %}
+{% block title %}Estimate{% endblock %}
 
 {% block main %}
     <h1>Estimate index</h1>
+    <a href="{{ path('back_app_estimate_new') }}">Create new</a>
+    <h1>Vos devis</h1>
 
     <table class="table">
         <thead>
             <tr>
-                <th>Id</th>
                 <th>Title</th>
-                <th>actions</th>
+                <th>Status</th>
             </tr>
         </thead>
         <tbody>
         {% for estimate in estimates %}
             <tr>
-                <td>{{ estimate.id }}</td>
                 <td>{{ estimate.title }}</td>
-                <td>
-                    <a href="{{ path('back_app_estimate_show', {'id': estimate.id}) }}">show</a>
-                    <a href="{{ path('back_app_estimate_edit', {'id': estimate.id}) }}">edit</a>
-                </td>
+                <td>{{ estimate.status }}</td>
+                <td><a href="{{ path('back_app_estimate_download', {'id': estimate.id}) }}">Télécharger</a></td>
+
+            {% if estimate.status == 'Non Payé' %}
+                    <td>Payé</td>
+            {% endif %}
             </tr>
         {% else %}
             <tr>
-                <td colspan="3">no records found</td>
+                <td colspan="3">Pad de devis</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('back_app_estimate_new') }}">Create new</a>
 {% endblock %}
