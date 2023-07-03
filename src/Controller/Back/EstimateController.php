@@ -71,8 +71,6 @@ class EstimateController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            dump($form->get('productQuantities')->getData());
-            die;
             $customer = $customerRepository->findOneBy([
                 'email' => $form->get('email')->getData()
             ]);
@@ -81,14 +79,18 @@ class EstimateController extends AbstractController
                 $id = $this->generateCustomerId($customerRepository);
                 $customer = $this->createCustomer($form,$id, $customerRepository);
             }
-            $estimate->setClient($customer);
-            $estimate->setTitle($form->getData()->getTitle());
-            $estimate->setValidityDate($form->get('validity_date')->getData());
-            $estimateRepository->save($estimate, true);
 
             $invoice->setClient($customer);
             $invoice->setStatus('PENDING');
             $invoiceRepository->save($invoice, true);
+
+            $estimate->setClient($customer);
+            $estimate->setTitle($form->getData()->getTitle());
+            $estimate->setValidityDate($form->get('validity_date')->getData());
+            $estimate->setInvoice($invoice);
+            $estimate->setStatus('Non Payé');
+            $estimateRepository->save($estimate, true);
+            
             $emailCustomer = $form->get('email')->getData();
 
             if($isCustomerExist){
