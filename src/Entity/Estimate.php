@@ -32,6 +32,10 @@ class Estimate
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $status = null;
 
+    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Invoice $invoice = null;
+
     public function __construct()
     {
         $this->estimateProducts = new ArrayCollection();
@@ -128,6 +132,18 @@ class Estimate
     public function setStatus(?string $status): static
     {
         $this->status = $status;
+
+        return $this;
+    }
+
+    public function getInvoice(): ?Invoice
+    {
+        return $this->invoice;
+    }
+
+    public function setInvoice(Invoice $invoice): static
+    {
+        $this->invoice = $invoice;
 
         return $this;
     }

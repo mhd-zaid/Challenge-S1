@@ -22,7 +22,7 @@
                 <td><a href="{{ path('back_app_estimate_download', {'id': estimate.id}) }}">Télécharger</a></td>
 
             {% if estimate.status == 'Non Payé' %}
-                    <td>Payé</td>
+                <td><a href="{{ path('back_app_stripe_buy', {'id': estimate.id}) }}">Payé</a></td>
             {% endif %}
             </tr>
         {% else %}
