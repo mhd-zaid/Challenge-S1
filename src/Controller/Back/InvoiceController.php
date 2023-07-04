@@ -39,8 +39,6 @@ class InvoiceController extends AbstractController
     #[Route('/{id}/download', name: 'app_invoice_download', methods: ['GET'])]
     public function download(Invoice $invoice): Response
     {
-        dump($invoice);
-        die;
         return $this->render('back/invoice/download.html.twig', []);
     }
 
