@@ -2,49 +2,53 @@
 
 namespace App\Controller\Back;
 
-use App\Repository\UserRepository;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
+use Knp\Snappy\Pdf;
 use Symfony\Component\Uid\Uuid;
+use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
+use Symfony\UX\Chartjs\Model\Chart;
 
 class DefaultController extends AbstractController
 {
     
     #[Route('/', name: 'default_index', methods: ['GET'])]
-    public function index(): Response
+    public function index(ChartBuilderInterface $chartBuilder): Response
     {
-
-        return $this->render('back/default/index.html.twig');
-    }
-
-    #[Route('/confirmEmail/{id}', name: 'app_send_confirm_email', methods: ['GET'])]
-    public function confirmEmail(int $id,UserRepository $userRepository,MailerInterface $mailer): Response
-    {
-        $user = $userRepository->findOneBy([
-            'id' => $id,
+        $chart = $chartBuilder->createChart(Chart::TYPE_PIE);
+        
+        $chart->setData([
+            'labels' => ['January', 'February', 'March', 'April'],
+            'datasets' => [
+                [
+                    'label' => 'My First dataset',
+                    'backgroundColor' => ["#54bebe", "#76c8c8", "#98d1d1", "#badbdb"],
+                    'data' => [10, 5, 2, 20],
+                ],
+            ],
         ]);
 
-        if (!empty($user)) {
-            $user->setValidationToken(Uuid::v4()->__toString());
-            $userRepository->save($user, true);
-            
-            $email = (new TemplatedEmail())
-            ->from("zaidmouhamad@gmail.com")
-            ->to($user->getEmail())
-            ->subject('Confirm email')
-            ->htmlTemplate('back/email/confirmEmail.html.twig')
-            ->context([
-                'user' => $user,
-            ]);
-            $mailer->send($email);
-            
-            return $this->render('back/user/sendEmail.html.twig',['message'=>'send','user'=>$user]);
-        }
-        
+        $chart->setOptions([
+            'plugins' => [
+                'legend' => [
+                    'display' => false,
+                ],
+            ],
+        ]);
 
-        return $this->redirectToRoute('back_default_index');
+        return $this->render('back/default/index.html.twig',['chart' => $chart]);
+    }
+
+    #[Route('/pdf', name: 'pdf', methods: ['GET'])]
+    public function pdf(Pdf $pdf): PdfResponse
+    {
+        $html = $this->renderView('back/pdf/estimate.html.twig');
+
+        return new PdfResponse(
+            $pdf->getOutputFromHtml($html),
+            'file.pdf'
+        );
     }
 }

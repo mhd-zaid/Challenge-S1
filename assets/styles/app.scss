@@ -1,9 +1,90 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-body {
-    background-color: lightgray;
-    a{
-        text-decoration: none;
+
+@import "colors.scss";
+@import "font.scss";
+body{
+    & .text{
+        color: $color-main-text;
+        &-title{
+            @include text-style-titre-0;
+        }
+        &-main{
+            @include text-style-titre-1;
+        }
+        &-medium{
+            @include text-style-titre-2;
+        }
+        &-small{
+            @include text-style-titre-3;
+        }
+        &-action{
+            color: $color-p-4;
+        }
     }
+    & .button{
+        @include text-style-titre-3;
+        @apply rounded-md text-center py-3 text-white;
+        &-details{
+            background-color: $color-p-3;
+            &:hover{
+                background-color: $color-p-5;
+            }
+        }
+        &-valid{
+            @apply bg-green-400;
+            &:hover{
+                @apply bg-green-600;
+            }
+        }
+        &-invalid{
+            @apply bg-red-400;
+            &:hover{
+                @apply bg-red-600;
+            }
+        }
+        &-edit{
+            background-color: $color-p-1;
+            &:hover{
+            background-color: #0f2c38;
+            }
+        }
+    }
+
+    & nav{
+        background-color: $color-p-1;
+        & div{
+            & :first-child{
+                background-color: $color-background-3;
+            }
+        }
+    }
+
+    & aside{
+        background-color: $color-background-3;
+    }
+
+    & main {
+        background-color: $color-background-2;
+        & #chart-dashboard{
+            width: 250px;
+        }
+
+        & #cards{
+            & div{
+                & a{
+                    background-color: $color-p-1;
+                    & p {
+                        color: $color-secondary-text;
+                    }
+                    & h5{
+                        color: $color-secondary-text;
+                    }
+                }
+            }
+        }
+    }
+        
+    
 }

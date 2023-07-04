@@ -1,0 +1,11 @@
+<body>
+    <p>Information de la société (nom et addresse)</p>
+    <p>Date du jour</p>
+<p>Validity Date: {{ estimate.getValidityDate()|date('Y-m-d') }}</p>  
+  <p>{{estimate.title}}</p>
+    <p>{{customer.firstname}} {{customer.lastname}}</p>
+    <p>Devis gratuit</p>
+    {% for product in products %}
+        <p>Produi : {{product.product.title}} HT: {{product.product.getTotalHT()}} TVA : {{product.product.getTotalTVA()}} Quantité : {{product.quantity}}</p>
+    {% endfor %}
+</body>

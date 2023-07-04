@@ -1,0 +1,239 @@
+{% extends 'back/base.html.twig' %}
+
+{% block title %}Accounting index{% endblock %}
+
+{% block main %}
+<div class="flex items-start justify-start space-x-40 p-4">
+  <div class="w-60">
+    <button id="dropdownDefault" data-dropdown-toggle="dropdown"
+      class="w-full text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+      type="button">
+      <span class="ml-12">Filter</span>
+      <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+      </svg>
+    </button>
+
+    <!-- Dropdown menu -->
+    <div id="dropdown" class="z-10 hidden w-48 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
+      <ul class="space-y-2 text-sm" aria-labelledby="dropdownDefault">
+        <li class="flex items-center">
+          <input id="states" type="checkbox"
+            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+          <label for="apple" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+            Status
+          </label>
+        </li>
+        <li class="flex items-center">
+          <input id="date" type="checkbox"
+            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+          <label for="fitbit" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+            Date
+          </label>
+        </li>
+        <li class="flex items-center">
+          <input id="customer" type="checkbox"
+            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+          <label for="customer" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+            Client Code
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div id= "filter-form" class="w-full w-48">
+    <form class="flex flex-wrap space-x-1 px-8 pt-6 pb-8 mb-4" action="{{path('back_app_accounting_filter')}}" method="GET">
+      <div id = "filter-states" class="mb-3">
+        <label for="states" class="sr-only">Choose a state</label>
+        <select name ="states" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-r-lg border-l-gray-100 dark:border-l-gray-700 border-l-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <option value="">Choose a status</option>
+            <option value="paid">
+              Paid
+            </option>
+            <option value="pending">
+              Pending
+            </option>
+        </select>
+      </div>
+      <div id = "filter-date" date-rangepicker class="flex items-center">
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
+        </div>
+        <input name="dateStart" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date start">
+      </div>
+      <span class="mx-4 text-gray-500">to</span>
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+            <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"></path></svg>
+        </div>
+        <input name="dateEnd" type="text" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5  dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Select date end">
+    </div>
+    </div>
+      <div id = "filter-customer" class="mb-3">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="customer">
+          Customer Code
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="customer" type="number" placeholder="Client Code">
+      </div>
+      <div id="filter-submit" class="mb-3">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="submit">
+          Filter
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="submit">
+      </div>
+      {% if app.request.get('_route') == 'back_app_accounting_filter' %}
+        <div id="filter-submit" class="mb-3">
+          <a href="{{path('back_app_accounting_index')}}">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="submit">
+              Effacer le filtre
+            </label>
+          </a>
+        </div>
+      {% endif %}
+    </form>
+  </div>
+  {% if filter is defined %}
+    <a href="{{path('back_app_accounting_export',{'filter': filter})}}">
+  {% else %}
+    <a href="{{path('back_app_accounting_export')}}">
+  {% endif %}
+  
+    <button class="text-white bg-primary-700 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded inline-flex items-center space-x-4">
+      <span class="ml-4">Exporter</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="currentColor" d="M21.17 3.25q.33 0 .59.25q.24.24.24.58v15.84q0 .34-.24.58q-.26.25-.59.25H7.83q-.33 0-.59-.25q-.24-.24-.24-.58V17H2.83q-.33 0-.59-.24Q2 16.5 2 16.17V7.83q0-.33.24-.59Q2.5 7 2.83 7H7V4.08q0-.34.24-.58q.26-.25.59-.25M7 13.06l1.18 2.22h1.79L8 12.06l1.93-3.17H8.22L7.13 10.9l-.04.06l-.03.07q-.26-.53-.56-1.07q-.25-.53-.53-1.07H4.16l1.89 3.19L4 15.28h1.78m8.1 4.22V17H8.25v2.5m5.63-3.75v-3.12H12v3.12m1.88-4.37V8.25H12v3.13M13.88 7V4.5H8.25V7m12.5 12.5V17h-5.62v2.5m5.62-3.75v-3.12h-5.62v3.12m5.62-4.37V8.25h-5.62v3.13M20.75 7V4.5h-5.62V7Z"/></svg>
+    </button>
+  </a>
+</div>
+
+<div class="relative bg-gray-50 overflow-x-auto shadow-md sm:rounded-lg mt-14 px-8">
+    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
+        <thead class="text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
+        <tr class="border-b-2 border-gray-500">
+            <th scope="col" class="px-6 py-3 text-center">
+                Devis n°
+            </th>
+            <th scope="col" class="px-6 py-3 text-center">
+                Client Id
+            </th>
+            <th scope="col" class="px-6 py-3 text-center">
+                Nom Client
+            </th>
+            <th scope="col" class="px-6 py-3 text-center">
+                Prénom Client
+            </th>
+            <th scope="col" class="px-6 py-3 text-center">
+                Email Client
+            </th>
+            <th scope="col" class="px-6 py-3 text-center">
+                Statut
+            </th>
+            <th scope="col" class="px-6 py-3">
+            <th scope="col" class="px-6 py-3">
+        </tr>
+        </thead>
+        <tbody>
+        {% if invoices is empty %}
+        <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+          <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center" colspan="6">
+            Aucune Facture Trouvée
+          </td>
+        </tr>
+        {% endif %}
+        
+        {% for invoice in invoices %}
+          <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                {{invoice.id}}
+            </td>
+            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                {{invoice.client.id}}
+            </td>
+            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                {{invoice.client.lastname}}
+            </td>
+            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                {{invoice.client.firstname}}
+            </td>
+            <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                {{invoice.client.email}}
+            </td>
+             <td class="px-6 py-4 text-center">
+                {% if invoice.status == "PENDING" %}
+                  <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-waiting.svg" alt="">
+                {% else %}
+                  <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-valid.svg" alt="">
+                {% endif %}
+            </td>
+            <td class="px-6 py-4 text-center">
+                <a href="{{path('back_app_invoice_show',{'id': invoice.id})}}">
+                  <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
+                </a>
+            </td>
+            <td class="px-6 py-4 text-center">
+                <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const statesCheckbox = document.getElementById("states");
+    const dateCheckbox = document.getElementById("date");
+    const customerCheckbox = document.getElementById("customer");
+    const statesField = document.getElementById("filter-states");
+    const dateField = document.getElementById("filter-date");
+    const customerField = document.getElementById("filter-customer");
+
+
+    hideForm();
+    displaysubmit([statesField,dateField,customerField])
+    
+    statesCheckbox.addEventListener("change", function() {
+      showOrHideFilterInput(statesCheckbox,statesField,'block');
+      displaysubmit([statesField,dateField,customerField])
+    });
+
+    dateCheckbox.addEventListener("change", function() {
+      showOrHideFilterInput(dateCheckbox,dateField,'flex');
+      displaysubmit([statesField,dateField,customerField])
+    });
+
+    customerCheckbox.addEventListener("change", function() {
+      showOrHideFilterInput(customerCheckbox,customerField,'block');
+      displaysubmit([statesField,dateField,customerField])
+    });
+  });
+
+  function hideForm(){
+    document.getElementById('filter-states').style.display = 'none';
+    document.getElementById('filter-date').style.display = 'none';
+    document.getElementById('filter-customer').style.display = 'none';
+    document.getElementById('filter-submit').style.display = 'none';
+  }
+
+  function showOrHideFilterInput(checkbox,input,displayType){
+    input.style.display = checkbox.checked ? displayType : "none";
+  }
+
+  function displaysubmit(fields)
+  {
+    const submitField = document.getElementById('filter-submit');
+    let boutonDisplay = false
+    for (let field of fields) {
+      if(field.style.display != 'none' )
+      {
+        submitField.style.display = 'block';
+        boutonDisplay = true;
+      }
+    }
+
+    if(! boutonDisplay){
+      submitField.style.display = 'none';
+    }
+  }
+</script>
+{% endblock %}

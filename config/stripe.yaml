@@ -1,0 +1,3 @@
+parameters:
+    stripe.sk: '%env(STRIPE_SK)%'
+    stripe.pk: '%env(STRIPE_PK)%'

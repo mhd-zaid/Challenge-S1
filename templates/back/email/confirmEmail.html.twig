@@ -1,5 +1,6 @@
 <h1>Welcome {{ user.firstname }} {{user.lastname}}!</h1>
-
+<p> {{user.id}}</p>
+<p> {{user.validationToken}}</p>
 <p>
-    <a href="{{url('back_app_user_validate',{'id': user.id,'token': user.validationToken})}}">Click here to activate your account</a>
+    <a href="{{url('front_app_email_validate',{'id': user.id,'token': user.validationToken})}}">Click here to activate your account</a>
 </p>
