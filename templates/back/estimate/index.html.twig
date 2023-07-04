@@ -23,6 +23,7 @@
 
             {% if estimate.status == 'Non Payé' %}
                 <td><a href="{{ path('back_app_stripe_buy', {'id': estimate.id}) }}">Payé</a></td>
+                <td><a href="{{ path('back_app_estimate_decline', {'id': estimate.id}) }}">Refuser le devis</a></td>
             {% endif %}
             </tr>
         {% else %}

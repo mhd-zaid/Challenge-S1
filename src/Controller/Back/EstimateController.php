@@ -50,12 +50,14 @@ class EstimateController extends AbstractController
             dump($estimateRepository->findAll());
             return $this->render('back/estimate/index.html.twig', [
                 'estimates' => $estimateRepository->findAll(),
+                'isUser' => false
             ]);
         }else{
             $estimates = $estimateRepository->findBy(['client' => $this->security->getUser()]);
             dump($estimates);
             return $this->render('back/estimate/index.html.twig', [
                 'estimates' => $estimates,
+                'isUser' => true
             ]);
         }
     }
@@ -159,6 +161,27 @@ class EstimateController extends AbstractController
             'estimate' => $estimate,
             'form' => $form,
             'products' => $products
+        ]);
+    }
+
+    #[Route('/decline/{id}', name: 'app_estimate_decline', methods: ['GET'])]
+    public function decline(Estimate $estimate, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, EstimateProductRepository $estimateProductRepository, ProductRepository $productRepository, InvoiceProductRepository $invoiceProductRepository): Response
+    {
+        //Reset les quantity au product et delete le devis et la facture avec leurs devisProduit et factureProduit correspondant
+        $invoiceProduct = $invoiceProductRepository->findBy(['invoice' => $estimate->getInvoice()]);
+        $estimateProduct = $estimateProductRepository->findBy(['estimate' => $estimate]);
+
+        dump($invoiceProduct);
+        // die;
+        foreach($estimateProduct as $product){
+            $productUpdate = $product->getProduct();
+            $productUpdate->setQuantity($product->getProduct()->getQuantity() + $product->getQuantity());
+            $productRepository->save($productUpdate, true);
+        }
+        $estimateRepository->remove($estimate, true);
+        return $this->render('back/estimate/index.html.twig', [
+            'estimates' => $estimateRepository->findAll(),
+            'isUser' => false
         ]);
     }
 

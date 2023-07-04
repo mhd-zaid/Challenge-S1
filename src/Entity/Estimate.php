@@ -23,7 +23,7 @@ class Estimate
     #[ORM\JoinColumn(nullable: false)]
     private ?Customer $client = null;
 
-    #[ORM\OneToMany(mappedBy: 'estimate', targetEntity: EstimateProduct::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'estimate', targetEntity: EstimateProduct::class, orphanRemoval: true, cascade: ['remove'])]
     private Collection $estimateProducts;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]

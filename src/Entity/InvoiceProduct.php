@@ -16,11 +16,11 @@ class InvoiceProduct
     #[ORM\Column]
     private ?int $total = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'invoiceProducts')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Invoice $invoice = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'invoiceProducts')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
