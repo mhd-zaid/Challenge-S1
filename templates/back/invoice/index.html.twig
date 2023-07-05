@@ -17,8 +17,8 @@
             <tr>
                 <td>{{ invoice.id }}</td>
                 <td>
-                    <a href="{{ path('back_app_invoice_show', {'id': invoice.id}) }}">show</a>
-                    <a href="{{ path('back_app_invoice_edit', {'id': invoice.id}) }}">edit</a>
+                    {# <a href="{{ path('back_app_invoice_show', {'id': invoice.id}) }}">show</a> #}
+                    {# <a href="{{ path('back_app_invoice_edit', {'id': invoice.id}) }}">edit</a> #}
                 </td>
             </tr>
         {% else %}
@@ -29,5 +29,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('back_app_invoice_new') }}">Create new</a>
+    {# <a href="{{ path('back_app_invoice_new') }}">Create new</a> #}
 {% endblock %}
