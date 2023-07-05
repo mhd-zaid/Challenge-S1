@@ -68,7 +68,7 @@ class InvoiceController extends AbstractController
     #[Route('/{id}', name: 'app_invoice_show', methods: ['GET'])]
     public function show(Invoice $invoice): Response
     {
-        return $this->render('invoice/show.html.twig', [
+        return $this->render('back/invoice/show.html.twig', [
             'invoice' => $invoice,
         ]);
     }
