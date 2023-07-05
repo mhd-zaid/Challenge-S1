@@ -172,13 +172,16 @@ class EstimateController extends AbstractController
         $estimateProduct = $estimateProductRepository->findBy(['estimate' => $estimate]);
 
         dump($invoiceProduct);
-        // die;
         foreach($estimateProduct as $product){
             $productUpdate = $product->getProduct();
             $productUpdate->setQuantity($product->getProduct()->getQuantity() + $product->getQuantity());
             $productRepository->save($productUpdate, true);
         }
-        $estimateRepository->remove($estimate, true);
+        $estimate->setStatus('REFUSED');
+        $estimateRepository->save($estimate, true);
+        $invoice = $estimate->getInvoice();
+        $invoice->setStatus('REFUSED');
+        $invoiceRepository->save($invoice, true);  
         return $this->render('back/estimate/index.html.twig', [
             'estimates' => $estimateRepository->findAll(),
             'isUser' => false
