@@ -3,7 +3,6 @@
 {% block title %}Estimate{% endblock %}
 
 {% block main %}
-    <h1>Estimate index</h1>
     <a href="{{ path('back_app_estimate_new') }}">Create new</a>
     <h1>Vos devis</h1>
 
@@ -21,7 +20,7 @@
                 <td>{{ estimate.status }}</td>
                 <td><a href="{{ path('back_app_estimate_download', {'id': estimate.id}) }}">Télécharger</a></td>
 
-            {% if estimate.status == 'Non Payé' %}
+            {% if estimate.status == 'PENDING' %}
                 <td><a href="{{ path('back_app_stripe_buy', {'id': estimate.id}) }}">Payé</a></td>
                 <td><a href="{{ path('back_app_estimate_decline', {'id': estimate.id}) }}">Refuser le devis</a></td>
             {% endif %}
