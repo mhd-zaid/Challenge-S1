@@ -1,11 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #F5F5F5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #FFF;
+            padding: 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+
+        .info {
+            margin-bottom: 20px;
+        }
+
+        .info p {
+            margin: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #F5F5F5;
+        }
+
+        .total {
+            text-align: right;
+            font-weight: bold;
+        }
+    </style>
+</head>
 <body>
-    <p>Information de la société (nom et addresse)</p>
-    <p>Date du jour</p>
-<p>Validity Date: {{ estimate.getValidityDate()|date('Y-m-d') }}</p>  
-  <p>{{estimate.title}}</p>
-    <p>{{customer.firstname}} {{customer.lastname}}</p>
-    <p>Devis gratuit</p>
-    {% for product in products %}
-        <p>Produi : {{product.product.title}} HT: {{product.product.getTotalHT()}} TVA : {{product.product.getTotalTVA()}} Quantité : {{product.quantity}}</p>
-    {% endfor %}
+    <div class="container">
+        <h1>Devis</h1>
+        <div class="info">
+            <p>Information de la société (nom et adresse)</p>
+            <p>Date du jour</p>
+            <p>Validity Date: {{ estimate.getValidityDate()|date('Y-m-d') }}</p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Produit</th>
+                    <th>Prix HT</th>
+                    <th>TVA</th>
+                    <th>Quantité</th>
+                    <th>Total TTC</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product in products %}
+                <tr>
+                    <td>{{ product.product.title }}</td>
+                    <td>{{ product.product.getTotalHT() }}</td>
+                    <td>{{ product.product.getTotalTVA() }}</td>
+                    <td>{{ product.quantity }}</td>
+                    <td>{{ product.product.getTotalHT() + product.product.getTotalTVA() }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="total">Total :</td>
+                    <td class="total">{{ total }}</td>
+                </tr>
+            </tfoot>
+        </table>
+        <p>{{ customer.firstname }} {{ customer.lastname }}</p>
+        <p>Devis gratuit</p>
+    </div>
 </body>
+</html>
