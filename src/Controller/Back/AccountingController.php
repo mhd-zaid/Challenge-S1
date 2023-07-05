@@ -11,11 +11,14 @@ use Symfony\Component\Routing\Annotation\Route;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use App\Service\Excel\ExcelAccounting;
 use DateTime;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
+#[Route('/accounting')]
+#[Security('is_granted("ROLE_ACCOUNTANT")')]
 class AccountingController extends AbstractController
 {
     
-    #[Route('/accounting', name: 'app_accounting_index', methods: ['GET'])]
+    #[Route('/', name: 'app_accounting_index', methods: ['GET'])]
     public function index(EntityManagerInterface $em): Response
     {
         //Export CSV Comptable
@@ -24,7 +27,7 @@ class AccountingController extends AbstractController
         return $this->render('back/accounting/index.html.twig',['invoices'=>$invoices]);
     }
 
-    #[Route('/accounting/filter', name: 'app_accounting_filter', methods: ['GET'])]
+    #[Route('/filter', name: 'app_accounting_filter', methods: ['GET'])]
     public function filter(Request $request,EntityManagerInterface $em): Response
     {   
         $filters = [
@@ -48,7 +51,7 @@ class AccountingController extends AbstractController
         return $this->render('back/accounting/index.html.twig',['invoices'=>$invoices,'filter'=>http_build_query($filteredParams)]);
     }
 
-    #[Route('/accounting/export/{filter}', name: 'app_accounting_export', methods: ['GET'])]
+    #[Route('/export/{filter}', name: 'app_accounting_export', methods: ['GET'])]
     public function export(Request $request,EntityManagerInterface $em, ExcelAccounting $excelAccounting,?string $filter = null): Response
     {   
         parse_str($filter, $params);

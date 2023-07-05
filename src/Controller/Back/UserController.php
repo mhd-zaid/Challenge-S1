@@ -13,11 +13,12 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 use Twig\Environment;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 #[Route('/user')]
 class UserController extends AbstractController
 {
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
+    #[Security('is_granted("ROLE_SUPER_ADMIN") or is_granted("ROLE_ADMIN")')]
     public function index(UserRepository $userRepository): Response
     {
         return $this->render('back/user/index.html.twig', [
@@ -26,6 +27,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
+    #[Security('is_granted("ROLE_SUPER_ADMIN") or is_granted("ROLE_ADMIN")')]
     public function new(Request $request, UserRepository $userRepository,MailerInterface $mailer): Response
     {
         $user = new User();
@@ -57,6 +59,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
+    #[Security('user.getId() == id or is_granted("ROLE_SUPER_ADMIN") or is_granted("ROLE_ADMIN")')]
     public function show(User $user): Response
     {
         return $this->render('back/user/show.html.twig', [
@@ -65,6 +68,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
+    #[Security('user.getId() == id or is_granted("ROLE_SUPER_ADMIN") or is_granted("ROLE_ADMIN")')]
     public function edit(Request $request, User $user, UserRepository $userRepository): Response
     {
         $form = $this->createForm(UserType::class, $user);
@@ -83,6 +87,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
+    #[Security('is_granted("ROLE_SUPER_ADMIN") or is_granted("ROLE_ADMIN")')]
     public function delete(Request $request, User $user, UserRepository $userRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {

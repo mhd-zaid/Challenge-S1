@@ -9,11 +9,12 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 #[Route('/prestation')]
 class PrestationController extends AbstractController
 {
     #[Route('/', name: 'app_prestation_index')]
+    #[Security('is_granted("ROLE_CUSTOMER") and !is_granted("ROLE_ACCOUNTANT") or is_granted("ROLE_ADMIN")')]
     public function index(PrestationRepository $prestationRepository): Response
     {
         return $this->render('back/prestation/index.html.twig', [
@@ -22,6 +23,7 @@ class PrestationController extends AbstractController
     }
 
     #[Route('/new', name: 'app_prestation_new', methods: ['GET', 'POST'])]
+    #[Security('is_granted("ROLE_MECHANIC")')]
     public function new(Request $request, PrestationRepository $prestationRepository): Response
     {
         $prestation = new Prestation();
@@ -41,6 +43,7 @@ class PrestationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_prestation_show', methods: ['GET'])]
+    #[Security('user.getId() == invoice.getClient() or is_granted("ROLE_MECHANIC")')]
     public function show(Prestation $prestation): Response
     {
         return $this->render('back/prestation/show.html.twig', [
@@ -49,6 +52,7 @@ class PrestationController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_prestation_edit', methods: ['GET', 'POST'])]
+    #[Security('user.getId() == invoice.getClient() or is_granted("ROLE_MECHANIC")')]
     public function edit(Request $request, Prestation $prestation, PrestationRepository $prestationRepository): Response
     {
         $form = $this->createForm(PrestationType::class, $prestation);
@@ -67,6 +71,7 @@ class PrestationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_prestation_delete', methods: ['POST'])]
+    #[Security('is_granted("ROLE_MECHANIC")')]
     public function delete(Request $request, Prestation $prestation, PrestationRepository $prestationRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$prestation->getId(), $request->request->get('_token'))) {

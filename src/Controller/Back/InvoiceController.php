@@ -11,11 +11,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Estimate;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 #[Route('/invoice')]
 class InvoiceController extends AbstractController
 {
     #[Route('/', name: 'app_invoice_index', methods: ['GET'])]
+    #[Security('is_granted("ROLE_CUSTOMER") or is_granted("ROLE_ACCOUNTANT")')]
     public function index(InvoiceRepository $invoiceRepository): Response
     {
         return $this->render('invoice/index.html.twig', [
@@ -24,6 +26,7 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_invoice_update', methods: ['GET'])]
+    #[Security('is_granted("ROLE_MECHANIC")')]
     public function update(Estimate $estimate, InvoiceRepository $invoiceRepository, EstimateRepository $estimateRepository): Response
     {
         $estimate->setStatus('PAID');
@@ -37,6 +40,7 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/{id}/download', name: 'app_invoice_download', methods: ['GET'])]
+    #[Security('user.getId() == invoice.getClient() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
     public function download(Invoice $invoice): Response
     {
         return $this->render('back/invoice/download.html.twig', []);
