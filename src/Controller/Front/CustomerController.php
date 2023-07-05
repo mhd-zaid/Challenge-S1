@@ -26,20 +26,16 @@ class CustomerController extends AbstractController
     #[Route('/new', name: 'app_customer_new', methods: ['GET', 'POST'])]
     public function new(Request $request, CustomerRepository $customerRepository): Response
     {
-        //utilise $request to get ID PARAM
         $customer = new Customer();
         $form = $this->createForm(CustomerType::class, $customer);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if(isset($_GET['id']) && $_GET['id']){
+            
             $customer = $customerRepository->find($form->get('id')->getData());
-            $customer->setId($_GET['id']);
-        }else{
-            $id = $this->generateCustomerId($customerRepository);
-            $customer->setId($id);
-        }
-        
+            $customer->setId(intval($form->get('id')->getData()));
+
+
             $customer->setLastname($form->get('lastname')->getData());
             $customer->setFirstname($form->get('firstname')->getData());
             $customer->setEmail($form->get('email')->getData());
@@ -59,7 +55,7 @@ class CustomerController extends AbstractController
             $this->mailer->send($email);
             
             $customerRepository->save($customer, true);
-            return $this->redirectToRoute('front_app_customer_new', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('front_default_index', [], Response::HTTP_SEE_OTHER);
         }
         return $this->renderForm('front/customer/new.html.twig', [
             'customer' => $customer,
