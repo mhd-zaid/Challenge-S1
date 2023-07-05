@@ -65,13 +65,13 @@ class InvoiceController extends AbstractController
     //     ]);
     // }
 
-    // #[Route('/{id}', name: 'app_invoice_show', methods: ['GET'])]
-    // public function show(Invoice $invoice): Response
-    // {
-    //     return $this->render('invoice/show.html.twig', [
-    //         'invoice' => $invoice,
-    //     ]);
-    // }
+    #[Route('/{id}', name: 'app_invoice_show', methods: ['GET'])]
+    public function show(Invoice $invoice): Response
+    {
+        return $this->render('invoice/show.html.twig', [
+            'invoice' => $invoice,
+        ]);
+    }
 
     // #[Route('/{id}/edit', name: 'app_invoice_edit', methods: ['GET', 'POST'])]
     // public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository): Response
