@@ -193,18 +193,22 @@ class EstimateController extends AbstractController
     {
         $estimateProduct = $estimateProductRepository->findBy(['estimate' => $estimate]);
         $estimateData = [];
+        $total = 0;
         foreach($estimateProduct as $product){
             $productData = $product->getProduct();
+            $total += ((($product->getTotalTVA() / 100) * $product->getTotalHT()) + $product->getTotalHT()) * $product->getQuantity();
             $estimateData[] = [
                 'product' => $productData,
                 'quantity' => $product->getQuantity(),
             ];
         }
+        $total+= $estimateProduct[0]->getWorkforce();
         $html = $this->renderView('back/pdf/estimate.html.twig', [
             'estimate' => $estimate,
             'customer' => $estimate->getClient(),
             'workforce' => $estimateProduct[0]->getWorkforce(),
             'products' => $estimateData,
+            'total' => $total
         ]);
         return new PdfResponse(
             $pdf->getOutputFromHtml($html),
