@@ -76,6 +76,12 @@ class EstimateController extends AbstractController
             $customer = $customerRepository->findOneBy([
                 'email' => $form->get('email')->getData()
             ]);
+
+            $total = 0;
+            foreach($form->get('productQuantities')->getData() as $product){
+                $total += ((($product['product']->getTotalTVA() / 100) * $product['product']->getTotalHT()) + $product['product']->getTotalHT()) * $product['quantity'];
+            }
+            $total+= $form->get('workforce')->getData();
             $isCustomerExist = $customer ? true: false;
             if ($customer === null) {
                 $id = $this->generateCustomerId($customerRepository);
@@ -90,8 +96,9 @@ class EstimateController extends AbstractController
             $estimate->setTitle($form->getData()->getTitle());
             $estimate->setValidityDate($form->get('validity_date')->getData());
             $estimate->setInvoice($invoice);
-            $estimate->setStatus('Non Payé');
+            $estimate->setStatus('PENDING');
             $estimateRepository->save($estimate, true);
+
             
             $emailCustomer = $form->get('email')->getData();
 
@@ -101,6 +108,7 @@ class EstimateController extends AbstractController
                 'customer' => $customer,
                 'workforce' => $form->get('workforce')->getData(),
                 'products' => $form->get('productQuantities')->getData(),
+                'total' => $total,
             ]);
             $pdfResponse = new PdfResponse(
                 $pdf->getOutputFromHtml($html),
