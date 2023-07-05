@@ -36,42 +36,60 @@
                     <span>Dashboard</span>
                 </a>
             </li>
+            {% if is_granted('ROLE_CUSTOMER') and not is_granted('ROLE_ACCOUNTANT') or is_granted('ROLE_ADMIN') %}
             <li>
                 <a href="{{path('back_app_estimate_index')}}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/estimate.svg" class="h-6" alt="Estimate"/>
                     <span>Estimate</span>
                 </a>
             </li>
+            {% endif %}
             <li>
                 <a href="{{path('back_app_invoice_index')}}" class="flex items-start space-x-2.5 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/invoice.svg" class="ml-1 h-6" alt="Invoice" />
                     <span>Invoice</span>
                 </a>
             </li>
+            {% if is_granted('ROLE_MECHANIC') %}
             <li>
                 <a href="#" class="flex items-start space-x-4 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/customer.svg" class="ml-1 h-6" alt="Customer" />
                     <span>Customer</span>
                 </a>
             </li>
+            {% endif %}
+            {% if is_granted('ROLE_CUSTOMER') and not is_granted('ROLE_ACCOUNTANT') or is_granted('ROLE_ADMIN') %}
             <li>
                 <a href="{{path('back_app_prestation_index')}}" class="flex items-start p-2 space-x-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/prestation.svg" class="ml-1 h-6" alt="Prestation" />
                     <span>Prestation</span>
                 </a>
             </li>
+            {% endif %}
+            {% if is_granted('ROLE_MECHANIC') %}
             <li>
                 <a href="{{path('back_app_product_index')}}" class="flex items-start space-x-3 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/product.svg" class="ml-1 h-6" alt="Product" />
                     <span>Product</span>
                 </a>
             </li>
+            {% endif %}
+            {% if is_granted('ROLE_ACCOUNTANT') %}
             <li>
                 <a href="{{path('back_app_accounting_index')}}" class="flex items-start space-x-3 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/accounting.svg" class="ml-1 h-6" alt="Product" />
                     <span>Accounting</span>
                 </a>
             </li>
+            {% endif %}
+            {% if is_granted('ROLE_ADMIN') %}
+            <li>
+                <a href="{{path('back_app_user_index')}}" class="flex items-start space-x-4 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="{{app.request.baseURL}}/uploads/images/global/customer.svg" class="ml-1 h-6" alt="User" />
+                    <span>User</span>
+                </a>
+            </li>
+            {% endif %}
         </ul>
         <ul class="font-medium top-[800px] absolute ml-4">
             <li>

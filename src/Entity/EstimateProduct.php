@@ -28,10 +28,10 @@ class EstimateProduct
     private ?int $workforce = null;
 
     #[ORM\Column]
-    private ?float $total_ht = null;
+    private ?float $totalHt = null;
 
     #[ORM\Column]
-    private ?float $total_tva = null;
+    private ?float $totalTva = null;
 
     public function getId(): ?int
     {
@@ -88,24 +88,24 @@ class EstimateProduct
 
     public function getTotalHt(): ?float
     {
-        return $this->total_ht;
+        return $this->totalHt;
     }
 
-    public function setTotalHt(float $total_ht): static
+    public function setTotalHt(float $totalHt): static
     {
-        $this->total_ht = $total_ht;
+        $this->totalHt = $totalHt;
 
         return $this;
     }
 
     public function getTotalTva(): ?float
     {
-        return $this->total_tva;
+        return $this->totalTva;
     }
 
-    public function setTotalTva(float $total_tva): static
+    public function setTotalTva(float $totalTva): static
     {
-        $this->total_tva = $total_tva;
+        $this->totalTva = $totalTva;
 
         return $this;
     }
