@@ -17,6 +17,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Security\Core\Security;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/invoice')]
 class InvoiceController extends AbstractController
@@ -30,15 +31,23 @@ class InvoiceController extends AbstractController
 
 
     #[Route('/', name: 'app_invoice_index', methods: ['GET'])]
-    public function index(InvoiceRepository $invoiceRepository, Security $security): Response
+    public function index(InvoiceRepository $invoiceRepository, Security $security,Request $request,PaginatorInterface $paginator): Response
     {
         if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
             $invoices = $invoiceRepository->findAll();
         }else{
             $invoices = $invoiceRepository->findBy(['client' => $security->getUser()->getId()]);
         }
+
+        $pagination = $paginator->paginate(
+            $invoices, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            5 /*limit per page*/
+        );
+
         return $this->render('back/invoice/index.html.twig', [
             'invoices' => $invoices,
+            'pagination' => $pagination,
         ]);
     }
 
