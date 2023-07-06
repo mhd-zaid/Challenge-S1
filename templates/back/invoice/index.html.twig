@@ -8,6 +8,9 @@
     <div>
         <div class="relative bg-gray-50 overflow-x-auto shadow-md sm:rounded-lg mt-14 px-8">
             <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
+            <tr>
+                <th>{{ knp_pagination_sortable(pagination, 'Id', 'id') }}</th>
+            </tr>
                 <thead class="text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
                 <tr class="border-b-2 border-gray-500">
                     <th scope="col" class="px-6 py-3 text-center">
@@ -34,7 +37,7 @@
                 </thead>
                 <tbody>
                 {% if invoices is not empty %}
-                    {% for invoice in invoices %}
+                    {% for invoice in pagination %}
                         <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
                             <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
                                 {{ invoice.id }}
@@ -91,5 +94,6 @@
         </div>
     </div>
 
+    {{ knp_pagination_render(pagination) }}
     {# <a href="{{ path('back_app_invoice_new') }}">Create new</a> #}
 {% endblock %}
