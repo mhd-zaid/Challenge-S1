@@ -2,6 +2,10 @@
 
 namespace App\Controller\Back;
 
+use App\Repository\EstimateRepository;
+use App\Repository\InvoiceRepository;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -15,10 +19,17 @@ class DefaultController extends AbstractController
 {
     
     #[Route('/', name: 'default_index', methods: ['GET'])]
-    public function index(ChartBuilderInterface $chartBuilder): Response
+    public function index(ChartBuilderInterface $chartBuilder, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, Security $security): Response
     {
         $chart = $chartBuilder->createChart(Chart::TYPE_PIE);
-        
+
+        if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
+            $estimates = $estimateRepository->findAll();
+            $invoices = $invoiceRepository->findAll();
+        }else{
+            $estimates = $estimateRepository->findBy(['client' => $security->getUser()->getId()]);
+            $invoices = $invoiceRepository->findBy(['client' => $security->getUser()->getId()]);
+        }
         $chart->setData([
             'labels' => ['January', 'February', 'March', 'April'],
             'datasets' => [
@@ -38,7 +49,11 @@ class DefaultController extends AbstractController
             ],
         ]);
 
-        return $this->render('back/default/index.html.twig',['chart' => $chart]);
+        return $this->render('back/default/index.html.twig',[
+            'chart' => $chart,
+            'estimates' => $estimates,
+            'invoices' => $invoices
+        ]);
     }
 
     #[Route('/pdf', name: 'pdf', methods: ['GET'])]

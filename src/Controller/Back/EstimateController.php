@@ -99,7 +99,7 @@ class EstimateController extends AbstractController
             $estimate->setStatus('PENDING');
             $estimateRepository->save($estimate, true);
 
-            
+
             $emailCustomer = $form->get('email')->getData();
 
             if($isCustomerExist){
@@ -161,7 +161,6 @@ class EstimateController extends AbstractController
                 $invoiceProduct->setQuantity($value['quantity']);
                 $invoiceProductRepository->save($invoiceProduct, true);
             }
-
             return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
         }
 

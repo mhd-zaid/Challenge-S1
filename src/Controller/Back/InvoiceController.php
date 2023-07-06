@@ -11,15 +11,21 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Estimate;
+use Symfony\Component\Security\Core\Security;
 
 #[Route('/invoice')]
 class InvoiceController extends AbstractController
 {
     #[Route('/', name: 'app_invoice_index', methods: ['GET'])]
-    public function index(InvoiceRepository $invoiceRepository): Response
+    public function index(InvoiceRepository $invoiceRepository, Security $security): Response
     {
+        if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
+            $invoices = $invoiceRepository->findAll();
+        }else{
+            $invoices = $invoiceRepository->findBy(['client' => $security->getUser()->getId()]);
+        }
         return $this->render('back/invoice/index.html.twig', [
-            'invoices' => $invoiceRepository->findAll(),
+            'invoices' => $invoices,
         ]);
     }
 
