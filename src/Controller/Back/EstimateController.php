@@ -28,7 +28,7 @@ use Symfony\Component\Security\Core\Security;
 use Doctrine\Common\Collections\ArrayCollection;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Snappy\Pdf;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as Sec;
 
 #[Route('/estimate')]
 class EstimateController extends AbstractController
@@ -45,7 +45,7 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/', name: 'app_estimate_index', methods: ['GET'])]
-    #[Security('is_granted("ROLE_CUSTOMER") and !is_granted("ROLE_ACCOUNTANT") or is_granted("ROLE_ADMIN")')]
+    #[Sec('is_granted("ROLE_CUSTOMER") and !is_granted("ROLE_ACCOUNTANT") or is_granted("ROLE_ADMIN")')]
     public function index(EstimateRepository $estimateRepository, Request $request): Response
     {
         if($this->isGranted('ROLE_ADMIN')){
@@ -65,7 +65,7 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/new', name: 'app_estimate_new', methods: ['GET', 'POST'])]
-    #[Security('is_granted("ROLE_MECHANIC")')]
+    #[Sec('is_granted("ROLE_MECHANIC")')]
     public function new(Pdf $pdf, Request $request, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, ProductRepository $productRepository, CustomerRepository $customerRepository, EstimateProductRepository $estimateProductRepository, InvoiceProductRepository $invoiceProductRepository): Response
     {
         $estimate = new Estimate();
@@ -168,7 +168,7 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/decline/{id}', name: 'app_estimate_decline', methods: ['GET'])]
-    #[Security('user.getId() == estimate.getClient().getId() or is_granted("ROLE_MECHANIC")')]
+    #[Sec('user.getId() == estimate.getClient().getId() or is_granted("ROLE_MECHANIC")')]
     public function decline(Estimate $estimate, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, EstimateProductRepository $estimateProductRepository, ProductRepository $productRepository, InvoiceProductRepository $invoiceProductRepository): Response
     {
         //Reset les quantity au product et delete le devis et la facture avec leurs devisProduit et factureProduit correspondant
@@ -214,7 +214,7 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_estimate_edit', methods: ['GET', 'POST'])]
-    #[Security('user.getId() == estimate.getClient().getId() or is_granted("ROLE_MECHANIC")')]
+    #[Sec('user.getId() == estimate.getClient().getId() or is_granted("ROLE_MECHANIC")')]
     public function edit(Request $request, Estimate $estimate, EstimateRepository $estimateRepository): Response
     {
         $form = $this->createForm(EstimateType::class, $estimate);
@@ -233,7 +233,7 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_estimate_delete', methods: ['POST'])]
-    #[Security('is_granted("ROLE_MECHANIC")')]
+    #[Sec('is_granted("ROLE_MECHANIC")')]
     public function delete(Request $request, Estimate $estimate, EstimateRepository $estimateRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$estimate->getId(), $request->request->get('_token'))) {

@@ -20,7 +20,7 @@ class InvoiceController extends AbstractController
     #[Security('is_granted("ROLE_CUSTOMER") or is_granted("ROLE_ACCOUNTANT")')]
     public function index(InvoiceRepository $invoiceRepository): Response
     {
-        return $this->render('invoice/index.html.twig', [
+        return $this->render('back/invoice/index.html.twig', [
             'invoices' => $invoiceRepository->findAll(),
         ]);
     }
