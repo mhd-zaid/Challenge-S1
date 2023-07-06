@@ -96,7 +96,7 @@ class EstimateController extends AbstractController
             $estimate->setStatus('PENDING');
             $estimateRepository->save($estimate, true);
 
-            
+
             $emailCustomer = $form->get('email')->getData();
             $total = $estimate->getTotal($estimatePrestationRepository);
             $html = $this->renderView('back/pdf/estimate.html.twig', [

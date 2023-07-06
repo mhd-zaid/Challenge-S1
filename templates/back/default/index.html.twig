@@ -3,232 +3,148 @@
 {% block title %}{{ 'Dashboard' | trans }}{% endblock %}
 
 {% block main %}
-    <h1>{{ 'Dashboard' | trans }}</h1>
-   {% if is_granted('ROLE_MECHANIC') %}
-        {{ block('mechanic') }}
-   {% endif %}
-    {% if is_granted('ROLE_CUSTOMER') and not is_granted('ROLE_MECHANIC') and not is_granted('ROLE_ACCOUNTANT') %}
-        {{ block('customer') }}
-   {% endif %}
-    {% if is_granted('ROLE_ACCOUNTANT') and not is_granted('ROLE_ADMIN') %}
-          {{ block('accountant') }}
-    {% endif %}
-
-{% endblock %}
-{% block customer %}
-    <div id="last-estimate-dashboard" class="mt-20">
-        <div class="flex justify-between items-center w-full mt-14">
-                <p class="text-main">Mes derniers devis</p>
-                <div class="text-action flex space-x-4">
-                    <a href="{{path('back_app_estimate_index')}}"><p>Tout voir</p></a>
-                    <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-arrow-right.svg" alt="">
+    {% if is_granted('ROLE_ADMIN') %}
+        <div class="flex space-x-80 mb-20">
+            <div id="chart-dashboard" class="ml-52">
+                {{ render_chart(chart, {'class': 'my-chart'}) }}
+            </div>
+            <div id="cards" class="flex flex-col space-y-8">
+                <div class="flex space-x-16 items-center">
+                    <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                        <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">26</h5>
+                        <p class="font-normal text-gray-700 dark:text-gray-400">Nouveaux clients</p>
+                    </a>
+                    <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                        <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">37</h5>
+                        <p class="font-normal text-gray-700 dark:text-gray-400">Devis en attente</p>
+                    </a>
+                </div>
+                <div class="flex space-x-16">
+                    <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                        <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">8</h5>
+                        <p class="font-normal text-gray-700 dark:text-gray-400">Prestation à venir</p>
+                    </a>
+                    <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
+                        <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">43</h5>
+                        <p class="font-normal text-gray-700 dark:text-gray-400">Prestation<br>effectuées</p>
+                    </a>
                 </div>
             </div>
-            <div class="relative bg-gray-50 overflow-x-auto shadow-md sm:rounded-lg mt-14 px-8">
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
-                    <thead class="text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
-                    <tr class="border-b-2 border-gray-500">
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Devis n°
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Date du devis
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Date de validité
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Montant
-                        </th>
-                        {# <th scope="col" class="px-6 py-3 text-center">
-                            Statut
-                        </th> #}
-                        <th scope="col" class="px-6 py-3">
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% if estimates is empty %}
-                    <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                    <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center" colspan="6">
-                        Vous n'avez aucun devis
-                    </td>
-                    </tr>
-                    {% endif %}
-                    
-                    {% for estimate in estimates %}
-                    <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                        <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            {{estimate.id}}
-                        </td>
-                        <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            {{estimate.createdAt | date('d/m/Y')}}
-                        </td>
-                        <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            {{estimate.validityDate | date('d/m/Y')}}
-                        </td>
-                        <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            {% for estimateTotal in estimatesTotal %}
-                                {% if estimate.id %}
-                                    {{estimateTotal.total}} €
-                                {% endif %}
-                                
-                            {% endfor %}
-                        </td>
-                        {# <td class="px-6 py-4 text-center">
-                            {% if estimate.status == "PENDING" %}
-                            <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-waiting.svg" alt="">
-                            {% else %}
-                            <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-valid.svg" alt="">
-                            {% endif %}
-                        </td> #}
-                        <td class="px-6 py-4 text-center">
-                            {# <a href="{{path('back_app_estimate_show',{'id': estimate.id})}}">
-                            <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
-                            </a> #}
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div>
-                <div class="flex space-x-16 items-center w-full py-2 px-2 bg-gray-200">
-                    <div class="text-medium flex justify-center items-center space-x-4">
-                        <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-valid.svg" alt="">
-                        <p>Devis acceptés</p>
-                    </div>
-                    <div class="text-medium flex justify-center items-center space-x-4">
-                        <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-waiting.svg" alt="">
-                        <p>Devis acceptés</p>
-                    </div>
-                    <div class="text-medium flex justify-center items-center space-x-4">
-                        <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-invalid.svg" alt="">
-                        <p>Devis acceptés</p>
-                    </div>
-                </div>
-            </div>
-   </div>
-   <div class="mt-20">
-   <div class="flex justify-between items-center w-full mt-14">
-                <p class="text-main">Dernières factures</p>
-                <div class="text-action flex space-x-4">
-                    <a href="{{path('back_app_invoice_index')}}"><p>Tout voir</p></a>
-                    <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-arrow-right.svg" alt="">
-                </div>
-            </div>
-        <div class="relative bg-gray-50 overflow-x-auto shadow-md sm:rounded-lg mt-14 px-8">
-                <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
-                    <thead class="text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
-                    <tr class="border-b-2 border-gray-500">
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Facture n°
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Date du Facture
-                        </th>
-                        <th scope="col" class="px-6 py-3 text-center">
-                            Montant
-                        </th>
-                        {# <th scope="col" class="px-6 py-3 text-center">
-                            Statut
-                        </th> #}
-                        <th scope="col" class="px-6 py-3">
-                    </tr>
-                    </thead>
-                    <tbody>
-                    {% if invoices is empty %}
-                    <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                    <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center" colspan="6">
-                        Vous n'avez aucune factures
-                    </td>
-                    </tr>
-                    {% endif %}
-                    
-                    {% for invoice in invoices %}
-                    <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                        <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            {{invoice.id}}
-                        </td>
-                        <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            {{invoice.createdAt | date('d/m/Y')}}
-                        </td>
-                        <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            {% set price = 0 %}
-                            {# {% for estimateProduct in invoice.estimateProducts %}
-                                {% set price = price + (estimateProduct.totalHt + estimateProduct.totalTva ) * estimateProduct.quantity + estimateProduct.workforce
-                                %}
-                            {% endfor %} #}
-                            {{price}} €
-                        </td>
-                        {# <td class="px-6 py-4 text-center">
-                            {% if estimate.status == "PENDING" %}
-                            <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-waiting.svg" alt="">
-                            {% else %}
-                            <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-valid.svg" alt="">
-                            {% endif %}
-                        </td> #}
-                        <td class="px-6 py-4 text-center">
-                            {# <a href="{{path('back_app_invoice_show',{'id': invoice.id})}}">
-                            <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
-                            </a> #}
-                        </td>
-                        <td class="px-6 py-4 text-center">
-                            <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
-                        </td>
-                    </tr>
-                    {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div>
-                <div class="flex space-x-16 items-center w-full py-2 px-2 bg-gray-200">
-                    <div class="text-medium flex justify-center items-center space-x-4">
-                        <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-valid.svg" alt="">
-                        <p>Factures payées</p>
-                    </div>
-                    <div class="text-medium flex justify-center items-center space-x-4">
-                        <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-waiting.svg" alt="">
-                        <p>Factures en attente de règlement</p>
-                    </div>
-                </div>
-            </div>
-   </div> 
-{% endblock %}
-{% block accountant %}
-    <div class="flex space-x-80">
-        <div id="chart-dashboard" class="ml-52">
-            {{ render_chart(chart, {'class': 'my-chart'}) }}
         </div>
-        <div id="cards" class="flex flex-col space-y-8">
-            <div class="flex space-x-16 items-center">
-                <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{invoicesPaid | length  }}</h5>
-                    <p class="font-normal text-gray-700 dark:text-gray-400">Facture payées</p>
-                </a> 
-                <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{invoicesPending | length  }}</h5>
-                    <p class="font-normal text-gray-700 dark:text-gray-400">Facture en attente</p>
-                </a> 
+    {% endif %}
+    <div id="last-estimate-dashboard">
+        <div class="flex justify-between items-center w-full mt-14">
+            {% if is_granted('ROLE_ADMIN') %}
+                <p class="text-main">Derniers devis clients</p>
+            {% else %}
+                <p class="text-main">Mes derniers devis</p>
+            {% endif %}
+            <div class="text-action flex space-x-4 items-center justify-center">
+                <a href="{{path('back_app_estimate_index')}}" class="no-underline flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white">
+                    <p class="mb-0">Tout voir</p>
+                    <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-arrow-right.svg" alt="">
+                </a>
             </div>
-            <div class="flex space-x-16">
-                <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
-                    <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{invoices | length}}</h5>
-                    <p class="font-normal text-gray-700 dark:text-gray-400">Tout les factures</p>
-                </a> 
+        </div>
+        <div class="relative bg-gray-50 overflow-x-auto shadow-md sm:rounded-lg mt-14 px-8">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
+                <thead class="text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
+                <tr class="border-b-2 border-gray-500">
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Devis n°
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Véhicule
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Date du devis
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Date de validité
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Montant
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Statut
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                </tr>
+                </thead>
+                <tbody>
+                {% if estimates is not empty %}
+                    {% for estimate in estimates %}
+                        <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                                {{ estimate.id }}
+                            </th>
+                            <td class="px-6 py-4 text-center">
+                                {{ estimate.title }}
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                {{ estimate.title }}
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                {{ estimate.validityDate|date('d/m/Y') }}
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                77 €
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                En cours
+                            </td>
+                            <td class="px-6 py-4 text-center flex justify-center">
+                                <iconify-icon icon="material-symbols:cancel" style="color: red;" width="35"></iconify-icon>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+
+                                <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                        <td colspan="7" class="px-6 py-4 text-center">
+                            Aucun devis
+                        </td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <div class="flex space-x-16 items-center w-full py-2 px-2 bg-gray-200">
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <iconify-icon icon="flat-color-icons:ok" width="35px"></iconify-icon>
+                    <p class="mb-0">Devis acceptés</p>
+                </div>
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <iconify-icon icon="material-symbols:cancel" style="color: red;" width="35"></iconify-icon>
+                    <p class="mb-0">Devis acceptés</p>
+                </div>
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon>
+                    <p class="mb-0">Devis acceptés</p>
+                </div>
             </div>
         </div>
     </div>
+
+
     <div class="mt-20">
-   <div class="flex justify-between items-center w-full mt-14">
-                <p class="text-main">Dernières factures</p>
-                <div class="text-action flex space-x-4">
-                    <a href="{{path('back_app_invoice_index')}}"><p>Tout voir</p></a>
+        <div class="flex justify-between items-center w-full mt-14">
+            {% if is_granted('ROLE_ADMIN') %}
+                <p class="text-main">Dernières factures clientes</p>
+            {% else %}
+                <p class="text-main">Mes dernières factures</p>
+            {% endif %}
+            <div class="text-action flex space-x-4">
+                <a href="{{path('back_app_invoice_index')}}" class="no-underline flex items-start space-x-2.5 p-2 text-gray-900 rounded-lg dark:text-white">
+                    <p class="mb-0">Tout voir</p>
                     <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-arrow-right.svg" alt="">
-                </div>
+                </a>
             </div>
+<<<<<<< HEAD
         <div class="relative bg-gray-50 overflow-x-auto shadow-md sm:rounded-lg mt-14 px-8">
                 <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
                     <thead class="text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
@@ -516,4 +432,91 @@
                 </div>
             </div>
    </div> 
+=======
+        </div>
+        <div class="relative bg-gray-50 overflow-x-auto shadow-md sm:rounded-lg mt-14 px-8">
+            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
+                <thead class="text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
+                <tr class="border-b-2 border-gray-500">
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Devis n°
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Véhicule
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Date du devis
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Date de validité
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Montant
+                    </th>
+                    <th scope="col" class="px-6 py-3 text-center">
+                        Statut
+                    </th>
+                    <th scope="col" class="px-6 py-3">
+                    <th scope="col" class="px-6 py-3">
+                </tr>
+                </thead>
+                <tbody>
+                {% if invoices is not empty %}
+                    {% for invoice in invoices %}
+                        <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
+                                {{ invoice.id }}
+                            </th>
+                            <td class="px-6 py-4 text-center">
+                                {{ invoice.client.lastname }}
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                {{ invoice.status }}
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                {{ invoice.status}}
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                77 €
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                En cours
+                            </td>
+                            <td class="px-6 py-4 text-center flex justify-center">
+                                <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-waiting.svg" alt="">
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <a href="{{ path('back_app_invoice_show', {'id': invoice.id}) }}">
+                                <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
+                                </a>
+                            </td>
+                            <td class="px-6 py-4 text-center">
+                                <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                        <td colspan="7" class="px-6 py-4 text-center">
+                            Aucun devis
+                        </td>
+                    </tr>
+                {% endif %}
+                </tbody>
+            </table>
+        </div>
+        <div>
+            <div class="flex space-x-16 items-center w-full py-2 px-2 bg-gray-200">
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-valid.svg" alt="">
+                    <p class="mb-0">Factures payées</p>
+                </div>
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-state-waiting.svg" alt="">
+                    <p class="mb-0">Factures en attente de règlement</p>
+                </div>
+            </div>
+        </div>
+    </div>
+>>>>>>> 85c4de4 (feat(Company) Création de la table de paramètre de site + fix(Estimate / Invoice) maj controller)
 {% endblock %}

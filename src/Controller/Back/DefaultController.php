@@ -8,6 +8,10 @@ use App\Entity\EstimatePrestation;
 use App\Entity\Invoice;
 use App\Repository\EstimatePrestationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\EstimateRepository;
+use App\Repository\InvoiceRepository;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -22,8 +26,7 @@ class DefaultController extends AbstractController
 {
     
     #[Route('/', name: 'default_index', methods: ['GET'])]
-    #[Security('is_granted("ROLE_CUSTOMER")')]
-    public function index(ChartBuilderInterface $chartBuilder,EntityManagerInterface $em): Response
+    public function index(ChartBuilderInterface $chartBuilder, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, Security $security): Response
     {
         $estimates = $em->getRepository(Estimate::class)->findBy(['customer'=>$this->getUser()],null,5);
         $estimatesTotal = $this->getEstimateTotal($estimates,$em->getRepository(EstimatePrestation::class));
@@ -38,7 +41,14 @@ class DefaultController extends AbstractController
         }
 
         $chart = $chartBuilder->createChart(Chart::TYPE_PIE);
-        
+
+        if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
+            $estimates = $estimateRepository->findAll();
+            $invoices = $invoiceRepository->findAll();
+        }else{
+            $estimates = $estimateRepository->findBy(['client' => $security->getUser()->getId()]);
+            $invoices = $invoiceRepository->findBy(['client' => $security->getUser()->getId()]);
+        }
         $chart->setData([
             'labels' => ['Nouveau Clients', 'Devis en attente', 'Prestation en attente', 'Presation effectuée'],
             'datasets' => [
