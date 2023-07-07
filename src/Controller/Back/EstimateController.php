@@ -10,6 +10,8 @@ use App\Entity\InvoicePrestation;
 use App\Entity\EstimatePrestation;
 use App\Repository\EstimateRepository;
 use App\Repository\CustomerRepository;
+use App\Repository\EstimatePrestationRepository;
+use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -70,6 +72,7 @@ class EstimateController extends AbstractController
 
         $form = $this->createForm(EstimateType::class, $estimate);
         $form->handleRequest($request);
+        $prestations = $form->get('estimatePrestations')->getData();
 
         if ($form->isSubmitted() && $form->isValid()) {
             $customer = $customerRepository->findOneBy([
@@ -85,24 +88,24 @@ class EstimateController extends AbstractController
 
             $invoice->setClient($customer);
             $invoice->setStatus('PENDING');
-            //$invoiceRepository->save($invoice, true);
+            $invoiceRepository->save($invoice, true);
 
             $estimate->setCustomer($customer);
             $estimate->setTitle($form->getData()->getTitle());
-            $estimate->addPrestation($form->getData()->getPrestations());
             $estimate->setValidityDate($form->get('validityDate')->getData());
             $estimate->setInvoice($invoice);
             $estimate->setStatus('PENDING');
-            //$estimateRepository->save($estimate, true);
+            $estimateRepository->save($estimate, true);
 
             
             $emailCustomer = $form->get('email')->getData();
-
+            $total = $estimate->getTotal($estimatePrestationRepository);
+            
             if($isCustomerExist){
             $html = $this->renderView('back/pdf/estimate.html.twig', [
                 'estimate' => $estimate,
                 'customer' => $customer,
-                'estimatePrestations' => $estimate->getEstimatePrestations(),
+                'prestations' => $prestations,
             ]);
             $pdfResponse = new PdfResponse(
                 $pdf->getOutputFromHtml($html),
@@ -131,12 +134,18 @@ class EstimateController extends AbstractController
                 ]);
                 $this->mailer->send($email);
             }
-            dump($estimate);die;
-            foreach($estimate->getestimatePrestations() as $value){
+
+            foreach($prestations as $prestation){
+                $estimatePrestation = new EstimatePrestation();
+                $estimatePrestation->setPrestation($prestation);
+                $estimatePrestation->setEstimate($estimate);
+                $estimatePrestationRepository->save($estimatePrestation, true);
+
                 $invoicePrestation = new InvoicePrestation();
-                $invoicePrestation->setPrestation($value);
+                $invoicePrestation->setPrestation($prestation);
                 $invoicePrestation->setInvoice($invoice);
-                $em->getRepository(InvoicePrestation::class)->save($invoicePrestation, true);
+                $invoicePrestationRepository->save($invoicePrestation, true);
+
             }
 
            return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
@@ -145,7 +154,6 @@ class EstimateController extends AbstractController
         return $this->renderForm('back/estimate/new.html.twig', [
             'estimate' => $estimate,
             'form' => $form,
-            'estimatePrestations' => $estimate->getEstimatePrestations(),
         ]);
     }
 
@@ -174,33 +182,24 @@ class EstimateController extends AbstractController
     //     ]);
     // }
 
-    // #[Route('/{id}', name: 'app_estimate_download', methods: ['GET'])]
-    // public function download(Estimate $estimate, Pdf $pdf, EstimateProductRepository $estimateProductRepository, ProductRepository $productRepository): Response
-    // {
-    //     $estimateProduct = $estimateProductRepository->findBy(['estimate' => $estimate]);
-    //     $estimateData = [];
-    //     $total = 0;
-    //     foreach($estimateProduct as $product){
-    //         $productData = $product->getProduct();
-    //         $total += ((($product->getTotalTVA() / 100) * $product->getTotalHT()) + $product->getTotalHT()) * $product->getQuantity();
-    //         $estimateData[] = [
-    //             'product' => $productData,
-    //             'quantity' => $product->getQuantity(),
-    //         ];
-    //     }
-    //     $total+= $estimateProduct[0]->getWorkforce();
-    //     $html = $this->renderView('back/pdf/estimate.html.twig', [
-    //         'estimate' => $estimate,
-    //         'customer' => $estimate->getClient(),
-    //         'workforce' => $estimateProduct[0]->getWorkforce(),
-    //         'products' => $estimateData,
-    //         'total' => $total
-    //     ]);
-    //     return new PdfResponse(
-    //         $pdf->getOutputFromHtml($html),
-    //         'file.pdf'
-    //     );
-    // }
+    #[Route('/{id}', name: 'app_estimate_download', methods: ['GET'])]
+    public function download(Estimate $estimate, Pdf $pdf, EstimatePrestationRepository $estimatePrestationRepository, ProductRepository $productRepository): Response
+    {
+        $total = $estimate->getTotal($estimatePrestationRepository);
+        dump($total);die;
+        
+        // $html = $this->renderView('back/pdf/estimate.html.twig', [
+        //     'estimate' => $estimate,
+        //     'customer' => $estimate->getClient(),
+        //     'workforce' => $estimateProduct[0]->getWorkforce(),
+        //     'products' => $estimateData,
+        //     'total' => $total
+        // ]);
+        // return new PdfResponse(
+        //     $pdf->getOutputFromHtml($html),
+        //     'file.pdf'
+        // );
+    }
 
     #[Route('/{id}/edit', name: 'app_estimate_edit', methods: ['GET', 'POST'])]
     #[Sec('user.getId() == estimate.getClient().getId() or is_granted("ROLE_MECHANIC")')]

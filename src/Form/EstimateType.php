@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Estimate;
+use App\Entity\EstimatePrestation;
 use App\Entity\Prestation;
 use App\Entity\Product;
 use App\Form\ProductQuantityType;
@@ -34,7 +35,7 @@ class EstimateType extends AbstractType
             ->add('estimatePrestations', CollectionType::class, [
                 'entry_type' => EntityType::class,
                 'entry_options' => [
-                    'class' => Prestation::class,
+                    'class' =>  Prestation::class,
                     'choice_label' => 'name',
                     'label' => false,
                 ],
@@ -43,6 +44,7 @@ class EstimateType extends AbstractType
                 'attr' => [
                     'class' => '',
                 ],
+                'mapped' => false,
             ])
             ->add('validityDate', DateType::class, [
                 'mapped' => false,

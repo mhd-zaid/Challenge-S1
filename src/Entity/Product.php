@@ -189,22 +189,22 @@ class Product
         return $this->prestationProducts;
     }
 
-    public function addPresationProduct(PresationProduct $presationProduct): self
+    public function addPrestationProduct(PrestationProduct $prestationProduct): self
     {
-        if (!$this->prestationProducts->contains($presationProduct)) {
-            $this->prestationProducts[] = $presationProduct;
-            $presationProduct->setProduct($this);
+        if (!$this->prestationProducts->contains($prestationProduct)) {
+            $this->prestationProducts[] = $prestationProduct;
+            $prestationProduct->setProduct($this);
         }
 
         return $this;
     }
 
-    public function removePresationProduct(PresationProduct $presationProduct): self
+    public function removePresationProduct(PrestationProduct $prestationProduct): self
     {
-        if ($this->prestationProducts->removeElement($presationProduct)) {
+        if ($this->prestationProducts->removeElement($prestationProduct)) {
             // set the owning side to null (unless already changed)
-            if ($presationProduct->getProduct() === $this) {
-                $presationProduct->setProduct(null);
+            if ($prestationProduct->getProduct() === $this) {
+                $prestationProduct->setProduct(null);
             }
         }
 

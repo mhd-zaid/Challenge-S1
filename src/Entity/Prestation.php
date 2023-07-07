@@ -108,7 +108,7 @@ class Prestation
         return $this;
     }
 
-    public function getPrestationProducts(): Collection
+    public function getPrestationProducts(): ?Collection
     {
         return $this->prestationProducts;
     }

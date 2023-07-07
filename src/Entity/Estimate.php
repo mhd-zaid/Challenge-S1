@@ -4,11 +4,14 @@ namespace App\Entity;
 
 use App\Entity\Traits\BlameableTrait;
 use App\Entity\Traits\TimestampableTrait;
+use App\Repository\EstimatePrestationRepository;
 use App\Repository\EstimateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
 
 #[ORM\Entity(repositoryClass: EstimateRepository::class)]
 class Estimate
@@ -28,9 +31,6 @@ class Estimate
     #[ORM\JoinColumn(nullable: false)]
     private ?Customer $customer = null;
 
-    #[ORM\OneToMany(mappedBy: 'estimate', targetEntity: EstimatePrestation::class, orphanRemoval: true, cascade: ['remove'])]
-    private Collection $estimatePrestations;
-
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $validityDate = null;
 
@@ -40,11 +40,6 @@ class Estimate
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?Invoice $invoice = null;
-
-    public function __construct()
-    {
-        $this->estimatePrestations = new ArrayCollection();
-    }
 
     public function getId(): ?int
     {
@@ -71,34 +66,6 @@ class Estimate
     public function setCustomer(Customer $customer): static
     {
         $this->customer = $customer;
-
-        return $this;
-    }
-
-    public function getEstimatePrestations(): Collection
-    {
-        return $this->estimatePrestations;
-    }
-
-    public function addPrestation(ArrayCollection $prestations): static
-    {
-        foreach ($prestations as $prestation) {
-            $estimatePrestation = new EstimatePrestation();
-            $estimatePrestation->setPrestation($prestation);
-            $estimatePrestation->setEstimate($this);
-            $this->estimatePrestations->add($estimatePrestation);
-        }
-
-        return $this;
-    }
-
-    public function removePrestation(Prestation $prestation): static
-    {
-        foreach ($this->estimatePrestations as $estimatePrestation) {
-            if ($estimatePrestation->getPrestation() === $prestation) {
-                $this->estimatePrestations->removeElement($estimatePrestation);
-            }
-        }
 
         return $this;
     }
@@ -137,5 +104,22 @@ class Estimate
         $this->invoice = $invoice;
 
         return $this;
+    }
+
+    public function getTotal(EstimatePrestationRepository $estimatePrestationRepository)
+    {
+        $total = 0 ;
+        $estimatePrestations = $estimatePrestationRepository->findBy(['estimate' => $this->getId()]);
+        foreach($estimatePrestations as $estimatePrestation){
+            $prestation = $estimatePrestation->getPrestation();
+            $totalPrestation = 0;
+            foreach($prestation->getPrestationProducts() as $prestationProduct){
+                $totalPrestation += ((($prestationProduct->getProduct()->getTotalTVA() / 100) * $prestationProduct->getProduct()->getTotalHT()) + $prestationProduct->getProduct()->getTotalHT()) * $prestationProduct->getQuantity();
+                         
+            }
+            $totalPrestation += $prestation->getWorkforce();
+            $total += $totalPrestation;
+        }
+        return $total;
     }
 }

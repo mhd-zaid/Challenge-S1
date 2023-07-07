@@ -64,17 +64,25 @@
         <table>
             <thead>
                 <tr>
-                    <th>Produit</th>
+                    <th>Prestation</th>
                     <th>Prix HT</th>
                     <th>TVA</th>
-                    <th>Quantité</th>
                     <th>Total TTC</th>
+                    <th>Product</th>
+                    <th>Quantité</th>
                 </tr>
             </thead>
             <tbody>
-                {% for product in products %}
+                {% for prestation in prestations %}
                 <tr>
-                    <td>{{ product.product.title }}</td>
+                    <td>{{ prestation.name }}</td>
+                    {% set totalHtProdui = 0 %}
+                    {% set totalTVA = 0 %}
+                    {% for prestationProducts in prestation.prestationProducts %}
+                       {% set totalHt = totalHt + prestationProducts.product.getTotalHT() %}
+                       {% set totalTVA = totalTVA + prestationProducts.product.getTotalTVA() %}
+                    {% endfor %}
+                    {% set var = value %}
                     <td>{{ product.product.getTotalHT() }}</td>
                     <td>{{ product.product.getTotalTVA() }}</td>
                     <td>{{ product.quantity }}</td>
