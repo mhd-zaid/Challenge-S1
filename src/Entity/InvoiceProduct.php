@@ -2,12 +2,17 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\BlameableTrait;
+use App\Entity\Traits\TimestampableTrait;
 use App\Repository\InvoiceProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: InvoiceProductRepository::class)]
 class InvoiceProduct
 {
+    use TimestampableTrait;
+    use BlameableTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

@@ -7,12 +7,10 @@ use App\Entity\Estimate;
 use App\Form\EstimateType;
 use App\Entity\Product;
 use App\Entity\Invoice;
-use App\Entity\EstimateProduct;
 use App\Entity\InvoiceProduct;
 use App\Repository\ProductRepository;
 use App\Repository\EstimateRepository;
 use App\Repository\InvoiceRepository;
-use App\Repository\EstimateProductRepository;
 use App\Repository\InvoiceProductRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\UserRepository;
@@ -47,38 +45,38 @@ class StripeController extends AbstractController
         $this->security = $security;
     }
 
-    #[Route('/{id}', name: 'app_stripe_buy', methods: ['GET'])]
-    public function download(Estimate $estimate, Pdf $pdf, EstimateProductRepository $estimateProductRepository, ProductRepository $productRepository): Response
-    {
-        $estimateProduct = $estimateProductRepository->findBy(['estimate' => $estimate]);
-        $total = 0;
-        foreach($estimateProduct as $product){
-            $total += ((($product->getTotalTVA() / 100) * $product->getTotalHT()) + $product->getTotalHT()) * $product->getQuantity();
-        }
-        $total+= $estimateProduct[0]->getWorkforce();
-        Stripe::setApiKey($this->getParameter('stripe.sk'));
-        $successUrl = $this->generateUrl('back_app_invoice_update', ["id" => $estimate->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
-        $cancelUrl = $this->generateUrl('back_app_estimate_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
+    // #[Route('/{id}', name: 'app_stripe_buy', methods: ['GET'])]
+    // public function download(Estimate $estimate, Pdf $pdf, EstimateProductRepository $estimateProductRepository, ProductRepository $productRepository): Response
+    // {
+    //     $estimateProduct = $estimateProductRepository->findBy(['estimate' => $estimate]);
+    //     $total = 0;
+    //     foreach($estimateProduct as $product){
+    //         $total += ((($product->getTotalTVA() / 100) * $product->getTotalHT()) + $product->getTotalHT()) * $product->getQuantity();
+    //     }
+    //     $total+= $estimateProduct[0]->getWorkforce();
+    //     Stripe::setApiKey($this->getParameter('stripe.sk'));
+    //     $successUrl = $this->generateUrl('back_app_invoice_update', ["id" => $estimate->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
+    //     $cancelUrl = $this->generateUrl('back_app_estimate_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
-        $session = \Stripe\Checkout\Session::create([
-            'line_items' => [
-                [
-                    'price_data' => [
-                        'currency' => 'eur',
-                        'product_data' => [
-                            'name' => 'test',
-                        ],
-                        'unit_amount' => $total * 100,
-                    ],
-                    'quantity' => 1,
-                ],
-            ],
-            "mode" => 'payment',
-            'success_url' =>  $successUrl,
-            'cancel_url' => $cancelUrl,
-        ]);
-        return new RedirectResponse($session->url);
-    }
+    //     $session = \Stripe\Checkout\Session::create([
+    //         'line_items' => [
+    //             [
+    //                 'price_data' => [
+    //                     'currency' => 'eur',
+    //                     'product_data' => [
+    //                         'name' => 'test',
+    //                     ],
+    //                     'unit_amount' => $total * 100,
+    //                 ],
+    //                 'quantity' => 1,
+    //             ],
+    //         ],
+    //         "mode" => 'payment',
+    //         'success_url' =>  $successUrl,
+    //         'cancel_url' => $cancelUrl,
+    //     ]);
+    //     return new RedirectResponse($session->url);
+    // }
 
     #[Route('/{id}/edit', name: 'app_estimate_edit', methods: ['GET', 'POST'])]
     public function edit(Request $request, Estimate $estimate, EstimateRepository $estimateRepository): Response

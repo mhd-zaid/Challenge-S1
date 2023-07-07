@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\BlameableTrait;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +19,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableTrait;
-
+    use BlameableTrait;
+    
     #[ORM\Id]
     #[ORM\Column]
     private ?int $id = null;

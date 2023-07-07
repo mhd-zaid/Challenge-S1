@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\BlameableTrait;
+use App\Entity\Traits\TimestampableTrait;
 use App\Repository\InvoiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,6 +12,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
 class Invoice
 {
+    use TimestampableTrait;
+    use BlameableTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

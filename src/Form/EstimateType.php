@@ -29,22 +29,17 @@ class EstimateType extends AbstractType
                 'mapped' => false,
                 'label' => 'Email'
             ])
-            ->add('workforce', IntegerType::class, [
+            ->add('prestation', CollectionType::class, [
                 'mapped' => false,
-                'label' => "Main d'oeuvre"
-            ])
-            ->add('productQuantities', CollectionType::class, [
-                'mapped' => false,
-                'entry_type' => ProductQuantityType::class,
+                'entry_type' => ChoiceType::class,
                 'allow_add' => true,
                 'by_reference' => false,
                 'attr' => [
-                    'class' => 'product-quantities-container',
+                    'class' => '',
                 ],
                 'entry_options' => [
                     'label' => false,
                 ],
-                'constraints' => [new ProductQuantity]
             ])
             ->add('validity_date', DateType::class, [
                 'mapped' => false,

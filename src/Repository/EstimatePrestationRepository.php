@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\EstimateProduct;
+use App\Entity\EstimatePrestation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<EstimateProduct>
+ * @extends ServiceEntityRepository<EstimatePrestation>
  *
- * @method EstimateProduct|null find($id, $lockMode = null, $lockVersion = null)
- * @method EstimateProduct|null findOneBy(array $criteria, array $orderBy = null)
- * @method EstimateProduct[]    findAll()
- * @method EstimateProduct[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method EstimatePrestation|null find($id, $lockMode = null, $lockVersion = null)
+ * @method EstimatePrestation|null findOneBy(array $criteria, array $orderBy = null)
+ * @method EstimatePrestation[]    findAll()
+ * @method EstimatePrestation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class EstimateProductRepository extends ServiceEntityRepository
+class EstimatePrestationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, EstimateProduct::class);
+        parent::__construct($registry, EstimatePrestation::class);
     }
 
-    public function save(EstimateProduct $entity, bool $flush = false): void
+    public function save(EstimatePrestation $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class EstimateProductRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(EstimateProduct $entity, bool $flush = false): void
+    public function remove(EstimatePrestation $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +40,7 @@ class EstimateProductRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return EstimateProduct[] Returns an array of EstimateProduct objects
+//     * @return EstimatePrestation[] Returns an array of EstimatePrestation objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +54,7 @@ class EstimateProductRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?EstimateProduct
+//    public function findOneBySomeField($value): ?EstimatePrestation
 //    {
 //        return $this->createQueryBuilder('e')
 //            ->andWhere('e.exampleField = :val')

@@ -2,6 +2,8 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\BlameableTrait;
+use App\Entity\Traits\TimestampableTrait;
 use App\Repository\EstimateRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -11,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: EstimateRepository::class)]
 class Estimate
 {
+    use TimestampableTrait;
+    use BlameableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -21,13 +26,13 @@ class Estimate
 
     #[ORM\ManyToOne(inversedBy: 'estimates')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Customer $client = null;
+    private ?Customer $customer = null;
 
-    #[ORM\OneToMany(mappedBy: 'estimate', targetEntity: EstimateProduct::class, orphanRemoval: true, cascade: ['remove'])]
-    private Collection $estimateProducts;
+    #[ORM\OneToMany(mappedBy: 'estimate', targetEntity: EstimatePrestation::class, orphanRemoval: true, cascade: ['remove'])]
+    private Collection $estimatePrestations;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $validity_date = null;
+    private ?\DateTimeInterface $validityDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $status = null;
@@ -38,24 +43,12 @@ class Estimate
 
     public function __construct()
     {
-        $this->estimateProducts = new ArrayCollection();
+        $this->estimatePrestations = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getClientId(): ?int
-    {
-        return $this->client_id;
-    }
-
-    public function setClientId(int $client_id): static
-    {
-        $this->client_id = $client_id;
-
-        return $this;
     }
 
     public function getTitle(): ?string
@@ -70,42 +63,39 @@ class Estimate
         return $this;
     }
 
-    public function getClient(): ?Customer
+    public function getCustomer(): ?Customer
     {
-        return $this->client;
+        return $this->customer;
     }
 
-    public function setClient(?Customer $client): static
+    public function setCustomer(Customer $customer): static
     {
-        $this->client = $client;
+        $this->customer = $customer;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, EstimateProduct>
-     */
-    public function getEstimateProducts(): Collection
+    public function getestimatePrestations(): Collection
     {
-        return $this->estimateProducts;
+        return $this->estimatePrestations;
     }
 
-    public function addEstimateProduct(EstimateProduct $estimateProduct): static
+    public function addEstimatePresation(EstimatePrestation $estimatePrestation): static
     {
-        if (!$this->estimateProducts->contains($estimateProduct)) {
-            $this->estimateProducts->add($estimateProduct);
-            $estimateProduct->setEstimate($this);
+        if (!$this->estimatePrestations->contains($estimatePrestation)) {
+            $this->estimatePrestations->add($estimatePrestation);
+            $estimatePrestation->setEstimate($this);
         }
 
         return $this;
     }
 
-    public function removeEstimateProduct(EstimateProduct $estimateProduct): static
+    public function removeEstimatePresation(EstimatePrestation $estimatePresation): static
     {
-        if ($this->estimateProducts->removeElement($estimateProduct)) {
+        if ($this->estimatePrestations->removeElement($estimatePresation)) {
             // set the owning side to null (unless already changed)
-            if ($estimateProduct->getEstimate() === $this) {
-                $estimateProduct->setEstimate(null);
+            if ($estimatePresation->getEstimate() === $this) {
+                $estimatePresation->setEstimate(null);
             }
         }
 
@@ -114,12 +104,12 @@ class Estimate
 
     public function getValidityDate(): ?\DateTimeInterface
     {
-        return $this->validity_date;
+        return $this->validityDate;
     }
 
-    public function setValidityDate(\DateTimeInterface $validity_date): static
+    public function setValidityDate(\DateTimeInterface $validityDate): static
     {
-        $this->validity_date = $validity_date;
+        $this->validityDate = $validityDate;
 
         return $this;
     }

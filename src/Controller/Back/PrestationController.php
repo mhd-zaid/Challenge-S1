@@ -3,8 +3,11 @@
 namespace App\Controller\Back;
 
 use App\Entity\Prestation;
+use App\Entity\PrestationProduct;
+use App\Entity\Product;
 use App\Form\PrestationType;
 use App\Repository\PrestationRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -24,16 +27,40 @@ class PrestationController extends AbstractController
 
     #[Route('/new', name: 'app_prestation_new', methods: ['GET', 'POST'])]
     #[Security('is_granted("ROLE_MECHANIC")')]
-    public function new(Request $request, PrestationRepository $prestationRepository): Response
+    public function new(Request $request,EntityManagerInterface $em ): Response
     {
         $prestation = new Prestation();
+        $prestationRepository = $em->getRepository(Prestation::class);
+        $productRepository = $em->getRepository(Product::class);
+        $products = $productRepository->findAll();
         $form = $this->createForm(PrestationType::class, $prestation);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $prestation->setName($form->getData()->getName());
+            $prestation->setCategory($form->getData()->getCategory());
+            $prestation->setDuration($form->getData()->getDuration());
+            $prestation->setWorkforce($form->getData()->getWorkforce());
+            $prestation->setTotalHT($form->getData()->getTotalHT());
+            $prestation->setTotalTVA($form->getData()->getTotalTVA());
             $prestationRepository->save($prestation, true);
 
-            return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);
+            $products = $form->get('productQuantities')->getData();
+            foreach($products as $value){
+                $product = $productRepository->find($value['product']->getId());
+                dump($product);
+                $product->setQuantity($product->getQuantity() - $value['quantity']);
+                $productRepository->save($product, true);
+
+                $prestationProduct = new PrestationProduct();
+                $prestationProduct->setPrestation($prestation);
+                $prestationProduct->setProduct($product);
+                $prestationProduct->setTotalHt($product->getTotalHt());
+                $prestationProduct->setTotalTva($product->getTotalTva());
+                $prestationProduct->setQuantity($value['quantity']);
+                $prestationProduct->setWorkforce($form->get('workforce')->getData());
+                $em->getRepository(PrestationProduct::class)->save($prestationProduct, true);
+            }
         }
 
         return $this->renderForm('back/prestation/new.html.twig', [
