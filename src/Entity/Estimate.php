@@ -63,7 +63,7 @@ class Estimate
         return $this->customer;
     }
 
-    public function setCustomer(Customer $customer): static
+    public function setCustomer(?Customer $customer): static
     {
         $this->customer = $customer;
 

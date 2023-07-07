@@ -1,22 +1,99 @@
 {% extends 'back/base.html.twig' %}
 
 {% block title %}Invoice{% endblock %}
-
 {% block main %}
-    <h1>Invoice</h1>
+<style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #F5F5F5;
+            color: #333;
+        }
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ invoice.id }}</td>
-            </tr>
-        </tbody>
-    </table>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #FFF;
+            padding: 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
 
-    <a href="{{ path('back_app_invoice_index') }}">back to list</a>
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
 
-    <a href="{{ path('back_app_invoice_edit', {'id': invoice.id}) }}">edit</a>
+        .info {
+            margin-bottom: 20px;
+        }
 
-    {{ include('back/invoice/_delete_form.html.twig') }}
+        .info p {
+            margin: 5px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #F5F5F5;
+        }
+
+        .total {
+            text-align: right;
+            font-weight: bold;
+        }
+    </style>
+    <div class="container">
+        <h1>facture</h1>
+        <div class="info">
+            <p>Information de la société (nom et adresse)</p>
+            <p>Date du jour : {{ "now"|date("d-m-Y") }}</p>
+            <p>Nom: {{ customer.lastname }}</p>
+            <p>Prénom {{ customer.firstname }}</p>
+            <p>Email: {{ customer.email }} </p>
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th></th>
+                    <th></th>
+                    <th>Qté</th>
+                    <th>Total TTC</th>
+                </tr>
+            </thead>
+            <tbody>
+                    {% for invoicePrestation in invoicePrestations %}
+                        <tr>
+                            <td>{{invoicePrestation.prestation.name}}
+                            {% for prestationProduct in invoicePrestation.prestation.prestationProducts %}
+                                <tr>
+                                    <td>{{ prestationProduct.product.title }}</td>
+                                    <td>{{ prestationProduct.quantity }}</td>
+                                    <td>{{ ((prestationProduct.product.getTotalHT() * prestationProduct.product.getTotalTVA() / 100) + prestationProduct.product.getTotalHT()) * prestationProduct.quantity }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            <td class="total">Main d'oeuvre :</td>
+                            <td class="total">{{ invoicePrestation.prestation.workforce }} €</td>
+                        </tr>
+                    {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="4" class="total">Total :</td>
+                    <td class="total">{{ total }} €</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 {% endblock %}

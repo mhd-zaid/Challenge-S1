@@ -43,7 +43,7 @@ class Prestation
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'La main d\'oeuvre est obligatoire')]
-    #[Assert\Type(type: 'int', message: 'Le nom du technicien doit être une chaîne de caractères')]
+    #[Assert\Type(type: 'int', message: 'La main d\'oeuvre doit être un nombre')]
     private ?int $workforce = null;
 
     #[ORM\OneToMany(mappedBy: 'prestation', targetEntity: PrestationProduct::class, orphanRemoval: true, cascade: ['remove'])]

@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Entity\Traits\BlameableTrait;
 use App\Entity\Traits\TimestampableTrait;
+use App\Repository\InvoicePrestationRepository;
 use App\Repository\InvoiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -22,7 +23,7 @@ class Invoice
 
     #[ORM\ManyToOne(inversedBy: 'invoice')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Customer $client = null;
+    private ?Customer $customer = null;
 
     #[ORM\Column(length: 255)]
     private ?string $status = null;
@@ -40,14 +41,14 @@ class Invoice
         return $this->id;
     }
 
-    public function getClient(): ?Customer
+    public function getCustomer(): ?Customer
     {
-        return $this->client;
+        return $this->customer;
     }
 
-    public function setClient(?Customer $client): static
+    public function setCustomer(?Customer $customer): static
     {
-        $this->client = $client;
+        $this->customer = $customer;
 
         return $this;
     }
@@ -92,5 +93,22 @@ class Invoice
         }
 
         return $this;
+    }
+
+    public function getTotal(InvoicePrestationRepository $invoicePrestationRepository)
+    {
+        $total = 0 ;
+        $invoicePrestations = $invoicePrestationRepository->findBy(['invoice' => $this->getId()]);
+        foreach($invoicePrestations as $invoicePrestation){
+            $prestation = $invoicePrestation->getPrestation();
+            $totalPrestation = 0;
+            foreach($prestation->getPrestationProducts() as $prestationProduct){
+                $totalPrestation += ((($prestationProduct->getProduct()->getTotalTVA() / 100) * $prestationProduct->getProduct()->getTotalHT()) + $prestationProduct->getProduct()->getTotalHT()) * $prestationProduct->getQuantity();
+                         
+            }
+            $totalPrestation += $prestation->getWorkforce();
+            $total += $totalPrestation;
+        }
+        return $total;
     }
 }

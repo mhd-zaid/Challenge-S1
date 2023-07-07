@@ -68,10 +68,10 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Unique]
     private array $roles = [];
 
-    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Estimate::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Estimate::class, orphanRemoval: true)]
     private Collection $estimates;
 
-    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Invoice::class)]
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Invoice::class)]
     private Collection $invoices;
 
     public function __construct()
@@ -297,7 +297,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->estimates->contains($estimate)) {
             $this->estimates->add($estimate);
-            $estimate->setClient($this);
+            $estimate->setCustomer($this);
         }
 
         return $this;
@@ -307,8 +307,8 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->estimates->removeElement($estimate)) {
             // set the owning side to null (unless already changed)
-            if ($estimate->getClient() === $this) {
-                $estimate->setClient(null);
+            if ($estimate->getCustomer() === $this) {
+                $estimate->setCustomer(null);
             }
         }
 
@@ -327,7 +327,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->invoices->contains($invoice)) {
             $this->invoices->add($invoice);
-            $invoice->setClient($this);
+            $invoice->setCustomer($this);
         }
 
         return $this;
@@ -337,8 +337,8 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->invoices->removeElement($invoice)) {
             // set the owning side to null (unless already changed)
-            if ($invoice->getClient() === $this) {
-                $invoice->setClient(null);
+            if ($invoice->getCustomer() === $this) {
+                $invoice->setCustomer(null);
             }
         }
 

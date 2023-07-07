@@ -33,16 +33,16 @@ class ExcelAccounting {
                         $activeSheet->setCellValue($columnLetter.$this->row, $invoice->getId());
                         break;
                     case 'CLIENT ID':
-                        $activeSheet->setCellValue($columnLetter.$this->row, $invoice->getClient()->getId());
+                        $activeSheet->setCellValue($columnLetter.$this->row, $invoice->getCustomer()->getId());
                         break;
                     case 'NOM CLIENT':
-                        $activeSheet->setCellValue($columnLetter.$this->row, $invoice->getClient()->getLastname());
+                        $activeSheet->setCellValue($columnLetter.$this->row, $invoice->getCustomer()->getLastname());
                         break;
                     case 'PRÉNOM CLIENT':
-                        $activeSheet->setCellValue($columnLetter.$this->row, $invoice->getClient()->getFirstname());
+                        $activeSheet->setCellValue($columnLetter.$this->row, $invoice->getCustomer()->getFirstname());
                         break;
                     case 'EMAIL CLIENT':
-                        $activeSheet->setCellValue($columnLetter.$this->row, $invoice->getClient()->getEmail());
+                        $activeSheet->setCellValue($columnLetter.$this->row, $invoice->getCustomer()->getEmail());
                         break;
                     case 'STATUT':
                         $activeSheet->setCellValue($columnLetter.$this->row, $invoice->getStatus());

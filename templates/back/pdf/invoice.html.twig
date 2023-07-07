@@ -55,11 +55,10 @@
 </head>
 <body>
     <div class="container">
-        <h1>Devis</h1>
+        <h1>facture</h1>
         <div class="info">
             <p>Information de la société (nom et adresse)</p>
             <p>Date du jour : {{ "now"|date("d-m-Y") }}</p>
-            <p>Validity Date: {{ estimate.getValidityDate()|date('d-m-Y') }}</p>
             <p>Nom: {{ customer.lastname }}</p>
             <p>Prénom {{ customer.firstname }}</p>
             <p>Email: {{ customer.email }} </p>
@@ -74,10 +73,10 @@
                 </tr>
             </thead>
             <tbody>
-                    {% for estimatePrestation in estimatePrestations %}
+                    {% for invoicePrestation in invoicePrestations %}
                         <tr>
-                            <td>{{estimatePrestation.prestation.name}}
-                            {% for prestationProduct in estimatePrestation.prestation.prestationProducts %}
+                            <td>{{invoicePrestation.prestation.name}}
+                            {% for prestationProduct in invoicePrestation.prestation.prestationProducts %}
                                 <tr>
                                     <td>{{ prestationProduct.product.title }}</td>
                                     <td>{{ prestationProduct.quantity }}</td>
@@ -87,7 +86,7 @@
                         </tr>
                         <tr>
                             <td class="total">Main d'oeuvre :</td>
-                            <td class="total">{{ estimatePrestation.prestation.workforce }} €</td>
+                            <td class="total">{{ invoicePrestation.prestation.workforce }} €</td>
                         </tr>
                     {% endfor %}
             </tbody>
@@ -98,7 +97,6 @@
                 </tr>
             </tfoot>
         </table>
-        <p>Devis gratuit</p>
     </div>
 </body>
 </html>

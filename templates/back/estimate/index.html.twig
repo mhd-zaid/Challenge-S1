@@ -19,7 +19,7 @@
                 <td>{{ estimate.title }}</td>
                 <td>{{ estimate.status }}</td>
                 <td><a href="{{ path('back_app_estimate_download', {'id': estimate.id}) }}">Télécharger</a></td>
-
+                <td><a href="{{ path('back_app_estimate_show', {'id': estimate.id}) }}">show</a></td>
             {% if estimate.status == 'PENDING' %}
                 <td><a href="{{ path('back_app_stripe_buy', {'id': estimate.id}) }}">Payé</a></td>
                 <td><a href="{{ path('back_app_estimate_decline', {'id': estimate.id}) }}">Refuser le devis</a></td>

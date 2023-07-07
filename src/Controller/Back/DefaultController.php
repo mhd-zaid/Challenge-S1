@@ -23,8 +23,8 @@ class DefaultController extends AbstractController
     #[Security('is_granted("ROLE_CUSTOMER")')]
     public function index(ChartBuilderInterface $chartBuilder,EntityManagerInterface $em): Response
     {
-        $estimates = $em->getRepository(Estimate::class)->findBy(['client'=>$this->getUser()],null,5);
-        $invoices = $em->getRepository(Invoice::class)->findBy(['client'=>$this->getUser()],null,5);
+        $estimates = $em->getRepository(Estimate::class)->findBy(['customer'=>$this->getUser()],null,5);
+        $invoices = $em->getRepository(Invoice::class)->findBy(['customer'=>$this->getUser()],null,5);
         $cutomers = $em->getRepository(Customer::class)->findAll();
         $invoicesPaid = $em->getRepository(Invoice::class)->findBy(['status'=>'PAID']);
         $invoicesPending = $em->getRepository(Invoice::class)->findBy(['status'=>'PENDING']);

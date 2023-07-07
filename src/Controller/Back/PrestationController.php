@@ -69,7 +69,7 @@ class PrestationController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_prestation_show', methods: ['GET'])]
-    #[Security('user.getId() == invoice.getClient() or is_granted("ROLE_MECHANIC")')]
+    #[Security('user.getId() == invoice.getCustomer() or is_granted("ROLE_MECHANIC")')]
     public function show(Prestation $prestation): Response
     {
         return $this->render('back/prestation/show.html.twig', [
@@ -78,7 +78,7 @@ class PrestationController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_prestation_edit', methods: ['GET', 'POST'])]
-    #[Security('user.getId() == invoice.getClient() or is_granted("ROLE_MECHANIC")')]
+    #[Security('user.getId() == invoice.getCustomer() or is_granted("ROLE_MECHANIC")')]
     public function edit(Request $request, Prestation $prestation, PrestationRepository $prestationRepository): Response
     {
         $form = $this->createForm(PrestationType::class, $prestation);

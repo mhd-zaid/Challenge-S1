@@ -59,7 +59,7 @@ class InvoiceRepository extends ServiceEntityRepository
         }
 
         if (isset($filters['customer'])) {
-            $queryBuilder->andWhere('i.client = :customer')
+            $queryBuilder->andWhere('i.customer = :customer')
                 ->setParameter('customer', $filters['customer']);
         }
 
