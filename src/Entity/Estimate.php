@@ -75,7 +75,7 @@ class Estimate
         return $this;
     }
 
-    public function getestimatePrestations(): Collection
+    public function getEstimatePrestations(): Collection
     {
         return $this->estimatePrestations;
     }

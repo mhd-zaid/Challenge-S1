@@ -46,16 +46,6 @@ class Prestation
     #[Assert\Type(type: 'int', message: 'Le nom du technicien doit être une chaîne de caractères')]
     private ?int $workforce = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
-    #[Assert\NotBlank(message: 'Le Total HT est obligatoire')]
-    #[Assert\Type(type: 'float', message: 'Le Total HT doit être un nombre décimal')]
-    private ?float $totalHt = null;
-
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
-    #[Assert\NotBlank(message: 'Le Total TVA est obligatoire')]
-    #[Assert\Type(type: 'float', message: 'Le Total TVA doit être un nombre décimal')]
-    private ?float $totalTva = null;
-
     #[ORM\OneToMany(mappedBy: 'prestation', targetEntity: PrestationProduct::class, orphanRemoval: true, cascade: ['remove'])]
     private Collection $prestationProducts;
 
@@ -115,28 +105,6 @@ class Prestation
     {
         $this->workforce = $workforce;
 
-        return $this;
-    }
-
-    public function getTotalHT(): ?float
-    {
-        return $this->totalHt;
-    }
-
-    public function setTotalHT(float $totalHt): static
-    {
-        $this->totalHt = $totalHt;
-        return $this;
-    }
-
-    public function getTotalTVA(): ?float
-    {
-        return $this->totalTva;
-    }
-
-    public function setTotalTVA(float $totalTva): static
-    {
-        $this->totalTva = $totalTva;
         return $this;
     }
 

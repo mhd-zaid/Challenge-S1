@@ -41,8 +41,6 @@ class PrestationController extends AbstractController
             $prestation->setCategory($form->getData()->getCategory());
             $prestation->setDuration($form->getData()->getDuration());
             $prestation->setWorkforce($form->getData()->getWorkforce());
-            $prestation->setTotalHT($form->getData()->getTotalHT());
-            $prestation->setTotalTVA($form->getData()->getTotalTVA());
             $prestationRepository->save($prestation, true);
 
             $products = $form->get('productQuantities')->getData();
@@ -59,7 +57,9 @@ class PrestationController extends AbstractController
                 $prestationProduct->setQuantity($value['quantity']);
                 $prestationProduct->setWorkforce($form->get('workforce')->getData());
                 $em->getRepository(PrestationProduct::class)->save($prestationProduct, true);
+
             }
+            return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('back/prestation/new.html.twig', [

@@ -7,6 +7,7 @@ use App\Entity\Estimate;
 use App\Form\EstimateType;
 use App\Entity\Invoice;
 use App\Entity\InvoicePrestation;
+use App\Entity\EstimatePrestation;
 use App\Repository\EstimateRepository;
 use App\Repository\CustomerRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -64,6 +65,8 @@ class EstimateController extends AbstractController
         $estimateRepository = $em->getRepository(Estimate::class);
         $invoiceRepository = $em->getRepository(Invoice::class);
         $customerRepository = $em->getRepository(Customer::class);
+        $invoicePrestationRepository = $em->getRepository(InvoicePrestation::class);
+        $estimatePrestationRepository = $em->getRepository(EstimatePrestation::class);
 
         $form = $this->createForm(EstimateType::class, $estimate);
         $form->handleRequest($request);
@@ -82,7 +85,7 @@ class EstimateController extends AbstractController
 
             $invoice->setClient($customer);
             $invoice->setStatus('PENDING');
-            $invoiceRepository->save($invoice, true);
+            //$invoiceRepository->save($invoice, true);
 
             $estimate->setCustomer($customer);
             $estimate->setTitle($form->getData()->getTitle());
@@ -90,7 +93,7 @@ class EstimateController extends AbstractController
             $estimate->setValidityDate($form->get('validityDate')->getData());
             $estimate->setInvoice($invoice);
             $estimate->setStatus('PENDING');
-            $estimateRepository->save($estimate, true);
+            //$estimateRepository->save($estimate, true);
 
             
             $emailCustomer = $form->get('email')->getData();
@@ -99,7 +102,7 @@ class EstimateController extends AbstractController
             $html = $this->renderView('back/pdf/estimate.html.twig', [
                 'estimate' => $estimate,
                 'customer' => $customer,
-                //'estimatePrestations' => $estimate->getEstimatePrestations(),
+                'estimatePrestations' => $estimate->getEstimatePrestations(),
             ]);
             $pdfResponse = new PdfResponse(
                 $pdf->getOutputFromHtml($html),
@@ -128,9 +131,8 @@ class EstimateController extends AbstractController
                 ]);
                 $this->mailer->send($email);
             }
-
+            dump($estimate);die;
             foreach($estimate->getestimatePrestations() as $value){
-                dump($value);die;
                 $invoicePrestation = new InvoicePrestation();
                 $invoicePrestation->setPrestation($value);
                 $invoicePrestation->setInvoice($invoice);

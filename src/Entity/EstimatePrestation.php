@@ -13,9 +13,12 @@ class EstimatePrestation
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
+    #[ORM\ManyToOne(inversedBy: 'estimatePrestations')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Estimate $estimate = null;
 
+    #[ORM\ManyToOne(inversedBy: 'estimatePrestations')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Prestation $prestation = null;
 
     public function getId(): ?int
@@ -28,7 +31,7 @@ class EstimatePrestation
         return $this->estimate;
     }
 
-    public function setEstimate(?estimate $estimate): static
+    public function setEstimate(?Estimate $estimate): static
     {
         $this->estimate = $estimate;
 

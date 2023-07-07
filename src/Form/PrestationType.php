@@ -33,9 +33,7 @@ class PrestationType extends AbstractType
                     'label' => false,
                 ],
                 'constraints' => [new ProductQuantity]
-            ])
-            ->add('total_ht')
-            ->add('total_tva');
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
