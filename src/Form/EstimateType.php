@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Estimate;
+use App\Entity\Prestation;
 use App\Entity\Product;
 use App\Form\ProductQuantityType;
 use Symfony\Component\Form\AbstractType;
@@ -18,6 +19,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use App\Validator\ProductQuantity;
+use Doctrine\ORM\Mapping\Entity;
 
 class EstimateType extends AbstractType
 {
@@ -29,19 +31,20 @@ class EstimateType extends AbstractType
                 'mapped' => false,
                 'label' => 'Email'
             ])
-            ->add('prestation', CollectionType::class, [
-                'mapped' => false,
-                'entry_type' => ChoiceType::class,
+            ->add('estimatePrestations', CollectionType::class, [
+                'entry_type' => EntityType::class,
+                'entry_options' => [
+                    'class' => Prestation::class,
+                    'choice_label' => 'name',
+                    'label' => false,
+                ],
                 'allow_add' => true,
                 'by_reference' => false,
                 'attr' => [
                     'class' => '',
                 ],
-                'entry_options' => [
-                    'label' => false,
-                ],
             ])
-            ->add('validity_date', DateType::class, [
+            ->add('validityDate', DateType::class, [
                 'mapped' => false,
                 'label' => "Date de fin de validité du contrat"
             ]);

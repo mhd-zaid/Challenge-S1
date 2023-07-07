@@ -80,22 +80,23 @@ class Estimate
         return $this->estimatePrestations;
     }
 
-    public function addEstimatePresation(EstimatePrestation $estimatePrestation): static
+    public function addPrestation(ArrayCollection $prestations): static
     {
-        if (!$this->estimatePrestations->contains($estimatePrestation)) {
-            $this->estimatePrestations->add($estimatePrestation);
+        foreach ($prestations as $prestation) {
+            $estimatePrestation = new EstimatePrestation();
+            $estimatePrestation->setPrestation($prestation);
             $estimatePrestation->setEstimate($this);
+            $this->estimatePrestations->add($estimatePrestation);
         }
 
         return $this;
     }
 
-    public function removeEstimatePresation(EstimatePrestation $estimatePresation): static
+    public function removePrestation(Prestation $prestation): static
     {
-        if ($this->estimatePrestations->removeElement($estimatePresation)) {
-            // set the owning side to null (unless already changed)
-            if ($estimatePresation->getEstimate() === $this) {
-                $estimatePresation->setEstimate(null);
+        foreach ($this->estimatePrestations as $estimatePrestation) {
+            if ($estimatePrestation->getPrestation() === $prestation) {
+                $this->estimatePrestations->removeElement($estimatePrestation);
             }
         }
 

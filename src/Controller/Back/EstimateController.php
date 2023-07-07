@@ -5,15 +5,10 @@ namespace App\Controller\Back;
 use App\Entity\Customer;
 use App\Entity\Estimate;
 use App\Form\EstimateType;
-use App\Entity\Product;
 use App\Entity\Invoice;
-use App\Entity\InvoiceProduct;
-use App\Repository\ProductRepository;
+use App\Entity\InvoicePrestation;
 use App\Repository\EstimateRepository;
-use App\Repository\InvoiceRepository;
-use App\Repository\InvoiceProductRepository;
 use App\Repository\CustomerRepository;
-use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -60,116 +55,97 @@ class EstimateController extends AbstractController
         }
     }
 
-    // #[Route('/new', name: 'app_estimate_new', methods: ['GET', 'POST'])]
-    // #[Sec('is_granted("ROLE_MECHANIC")')]
-    // public function new(Pdf $pdf, Request $request, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, ProductRepository $productRepository, CustomerRepository $customerRepository, EstimateProductRepository $estimateProductRepository, InvoiceProductRepository $invoiceProductRepository): Response
-    // {
-        // $estimate = new Estimate();
-        // $invoice = new Invoice();
+    #[Route('/new', name: 'app_estimate_new', methods: ['GET', 'POST'])]
+    #[Sec('is_granted("ROLE_MECHANIC")')]
+    public function new(Pdf $pdf, Request $request, EntityManagerInterface $em): Response
+    {
+        $estimate = new Estimate();
+        $invoice = new Invoice();
+        $estimateRepository = $em->getRepository(Estimate::class);
+        $invoiceRepository = $em->getRepository(Invoice::class);
+        $customerRepository = $em->getRepository(Customer::class);
 
-        // $products = $productRepository->findAll();
-        // $form = $this->createForm(EstimateType::class, $estimate);
-        // $form->handleRequest($request);
+        $form = $this->createForm(EstimateType::class, $estimate);
+        $form->handleRequest($request);
 
-        // if ($form->isSubmitted() && $form->isValid()) {
-        //     $customer = $customerRepository->findOneBy([
-        //         'email' => $form->get('email')->getData()
-        //     ]);
-
-        //     $total = 0;
-        //     foreach($form->get('productQuantities')->getData() as $product){
-        //         $total += ((($product['product']->getTotalTVA() / 100) * $product['product']->getTotalHT()) + $product['product']->getTotalHT()) * $product['quantity'];
-        //     }
-        //     $total+= $form->get('workforce')->getData();
-        //     $isCustomerExist = $customer ? true: false;
-        //     if ($customer === null) {
-        //         $id = $this->generateCustomerId($customerRepository);
-        //         $customer = $this->createCustomer($form,$id, $customerRepository);
-        //     }
-
-        //     $invoice->setClient($customer);
-        //     $invoice->setStatus('PENDING');
-        //     $invoiceRepository->save($invoice, true);
-
-        //     $estimate->setClient($customer);
-        //     $estimate->setTitle($form->getData()->getTitle());
-        //     $estimate->setValidityDate($form->get('validity_date')->getData());
-        //     $estimate->setInvoice($invoice);
-        //     $estimate->setStatus('PENDING');
-        //     $estimateRepository->save($estimate, true);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $customer = $customerRepository->findOneBy([
+                'email' => $form->get('email')->getData()
+            ]);
 
             
-        //     $emailCustomer = $form->get('email')->getData();
+            $isCustomerExist = $customer ? true: false;
+            if ($customer === null) {
+                $id = $this->generateCustomerId($customerRepository);
+                $customer = $this->createCustomer($form,$id, $customerRepository);
+            }
 
-        //     if($isCustomerExist){
-        //     $html = $this->renderView('back/pdf/estimate.html.twig', [
-        //         'estimate' => $estimate,
-        //         'customer' => $customer,
-        //         'workforce' => $form->get('workforce')->getData(),
-        //         'products' => $form->get('productQuantities')->getData(),
-        //         'total' => $total,
-        //     ]);
-        //     $pdfResponse = new PdfResponse(
-        //         $pdf->getOutputFromHtml($html),
-        //         'file.pdf'
-        //     );
-        //     $pdfContent = $pdfResponse->getContent();
-        //     $email = (new TemplatedEmail())
-        //     ->from("zaidmouhamad@gmail.com")
-        //     ->to($emailCustomer)
-        //     ->subject('Votre Devis
-        //     ')
-        //     ->htmlTemplate('back/email/devisEmail.html.twig')
-        //     ->context([
-        //         'customer' => $customer,
-        //     ])
-        //     ->attach($pdfContent, 'file.pdf');
-        //     $this->mailer->send($email);
-        //     }else{
-        //         $email = (new TemplatedEmail())
-        //         ->from("zaidmouhamad@gmail.com")
-        //         ->to($emailCustomer)
-        //         ->subject('Confirm email')
-        //         ->htmlTemplate('back/email/inscriptionEmail.html.twig')
-        //         ->context([
-        //             'customer' => $customer,
-        //         ]);
-        //         $this->mailer->send($email);
-        //     }
-        //     $products = $form->get('productQuantities')->getData();
-        //     foreach($products as $value){
-        //         $product = $productRepository->find($value['product']->getId());
-        //         $product->setQuantity($product->getQuantity() - $value['quantity']);
-        //         $productRepository->save($product, true);
+            $invoice->setClient($customer);
+            $invoice->setStatus('PENDING');
+            $invoiceRepository->save($invoice, true);
 
-        //         $estimateProduct = new EstimateProduct();
-        //         $estimateProduct->setEstimate($estimate);
-        //         $estimateProduct->setProduct($product);
-        //         $estimateProduct->setTotalHt($product->getTotalHt());
-        //         $estimateProduct->setTotalTva($product->getTotalTva());
-        //         $estimateProduct->setQuantity($value['quantity']);
-        //         $estimateProduct->setWorkforce($form->get('workforce')->getData());
-        //         $estimateProductRepository->save($estimateProduct, true);
+            $estimate->setCustomer($customer);
+            $estimate->setTitle($form->getData()->getTitle());
+            $estimate->addPrestation($form->getData()->getPrestations());
+            $estimate->setValidityDate($form->get('validityDate')->getData());
+            $estimate->setInvoice($invoice);
+            $estimate->setStatus('PENDING');
+            $estimateRepository->save($estimate, true);
 
-        //         $total = (($product->getTotalTva() / 100) * $product->getTotalHt()) + $product->getTotalHt() + $form->get('workforce')->getData();
+            
+            $emailCustomer = $form->get('email')->getData();
 
-        //         $invoiceProduct = new InvoiceProduct();
-        //         $invoiceProduct->setProduct($product);
-        //         $invoiceProduct->setInvoice($invoice);
-        //         $invoiceProduct->setTotal($total);
-        //         $invoiceProduct->setQuantity($value['quantity']);
-        //         $invoiceProductRepository->save($invoiceProduct, true);
-        //     }
+            if($isCustomerExist){
+            $html = $this->renderView('back/pdf/estimate.html.twig', [
+                'estimate' => $estimate,
+                'customer' => $customer,
+                //'estimatePrestations' => $estimate->getEstimatePrestations(),
+            ]);
+            $pdfResponse = new PdfResponse(
+                $pdf->getOutputFromHtml($html),
+                'file.pdf'
+            );
+            $pdfContent = $pdfResponse->getContent();
+            $email = (new TemplatedEmail())
+            ->from("zaidmouhamad@gmail.com")
+            ->to($emailCustomer)
+            ->subject('Votre Devis
+            ')
+            ->htmlTemplate('back/email/devisEmail.html.twig')
+            ->context([
+                'customer' => $customer,
+            ])
+            ->attach($pdfContent, 'file.pdf');
+            $this->mailer->send($email);
+            }else{
+                $email = (new TemplatedEmail())
+                ->from("zaidmouhamad@gmail.com")
+                ->to($emailCustomer)
+                ->subject('Confirm email')
+                ->htmlTemplate('back/email/inscriptionEmail.html.twig')
+                ->context([
+                    'customer' => $customer,
+                ]);
+                $this->mailer->send($email);
+            }
 
-        //    return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
-        //}
+            foreach($estimate->getestimatePrestations() as $value){
+                dump($value);die;
+                $invoicePrestation = new InvoicePrestation();
+                $invoicePrestation->setPrestation($value);
+                $invoicePrestation->setInvoice($invoice);
+                $em->getRepository(InvoicePrestation::class)->save($invoicePrestation, true);
+            }
 
-        // return $this->renderForm('back/estimate/new.html.twig', [
-        //     'estimate' => $estimate,
-        //     'form' => $form,
-        //     'products' => $products
-        // ]);
-    //}
+           return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
+        }
+
+        return $this->renderForm('back/estimate/new.html.twig', [
+            'estimate' => $estimate,
+            'form' => $form,
+            'estimatePrestations' => $estimate->getEstimatePrestations(),
+        ]);
+    }
 
     // #[Route('/decline/{id}', name: 'app_estimate_decline', methods: ['GET'])]
     // #[Sec('user.getId() == estimate.getClient().getId() or is_granted("ROLE_MECHANIC")')]

@@ -27,12 +27,12 @@ class Invoice
     #[ORM\Column(length: 255)]
     private ?string $status = null;
 
-    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceProduct::class, orphanRemoval: true, cascade: ['remove'])]
-    private Collection $invoiceProducts;
+    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoicePrestation::class, orphanRemoval: true, cascade: ['remove'])]
+    private Collection $invoicePrestations;
 
     public function __construct()
     {
-        $this->invoiceProducts = new ArrayCollection();
+        $this->invoicePrestations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -69,25 +69,25 @@ class Invoice
      */
     public function getInvoiceProducts(): Collection
     {
-        return $this->invoiceProducts;
+        return $this->invoicePrestations;
     }
 
-    public function addInvoiceProduct(InvoiceProduct $invoiceProduct): static
+    public function addInvoiceProduct(InvoicePrestation $invoicePrestation): static
     {
-        if (!$this->invoiceProducts->contains($invoiceProduct)) {
-            $this->invoiceProducts->add($invoiceProduct);
-            $invoiceProduct->setInvoices($this);
+        if (!$this->invoicePrestations->contains($invoicePrestation)) {
+            $this->invoicePrestations->add($invoicePrestation);
+            $invoicePrestation->setInvoice($this);
         }
 
         return $this;
     }
 
-    public function removeInvoiceProduct(InvoiceProduct $invoiceProduct): static
+    public function removeInvoiceProduct(InvoicePrestation $invoicePrestations): static
     {
-        if ($this->invoiceProducts->removeElement($invoiceProduct)) {
+        if ($this->invoicePrestations->removeElement($invoicePrestations)) {
             // set the owning side to null (unless already changed)
-            if ($invoiceProduct->getInvoices() === $this) {
-                $invoiceProduct->setInvoices(null);
+            if ($invoicePrestations->getInvoice() === $this) {
+                $invoicePrestations->setInvoice(null);
             }
         }
 

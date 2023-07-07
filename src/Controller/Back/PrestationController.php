@@ -48,7 +48,6 @@ class PrestationController extends AbstractController
             $products = $form->get('productQuantities')->getData();
             foreach($products as $value){
                 $product = $productRepository->find($value['product']->getId());
-                dump($product);
                 $product->setQuantity($product->getQuantity() - $value['quantity']);
                 $productRepository->save($product, true);
 
