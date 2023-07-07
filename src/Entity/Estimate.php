@@ -6,13 +6,9 @@ use App\Entity\Traits\BlameableTrait;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\EstimatePrestationRepository;
 use App\Repository\EstimateRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
-use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Entity;
-
+use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: EstimateRepository::class)]
 class Estimate
 {

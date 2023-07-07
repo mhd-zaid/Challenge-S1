@@ -3,24 +3,15 @@
 namespace App\Form;
 
 use App\Entity\Estimate;
-use App\Entity\EstimatePrestation;
 use App\Entity\Prestation;
-use App\Entity\Product;
-use App\Form\ProductQuantityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
-use App\Validator\ProductQuantity;
-use Doctrine\ORM\Mapping\Entity;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class EstimateType extends AbstractType
 {
@@ -48,7 +39,11 @@ class EstimateType extends AbstractType
             ])
             ->add('validityDate', DateType::class, [
                 'mapped' => false,
-                'label' => "Date de fin de validité du contrat"
+                'label' => "Date de fin de validité du contrat",
+                'data' => new \DateTime("now"),
+                'constraints' => [
+                    new Assert\GreaterThan('today')
+                ],
             ]);
     }
 
