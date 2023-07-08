@@ -48,6 +48,8 @@ class Estimate
 
     #[ORM\Column(length: 15, nullable: true)]
     private ?string $carType = null;
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $uuid_success_payment = null;
 
     public function getId(): ?int
     {
@@ -178,5 +180,17 @@ class Estimate
             $total += $totalPrestation;
         }
         return $total;
+    }
+
+    public function getUuidSuccessPayment(): ?string
+    {
+        return $this->uuid_success_payment;
+    }
+
+    public function setUuidSuccessPayment(?string $uuid_success_payment): static
+    {
+        $this->uuid_success_payment = $uuid_success_payment;
+
+        return $this;
     }
 }
