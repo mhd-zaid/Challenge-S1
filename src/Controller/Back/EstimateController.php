@@ -44,7 +44,7 @@ class EstimateController extends AbstractController
         if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
             $estimates = $estimateRepository->findAll();
         }else{
-            $estimates = $estimateRepository->findBy(['client' => $security->getUser()->getId()]);
+            $estimates = $estimateRepository->findBy(['customer' => $security->getUser()->getId()]);
         }
         dump($estimates);
         $estimatesPagination = $paginator->paginate(

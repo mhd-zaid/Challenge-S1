@@ -31,8 +31,8 @@ class DefaultController extends AbstractController
         $estimateRepository = $em->getRepository(Estimate::class);
         $invoiceRepository = $em->getRepository(Invoice::class);
 
-        $estimates = $estimateRepository->findBy(['client'=>$this->getUser()],null,5);
-        $invoices = $invoiceRepository->findBy(['client'=>$this->getUser()],null,5);
+        $estimates = $estimateRepository->findBy(['customer'=>$this->getUser()],null,5);
+        $invoices = $invoiceRepository->findBy(['customer'=>$this->getUser()],null,5);
         $cutomers = $em->getRepository(Customer::class)->findAll();
         $invoicesPaid = $em->getRepository(Invoice::class)->findBy(['status'=>'PAID']);
         $invoicesPending = $em->getRepository(Invoice::class)->findBy(['status'=>'PENDING']);
@@ -49,8 +49,8 @@ class DefaultController extends AbstractController
             $estimates = $estimateRepository->findAll();
             $invoices = $invoiceRepository->findAll();
         }else{
-            $estimates = $estimateRepository->findBy(['client' => $security->getUser()->getId()]);
-            $invoices = $invoiceRepository->findBy(['client' => $security->getUser()->getId()]);
+            $estimates = $estimateRepository->findBy(['customer' => $security->getUser()->getId()]);
+            $invoices = $invoiceRepository->findBy(['customer' => $security->getUser()->getId()]);
         }
         $estimatesPagination = $paginator->paginate(
             $estimates,

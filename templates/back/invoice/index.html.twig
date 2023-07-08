@@ -5,33 +5,6 @@
 {% block main %}
     {% include 'components/page_header.html.twig' with {'title': 'Liste des factures', 'link': path('back_default_index')} %}
 
-<<<<<<< HEAD
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for invoice in invoices %}
-            <tr>
-                <td>{{ invoice.id }}</td>
-                <td>{{ invoice.status }}</td>
-                <td><a href="{{ path('back_app_invoice_download', {'id': invoice.id}) }}">Télécharger</a></td>
-                <td>
-                    <a href="{{ path('back_app_invoice_show', {'id': invoice.id}) }}">show</a>
-                    {# <a href="{{ path('back_app_invoice_edit', {'id': invoice.id}) }}">edit</a> #}
-                </td> 
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="2">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-=======
     <div>
         <div class="card">
             {% include 'components/table_Invoice_Estimate.html.twig' with {'type': 'invoice', 'pagination': invoicesPagination} %}
@@ -49,14 +22,8 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
->>>>>>> 85c4de4 (feat(Company) Création de la table de paramètre de site + fix(Estimate / Invoice) maj controller)
 
-    {{ knp_pagination_render(pagination) }}
-    {# <a href="{{ path('back_app_invoice_new') }}">Create new</a> #}
-=======
     <div class="pagination mt-4 flex justify-between">
         {{ knp_pagination_render(invoicesPagination) }}
     </div>
->>>>>>> 40dcc14 (Ajout de la pagination et Mise à jours des vues)
 {% endblock %}

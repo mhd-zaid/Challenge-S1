@@ -36,7 +36,7 @@ class InvoiceController extends AbstractController
         if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
             $invoices = $invoiceRepository->findAll();
         }else{
-            $invoices = $invoiceRepository->findBy(['client' => $security->getUser()->getId()]);
+            $invoices = $invoiceRepository->findBy(['customer' => $security->getUser()->getId()]);
         }
         $invoicesPagination = $paginator->paginate(
             $invoices, /* query NOT result */
