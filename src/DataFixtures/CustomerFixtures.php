@@ -35,6 +35,7 @@ class CustomerFixtures extends Fixture
                 ->setCity($faker->city)
                 ->setZipcode(str_replace(" ", "", $faker->postcode))
                 ->setCountry($faker->country)
+                ->setLanguage('fr')
         ;
             $manager->persist($object);
         }
@@ -55,6 +56,7 @@ class CustomerFixtures extends Fixture
             ->setCity($faker->city)
             ->setZipcode(str_replace(" ", "", $faker->postcode))
             ->setCountry($faker->country)
+            ->setLanguage('en')
         ;
         $manager->persist($object);
 
