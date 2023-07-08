@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\Customer;
+use App\Entity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -19,25 +20,22 @@ use App\Validator\PasswordMatch;
 use App\Validator\ClientId;
 use App\Validator\ClientExist;
 
-class CustomerType extends AbstractType
+class AccountType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
-    {         
-            $builder
-            ->add('id', IntegerType::class, [
-//                'constraints' => [new ClientId, new ClientExist]
-            ])
+    {
+        $builder
             ->add('firstname')
             ->add('lastname')
             ->add('email', EmailType::class, [
                 // 'constraints' => [new CustomerEmail]
             ])
             ->add('plainPassword', PasswordType::class, [
-            'constraints' => [new PasswordMatch]
+                'constraints' => [new PasswordMatch]
             ])
             ->add('password', PasswordType::class, [
                 'mapped' => false,
-                ])
+            ])
             ->add('address')
             ->add('phone')
             ->add('city')
@@ -66,7 +64,7 @@ class CustomerType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => Customer::class,
+//            'data_class' => User::class,
         ]);
     }
 }

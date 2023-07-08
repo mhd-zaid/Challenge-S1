@@ -24,6 +24,11 @@ class UserFixtures extends Fixture
             ->setValidationToken("")
             ->setCreatedAt(new DateTime())
             ->setUpdatedAt(new DateTime())
+            ->setAddress($faker->address)
+            ->setPhone($faker->phoneNumber)
+            ->setCity($faker->city)
+            ->setZipcode(str_replace(" ", "", $faker->postcode))
+            ->setCountry($faker->country)
         ;
         $manager->persist($object);
 
@@ -37,6 +42,11 @@ class UserFixtures extends Fixture
         ->setValidationToken("")
         ->setCreatedAt(new DateTime())
         ->setUpdatedAt(new DateTime())
+        ->setAddress($faker->address)
+        ->setPhone($faker->phoneNumber)
+        ->setCity($faker->city)
+        ->setZipcode(str_replace(" ", "", $faker->postcode))
+        ->setCountry($faker->country)
         ;
         $manager->persist($object);
 
@@ -50,6 +60,11 @@ class UserFixtures extends Fixture
             ->setValidationToken("")
             ->setCreatedAt(new DateTime())
             ->setUpdatedAt(new DateTime())
+            ->setAddress($faker->address)
+            ->setPhone($faker->phoneNumber)
+            ->setCity($faker->city)
+            ->setZipcode(str_replace(" ", "", $faker->postcode))
+            ->setCountry($faker->country)
         ;
         $manager->persist($object);
 

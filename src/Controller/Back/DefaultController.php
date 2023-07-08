@@ -8,6 +8,10 @@ use App\Entity\EstimatePrestation;
 use App\Entity\Invoice;
 use App\Repository\EstimatePrestationRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use App\Repository\EstimateRepository;
+use App\Repository\InvoiceRepository;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Component\Security\Core\Security;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -16,21 +20,23 @@ use Knp\Snappy\Pdf;
 use Symfony\Component\Uid\Uuid;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends AbstractController
 {
     
     #[Route('/', name: 'default_index', methods: ['GET'])]
-    #[Security('is_granted("ROLE_CUSTOMER")')]
-    public function index(ChartBuilderInterface $chartBuilder,EntityManagerInterface $em): Response
+    public function index(Request $request,ChartBuilderInterface $chartBuilder,EntityManagerInterface $em, Security $security, PaginatorInterface $paginator): Response
     {
-        $estimates = $em->getRepository(Estimate::class)->findBy(['customer'=>$this->getUser()],null,5);
-        $estimatesTotal = $this->getEstimateTotal($estimates,$em->getRepository(EstimatePrestation::class));
-        $invoices = $em->getRepository(Invoice::class)->findBy(['customer'=>$this->getUser()],null,5);
+        $estimateRepository = $em->getRepository(Estimate::class);
+        $invoiceRepository = $em->getRepository(Invoice::class);
+
+        $estimates = $estimateRepository->findBy(['customer'=>$this->getUser()],null,5);
+        $invoices = $invoiceRepository->findBy(['customer'=>$this->getUser()],null,5);
         $cutomers = $em->getRepository(Customer::class)->findAll();
         $invoicesPaid = $em->getRepository(Invoice::class)->findBy(['status'=>'PAID']);
         $invoicesPending = $em->getRepository(Invoice::class)->findBy(['status'=>'PENDING']);
+
         if ($this->isGranted('ROLE_MECHANIC')) {
             $estimates = $em->getRepository(Estimate::class)->findAll();
             $invoices = $em->getRepository(Invoice::class)->findAll();
@@ -38,7 +44,24 @@ class DefaultController extends AbstractController
         }
 
         $chart = $chartBuilder->createChart(Chart::TYPE_PIE);
-        
+
+        if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
+            $estimates = $estimateRepository->findAll();
+            $invoices = $invoiceRepository->findAll();
+        }else{
+            $estimates = $estimateRepository->findBy(['customer' => $security->getUser()->getId()]);
+            $invoices = $invoiceRepository->findBy(['customer' => $security->getUser()->getId()]);
+        }
+        $estimatesPagination = $paginator->paginate(
+            $estimates,
+            $request->query->getInt('page', 1),
+            5
+        );
+        $invoicesPagination = $paginator->paginate(
+            $invoices,
+            $request->query->getInt('page', 1),
+            5
+        );
         $chart->setData([
             'labels' => ['Nouveau Clients', 'Devis en attente', 'Prestation en attente', 'Presation effectuée'],
             'datasets' => [
@@ -79,7 +102,9 @@ class DefaultController extends AbstractController
             'invoices'=>$invoices,
             'customers'=>$cutomers,
             'invoicesPaid'=>$invoicesPaid,
-            'invoicesPending'=>$invoicesPending
+            'invoicesPending'=>$invoicesPending,
+            'invoicesPagination' => $invoicesPagination,
+            'estimatesPagination' => $estimatesPagination,
         ]);
     }
 

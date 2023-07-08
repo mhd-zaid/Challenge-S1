@@ -14,3 +14,9 @@ vich_uploader:
             namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
             delete_on_update: true
             delete_on_remove: true
+        companies:
+            uri_prefix: /uploads/images/companies
+            upload_destination: '%kernel.project_dir%/public/uploads/images/companies'
+            namer: Vich\UploaderBundle\Naming\SmartUniqueNamer
+            delete_on_update: true
+            delete_on_remove: true

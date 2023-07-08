@@ -13,10 +13,11 @@ use App\Entity\Estimate;
 use App\Repository\InvoicePrestationRepository;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Snappy\Pdf;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
+use Symfony\Component\Security\Core\Security;
+use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/invoice')]
 class InvoiceController extends AbstractController
@@ -30,11 +31,21 @@ class InvoiceController extends AbstractController
 
 
     #[Route('/', name: 'app_invoice_index', methods: ['GET'])]
-    #[Security('is_granted("ROLE_CUSTOMER") or is_granted("ROLE_ACCOUNTANT")')]
-    public function index(InvoiceRepository $invoiceRepository): Response
+    public function index(InvoiceRepository $invoiceRepository, Security $security, Request $request, PaginatorInterface $paginator): Response
     {
+        if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
+            $invoices = $invoiceRepository->findAll();
+        }else{
+            $invoices = $invoiceRepository->findBy(['customer' => $security->getUser()->getId()]);
+        }
+        $invoicesPagination = $paginator->paginate(
+            $invoices, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            5 /*limit per page*/
+        );
         return $this->render('back/invoice/index.html.twig', [
-            'invoices' => $invoiceRepository->findAll(),
+            'invoices' => $invoices,
+            'invoicesPagination' => $invoicesPagination,
         ]);
     }
 

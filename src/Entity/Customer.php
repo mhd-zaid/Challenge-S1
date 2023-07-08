@@ -47,7 +47,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable : true)]
     private ?string $password = null;
 
-    #[Assert\NotBlank]
+    #[ORM\Column(nullable : true)]
     #[Assert\Regex('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z\d\W]{8,}$/')]
     private ?string $plainPassword = null;
 
@@ -76,6 +76,27 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column]
     private ?bool $isRegistered = false;
+    
+    #[ORM\Column(length: 255, nullable : true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2,minMessage:'Le nom de la ville doit comporter au moins 2 caractères')]
+    private ?string $city = null;
+
+    #[ORM\Column(length: 255, nullable : true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2,minMessage:'Le nom du pays doit comporter au moins 2 caractères')]
+    private ?string $country = null;
+
+    #[ORM\Column(nullable : true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 5,minMessage:'Le code postal doit comporter au moins 5 caractères')]
+    private ?string $zipCode = null;
+
+    #[ORM\Column(length: 255, nullable : true)]
+    private ?string $theme = null;
+
+    #[ORM\Column(length: 255, nullable : true)]
+    private ?string $language = null;
 
     public function __construct()
     {
@@ -105,6 +126,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
 
     /**
      * A visual identifier that represents this user.
@@ -355,6 +377,66 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
                 $invoice->setCustomer(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(string $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getZipCode(): ?string
+    {
+        return $this->zipCode;
+    }
+
+    public function setZipCode(string $zipCode): static
+    {
+        $this->zipCode = $zipCode;
+
+        return $this;
+    }
+
+    public function getTheme(): ?string
+    {
+        return $this->theme;
+    }
+
+    public function setTheme(string $theme): static
+    {
+        $this->theme = $theme;
+
+        return $this;
+    }
+
+    public function getLanguage(): ?string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(string $language): static
+    {
+        $this->language = $language;
 
         return $this;
     }

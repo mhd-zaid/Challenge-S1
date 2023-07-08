@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('back_app_customer_validate', {'id': customer.id}) }}" onsubmit="return confirm('Êtes vous sûr de vouloir valider le client n° {{ customer.id}} ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ customer.id) }}">
+    <button class="button button-valid px-6 flex items-center justify-center mt-4 text-medium">Valider le compte</button>
+</form>

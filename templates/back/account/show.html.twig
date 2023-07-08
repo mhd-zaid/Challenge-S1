@@ -1,0 +1,22 @@
+{% extends 'back/base.html.twig' %}
+{% block title %}
+{% if entity == 'user' %}
+    User
+{% else %}
+    Customer
+{% endif %}
+{% endblock %}
+
+{% block main %}
+    {% include 'components/page_header.html.twig' with {'title': 'Mon compte', 'link': path('back_default_index')} %}
+
+    {% if entity == 'user' %}
+    {% include 'components/page_account.html.twig' with {'user': user, 'type': 'user'} %}
+    {% elseif entity == 'customer' %}
+    {% include 'components/page_account.html.twig' with {'user': customer, 'type': 'customer'} %}
+    {% endif %}
+
+    {#    <a href="{{ path('back_app_user_edit', {'id': user.id}) }}">edit</a>#}
+
+    {#    {{ include('back/user/_delete_form.html.twig') }}#}
+{% endblock %}

@@ -1,0 +1,71 @@
+{% set NO_DATA_MESSAGE = "Aucun devis" %}
+
+<table>
+    <thead>
+    <tr>
+        <th scope="col" class="px-6 py-3 text-center">
+            {% if type == "estimate" and estimatesPagination is not null %}
+                {{ knp_pagination_sortable(estimatesPagination, 'Devis n°', 'id') }}
+            {% elseif type == "invoice" and invoicesPagination is not null %}
+                {{ knp_pagination_sortable(invoicesPagination, 'Facture n°', 'id') }}
+            {% endif %}
+        </th>
+        <th scope="col">Véhicule</th>
+        <th scope="col">Date du devis</th>
+        <th scope="col">Date de validité</th>
+        <th scope="col">Montant</th>
+            {% if type == "invoices" %}
+        <th scope="col">{{ knp_pagination_sortable(invoicesPagination, 'Statut', 'isValidated') }}</th>
+            {% elseif type == "estimates" %}
+        <th scope="col">{{ knp_pagination_sortable(estimatesPagination, 'Statut', 'isValidated') }}</th>
+            {% endif %}
+        <th scope="col">
+                <!-- Ajoutez ici le contenu de la colonne -->
+        </th>
+    </tr>
+    </thead>
+    <tbody>
+    {% if type == "invoice" and invoicesPagination is not empty %}
+        {% for invoice in invoicesPagination %}
+            <tr>
+                <td>{{ invoice.id }}</td>
+                <td>{{ invoice.client.lastname }}</td>
+                <td>{{ invoice.status }}</td>
+                <td>77 €</td>
+                <td>En cours</td>
+                <td><iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon></td>
+                <td>
+                    <a href="{{ path('back_app_invoice_show', {'id': invoice.id}) }}">
+                        <button type="button" class="button button-details">Details</button>
+                    </a>
+                </td>
+                <td>
+                    <a href="{{ path('back_app_invoice_update', {'id': invoice.id}) }}">
+                        <button type="button" class="button button-details"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    {% elseif type == "estimate" and estimatesPagination is not empty %}
+        {% for estimate in estimatesPagination %}
+            <tr>
+                <td>{{ estimate.id }}</td>
+                <td>{{ estimate.client.lastname }}</td>
+                <td>{{ estimate.status }}</td>
+                <td>77 €</td>
+                <td>En cours</td>
+                <td><iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon></td>
+                <td>
+                    <a href="{{ path('back_app_invoice_show', {'id': estimate.id}) }}">
+                        <button type="button" class="button button-details">Details</button>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="7">Aucun devis</td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>

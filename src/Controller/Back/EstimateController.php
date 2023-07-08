@@ -12,6 +12,8 @@ use App\Repository\EstimateRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\EstimatePrestationRepository;
 use App\Repository\ProductRepository;
+use App\Repository\UserRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -23,7 +25,6 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Security\Core\Security;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Snappy\Pdf;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as Sec;
 
 #[Route('/estimate')]
 class EstimateController extends AbstractController
@@ -38,25 +39,27 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/', name: 'app_estimate_index', methods: ['GET'])]
-    #[Sec('is_granted("ROLE_CUSTOMER") and !is_granted("ROLE_ACCOUNTANT") or is_granted("ROLE_ADMIN")')]
-    public function index(EstimateRepository $estimateRepository, Request $request): Response
+    public function index(EstimateRepository $estimateRepository, Security $security, Request $request,  PaginatorInterface $paginator): Response
     {
-        if($this->isGranted('ROLE_ADMIN')){
-            return $this->render('back/estimate/index.html.twig', [
-                'estimates' => $estimateRepository->findAll(),
-                'isUser' => false
-            ]);
+        if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
+            $estimates = $estimateRepository->findAll();
         }else{
-            $estimates = $estimateRepository->findBy(['customer' => $this->security->getUser()]);
-            return $this->render('back/estimate/index.html.twig', [
-                'estimates' => $estimates,
-                'isUser' => true
-            ]);
+            $estimates = $estimateRepository->findBy(['customer' => $security->getUser()->getId()]);
         }
+        dump($estimates);
+        $estimatesPagination = $paginator->paginate(
+            $estimates, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            5 /*limit per page*/
+        );
+
+        return $this->render('back/estimate/index.html.twig', [
+            'estimates' => $estimates,
+            'estimatesPagination' => $estimatesPagination,
+        ]);
     }
 
     #[Route('/new', name: 'app_estimate_new', methods: ['GET', 'POST'])]
-    #[Sec('is_granted("ROLE_MECHANIC")')]
     public function new(Pdf $pdf, Request $request, EntityManagerInterface $em): Response
     {
         $estimate = new Estimate();
@@ -96,7 +99,7 @@ class EstimateController extends AbstractController
             $estimate->setStatus('PENDING');
             $estimateRepository->save($estimate, true);
 
-            
+
             $emailCustomer = $form->get('email')->getData();
             $total = $estimate->getTotal($estimatePrestationRepository);
             $html = $this->renderView('back/pdf/estimate.html.twig', [
@@ -160,7 +163,6 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/decline/{id}', name: 'app_estimate_decline', methods: ['GET'])]
-    #[Sec('user === estimate.getCustomer() or is_granted("ROLE_MECANIC")"')]
     public function decline(Estimate $estimate, EntityManagerInterface $em): Response
     {
         //Reset les quantity au product et delete le devis et la facture avec leurs devisProduit et factureProduit correspondant
@@ -205,7 +207,6 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_estimate_delete', methods: ['POST'])]
-    #[Sec('is_granted("ROLE_MECHANIC")')]
     public function delete(Request $request, Estimate $estimate, EstimateRepository $estimateRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$estimate->getId(), $request->request->get('_token'))) {
