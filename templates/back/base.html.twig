@@ -52,7 +52,7 @@
             </li>
             {% if is_granted('ROLE_MECHANIC') %}
             <li>
-                <a href="#" class="flex items-start space-x-4 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                <a href="{{path('back_app_customer_index')}}" class="flex items-start space-x-4 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/customer.svg" class="ml-1 h-6" alt="Customer" />
                     <span>Customer</span>
                 </a>

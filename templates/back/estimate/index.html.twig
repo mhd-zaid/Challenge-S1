@@ -3,33 +3,17 @@
 {% block title %}Estimate{% endblock %}
 
 {% block main %}
-    <a href="{{ path('back_app_estimate_new') }}">Create new</a>
-    <h1>Vos devis</h1>
+    {% include 'components/page_header.html.twig' with {'title': 'Liste des devis', 'link': path('back_default_index')} %}
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for estimate in estimates %}
-            <tr>
-                <td>{{ estimate.title }}</td>
-                <td>{{ estimate.status }}</td>
-                <td><a href="{{ path('back_app_estimate_download', {'id': estimate.id}) }}">Télécharger</a></td>
-                <td><a href="{{ path('back_app_estimate_show', {'id': estimate.id}) }}">show</a></td>
-            {% if estimate.status == 'PENDING' %}
-                <td><a href="{{ path('back_app_stripe_buy', {'id': estimate.id}) }}">Payé</a></td>
-                <td><a href="{{ path('back_app_estimate_decline', {'id': estimate.id}) }}">Refuser le devis</a></td>
-            {% endif %}
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">Pad de devis</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+<div>
+    <div class="card mb-5">
+        {% include 'components/table_Invoice_Estimate.html.twig' with {'type': 'estimate', 'pagination': estimatesPagination} %}
+    </div>
+</div>
+    <div class="pagination mt-4 flex justify-between">
+        <a class="no-underline" href="{{ path('back_app_estimate_new') }}">
+            <button type="button" class="button button-details">Nouveau devis</button>
+        </a>
+        {{ knp_pagination_render(estimatesPagination) }}
+    </div>
 {% endblock %}

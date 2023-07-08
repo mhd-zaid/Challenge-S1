@@ -33,79 +33,8 @@
     </table>
 =======
     <div>
-        <div class="relative bg-gray-50 overflow-x-auto shadow-md sm:rounded-lg mt-14 px-8">
-            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400 ">
-            <tr>
-                <th>{{ knp_pagination_sortable(pagination, 'Id', 'id') }}</th>
-            </tr>
-                <thead class="text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400">
-                <tr class="border-b-2 border-gray-500">
-                    <th scope="col" class="px-6 py-3 text-center">
-                        Devis n°
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-center">
-                        Véhicule
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-center">
-                        Date du devis
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-center">
-                        Date de validité
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-center">
-                        Montant
-                    </th>
-                    <th scope="col" class="px-6 py-3 text-center">
-                        Statut
-                    </th>
-                    <th scope="col" class="px-6 py-3">
-                    <th scope="col" class="px-6 py-3">
-                </tr>
-                </thead>
-                <tbody>
-                {% if invoices is not empty %}
-                    {% for invoice in pagination %}
-                        <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                            <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                                {{ invoice.id }}
-                            </th>
-                            <td class="px-6 py-4 text-center">
-                                {{ invoice.client.lastname }}
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                {{ invoice.status }}
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                {{ invoice.status}}
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                77 €
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                En cours
-                            </td>
-                            <td class="px-6 py-4 text-center flex justify-center">
-                                <iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <a href="{{ path('back_app_invoice_show', {'id': invoice.id}) }}">
-                                    <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
-                                </a>
-                            </td>
-                            <td class="px-6 py-4 text-center">
-                                <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                {% else %}
-                    <tr class="border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-                        <td colspan="7" class="px-6 py-4 text-center">
-                            Aucun devis
-                        </td>
-                    </tr>
-                {% endif %}
-                </tbody>
-            </table>
+        <div class="card">
+            {% include 'components/table_Invoice_Estimate.html.twig' with {'type': 'invoice', 'pagination': invoicesPagination} %}
         </div>
         <div>
             <div class="flex space-x-16 items-center w-full py-2 px-2 bg-gray-200">
@@ -120,8 +49,14 @@
             </div>
         </div>
     </div>
+<<<<<<< HEAD
 >>>>>>> 85c4de4 (feat(Company) Création de la table de paramètre de site + fix(Estimate / Invoice) maj controller)
 
     {{ knp_pagination_render(pagination) }}
     {# <a href="{{ path('back_app_invoice_new') }}">Create new</a> #}
+=======
+    <div class="pagination mt-4 flex justify-between">
+        {{ knp_pagination_render(invoicesPagination) }}
+    </div>
+>>>>>>> 40dcc14 (Ajout de la pagination et Mise à jours des vues)
 {% endblock %}
