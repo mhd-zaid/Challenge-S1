@@ -64,16 +64,20 @@
     {{ form_row(form.firstname) }}
     {{ form_row(form.lastname) }}
     {{ form_row(form.email) }}
-{#    {{ form_row(form.plainPassword) }}#}
-{#    {{ form_row(form.password) }}#}
+    {{ form_row(form.plainPassword) }}
+    {{ form_row(form.password) }}
     {{ form_row(form.address) }}
     {{ form_row(form.phone) }}
     {{ form_row(form.city) }}
     {{ form_row(form.zipCode) }}
     {{ form_row(form.country) }}
-{#    {{ form_row(form.language) }}#}
-{#    {{ form_row(form.theme) }}#}
+    {{ form_row(form.language) }}
+    {{ form_row(form.theme) }}
+{% if entity =='customer' %}
 <a href="{{ path('back_app_customer_edit', {'id': customer.id}) }}">
+{% elseif entity =='user' %}
+<a href="{{ path('back_app_user_edit', {'id': user.id}) }}">
+{% endif %}
     <button type="submit" class="button button-edit px-4 flex items-center justify-center space-x-4"><iconify-icon icon="dashicons:saved" style="color: white;" width="24" height="24"></iconify-icon>{{ button_label|default('Save') }}</button>
 </a>
 {{ form_end(form) }}

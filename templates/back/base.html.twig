@@ -75,7 +75,7 @@
         </ul>
         <ul class="font-medium top-[800px] absolute ml-4">
             <li>
-                <a href="#" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                <a href="{{ path('back_app_account_show', {'id': app.user.id}) }}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/account.svg" class="h-6" alt="Account" />
                     <span>My Account</span>
                 </a>

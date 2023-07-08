@@ -1,0 +1,103 @@
+<div class="px-8">
+    <div class="border-gray-200 bg-white shadow-md shadow-gray-400 rounded-lg grid grid-cols-5 gap-4 p-4 mt-14">
+        <div class="col-start-1 flex justify-center items-center"><img src="{{ app.request.baseURL }}/uploads/images/icon/icon-contact.svg" alt=""></div>
+        <div class=" col-span-1 flex flex-col justify-center">
+            <p class="font-bold">{{ user.firstname }} {{ user.lastname }}</p>
+            <p class="underline">{{ user.email }}</p>
+            <p>{{ user.address }}</p>
+        </div>
+        <div class="flex items-center justify-center">
+            {% if user.isValidated %}
+                <p class="text-main text-green-600 flex space-x-2 items-center">
+                    <iconify-icon icon="pepicons-print:person-checkmark-circle" style="color: green;"></iconify-icon>
+                    <span>Client actif</span>
+                </p>
+            {% else %}
+                <p class="text-main text-red-600 flex space-x-2 items-center">
+                    <iconify-icon icon="pepicons-print:person-checkmark-circle-off" style="color: red;"></iconify-icon>
+                    <span>Client inactif</span>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+    <div class="border-gray-200 bg-white shadow-md shadow-gray-400 rounded-lg p-6 mt-14">
+        <div class="flex justify-between items-center">
+            <p class="text-main mb-3">Informations personnels</p>
+            <a class="no-underline" href="{{ path('back_app_account_edit', {'id': user.id}) }}">
+                <button type="button" class="button button-edit flex items-center">
+                    <iconify-icon class="mr-3" icon="iconamoon:edit-bold" style="color: white;" width="24" height="24"></iconify-icon>
+                    <p class="text-medium m-0">Modifier</p>
+                </button>
+            </a>
+        </div>
+        <div class="grid gap-6 mb-6 md:grid-cols-2">
+            <div>
+                <label for="first_name" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Nom</label>
+                <p>{{ user.lastname }}</p>
+            </div>
+            <div>
+                <label for="last_name" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Prénom</label>
+                <p>{{ user.firstname }}</p>
+            </div>
+            <div>
+                <label for="email" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Adresse Email</label>
+                <p>{{ user.email }}</p>
+            </div>
+            <div>
+                <label for="phone" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Numéro de téléphone</label>
+                <p>{{ user.phone }}</p>
+            </div>
+            {% if user.id == app.user.id %}
+            <div>
+                <label for="password" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Mot de passe</label>
+                <p>*******</p>
+            </div>
+            <div>
+                <label for="confirm_password" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Confirmez votre mot de passe</label>
+                <p>*******</p>
+            </div>
+        </div>
+        <p class="text-main mb-3">Préférences</p>
+        <div class="grid gap-6 mb-6 md:grid-cols-2">
+            <div>
+                <label for="visitors" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Langue</label>
+                <p>{{ user.language }}</p>
+            </div>
+            <div class="w-full">
+                <label for="visitors" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Thème</label>
+                <p>{{ user.theme }}</p>
+            </div>
+            {% endif %}
+        </div>
+        <p class="text-main mb-3">Adresse de facturation</p>
+        <div class="grid gap-6 mb-6 md:grid-cols-2">
+            <div>
+                <label for="website" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Pays</label>
+                <p>{{ user.country }}</p>
+            </div>
+            <div>
+                <label for="visitors" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Code Postal</label>
+                <p>{{ user.zipCode }}</p>
+            </div>
+            <div>
+                <label for="website" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Ville</label>
+                <p>{{ user.city }}</p>
+            </div>
+            <div>
+                <label for="visitors" class="block mb-2 text-sm font-medium text-gray-400 dark:text-white">Rue</label>
+                <p>{{ user.address }}</p>
+            </div>
+        </div>
+
+    </div>
+    <div class="flex space-x-4">
+        {% if type=='customer' %}
+            {{ include('back/customer/_delete_form.html.twig') }}
+            {% if customer.isValidated == false %}
+                {{ include('back/customer/_validate_form.html.twig') }}
+            {% endif %}
+        {% elseif type=='user' %}
+            {{ include('back/user/_delete_form.html.twig') }}
+        {% endif %}
+    </div>
+</div>
