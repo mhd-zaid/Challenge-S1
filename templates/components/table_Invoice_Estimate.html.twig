@@ -29,7 +29,7 @@
         {% for invoice in invoicesPagination %}
             <tr>
                 <td>{{ invoice.id }}</td>
-                <td>{{ invoice.client.lastname }}</td>
+                <td>{{ invoice.customer.lastname }}</td>
                 <td>{{ invoice.status }}</td>
                 <td>77 €</td>
                 <td>En cours</td>
@@ -40,7 +40,7 @@
                     </a>
                 </td>
                 <td>
-                    <a href="{{ path('back_app_invoice_update', {'id': invoice.id}) }}">
+                    <a href="{{ path('back_app_invoice_download', {'id': invoice.id}) }}">
                         <button type="button" class="button button-details"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
                     </a>
                 </td>

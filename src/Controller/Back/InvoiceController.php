@@ -92,6 +92,7 @@ class InvoiceController extends AbstractController
    
         $total = $invoice->getTotal($invoicePrestationRepository);
         $invoicePrestations = $invoicePrestationRepository->findBy(['invoice' => $invoice]);
+        dump($invoicePrestations);
         $html = $this->renderView('back/pdf/invoice.html.twig', [
             'invoice' => $invoice,
             'customer' => $invoice->getCustomer(),
