@@ -16,6 +16,7 @@ use App\Repository\EstimateProductRepository;
 use App\Repository\InvoiceProductRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\UserRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -44,22 +45,24 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/', name: 'app_estimate_index', methods: ['GET'])]
-    public function index(EstimateRepository $estimateRepository, Request $request): Response
+    public function index(EstimateRepository $estimateRepository, Security $security, Request $request,  PaginatorInterface $paginator): Response
     {
-        if($this->isGranted('ROLE_ADMIN')){
-            dump($estimateRepository->findAll());
-            return $this->render('back/estimate/index.html.twig', [
-                'estimates' => $estimateRepository->findAll(),
-                'isUser' => false
-            ]);
+        if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
+            $estimates = $estimateRepository->findAll();
         }else{
-            $estimates = $estimateRepository->findBy(['client' => $this->security->getUser()]);
-            dump($estimates);
-            return $this->render('back/estimate/index.html.twig', [
-                'estimates' => $estimates,
-                'isUser' => true
-            ]);
+            $estimates = $estimateRepository->findBy(['client' => $security->getUser()->getId()]);
         }
+        dump($estimates);
+        $estimatesPagination = $paginator->paginate(
+            $estimates, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            5 /*limit per page*/
+        );
+
+        return $this->render('back/estimate/index.html.twig', [
+            'estimates' => $estimates,
+            'estimatesPagination' => $estimatesPagination,
+        ]);
     }
 
     #[Route('/new', name: 'app_estimate_new', methods: ['GET', 'POST'])]

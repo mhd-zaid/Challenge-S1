@@ -14,12 +14,13 @@ use Knp\Snappy\Pdf;
 use Symfony\Component\Uid\Uuid;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
+use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends AbstractController
 {
     
     #[Route('/', name: 'default_index', methods: ['GET'])]
-    public function index(ChartBuilderInterface $chartBuilder, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, Security $security): Response
+    public function index(Request $request,ChartBuilderInterface $chartBuilder, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, Security $security, PaginatorInterface $paginator): Response
     {
         $chart = $chartBuilder->createChart(Chart::TYPE_PIE);
 
@@ -30,6 +31,16 @@ class DefaultController extends AbstractController
             $estimates = $estimateRepository->findBy(['client' => $security->getUser()->getId()]);
             $invoices = $invoiceRepository->findBy(['client' => $security->getUser()->getId()]);
         }
+        $estimatesPagination = $paginator->paginate(
+            $estimates,
+            $request->query->getInt('page', 1),
+            5
+        );
+        $invoicesPagination = $paginator->paginate(
+            $invoices,
+            $request->query->getInt('page', 1),
+            5
+        );
         $chart->setData([
             'labels' => ['January', 'February', 'March', 'April'],
             'datasets' => [
@@ -52,7 +63,8 @@ class DefaultController extends AbstractController
         return $this->render('back/default/index.html.twig',[
             'chart' => $chart,
             'estimates' => $estimates,
-            'invoices' => $invoices
+            'invoicesPagination' => $invoicesPagination,
+            'estimatesPagination' => $estimatesPagination,
         ]);
     }
 
