@@ -1,0 +1,10 @@
+{% extends 'back/base.html.twig' %}
+
+{% block title %}Invoice Succes{% endblock %}
+
+{% block body %}
+    <h1>Félicitations</h1>
+
+    <a href="{{ path('back_app_invoice_index') }}">Retourner à l'accueil</a>
+    <a href="{{ path('back_app_invoice_download', {'id': invoice.id}) }}">Télécharger ma facture</a>
+{% endblock %}

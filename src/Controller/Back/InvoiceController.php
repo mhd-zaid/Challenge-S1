@@ -14,6 +14,7 @@ use App\Repository\InvoicePrestationRepository;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Snappy\Pdf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 #[Route('/invoice')]
 class InvoiceController extends AbstractController
@@ -27,24 +28,20 @@ class InvoiceController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_invoice_update', methods: ['GET'])]
-    #[Security('is_granted("ROLE_MECHANIC")')]
-    public function update(Estimate $estimate, InvoiceRepository $invoiceRepository, EstimateRepository $estimateRepository): Response
+    #[Route('/{id}/success', name: 'app_invoice_success', methods: ['GET'])]
+    #[Security('user == invoice.getCustomer() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
+    public function success(Invoice $invoice,Pdf $pdf,InvoicePrestationRepository $invoicePrestationRepository): Response
     {
-        $estimate->setStatus('PAID');
-        $estimateRepository->save($estimate, true);
-        $invoice = $estimate->getInvoice();
-
-        $invoice->setStatus('PAID');
-        $invoiceRepository->save($invoice, true);
-
-        return $this->redirectToRoute('back_app_invoice_download', ['id' => $invoice->getId()]);
+        return $this->render('back/invoice/success.html.twig', [
+            'invoice' => $invoice
+        ]);
     }
 
     #[Route('/{id}/download', name: 'app_invoice_download', methods: ['GET'])]
     #[Security('user == invoice.getCustomer() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
     public function download(Invoice $invoice,Pdf $pdf,InvoicePrestationRepository $invoicePrestationRepository): Response
     {
+   
         $total = $invoice->getTotal($invoicePrestationRepository);
         $invoicePrestations = $invoicePrestationRepository->findBy(['invoice' => $invoice]);
         $html = $this->renderView('back/pdf/invoice.html.twig', [
@@ -57,6 +54,25 @@ class InvoiceController extends AbstractController
             $pdf->getOutputFromHtml($html),
             'facture.pdf'
         );
+    }
+
+    #[Route('/{id}/{uuid}', name: 'app_invoice_update', methods: ['GET'])]
+    #[Security('is_granted("ROLE_MECHANIC")')]
+    public function update(Request $request, $uuid, Estimate $estimate, InvoiceRepository $invoiceRepository, EstimateRepository $estimateRepository): Response
+    {
+        if($estimate->getUuidSuccessPayment() !== $uuid){
+            dump($estimate->getUuidSuccessPayment());
+            dump($uuid);
+            die;
+            throw new NotFoundHttpException('Page not found');
+        }
+        $estimate->setStatus('PAID');
+        $estimateRepository->save($estimate, true);
+        $invoice = $estimate->getInvoice();
+
+        $invoice->setStatus('PAID');
+        $invoiceRepository->save($invoice, true);
+        return $this->redirectToRoute('back_app_invoice_success', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/show', name: 'app_invoice_show', methods: ['GET'])]
