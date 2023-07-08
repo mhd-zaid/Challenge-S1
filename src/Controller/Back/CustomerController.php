@@ -17,7 +17,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 
 #[Route('/customer')]
-class CustomerController extends AbstractController
+class CustomerController extends AdminController
 {
     private $mailer;
 

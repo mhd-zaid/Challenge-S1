@@ -19,7 +19,7 @@ use Symfony\Component\Uid\Uuid;
 use Twig\Environment;
 
 #[Route('/account')]
-class AccountController extends AbstractController
+class AccountController extends AdminController
 {
 
     #[Route('/{id}', name: 'app_account_show', methods: ['GET'])]

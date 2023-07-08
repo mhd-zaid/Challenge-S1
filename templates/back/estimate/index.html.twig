@@ -5,15 +5,33 @@
 {% block main %}
     {% include 'components/page_header.html.twig' with {'title': 'Liste des devis', 'link': path('back_default_index')} %}
 
-<div>
-    <div class="card mb-5">
-        {% include 'components/table_Invoice_Estimate.html.twig' with {'type': 'estimate', 'pagination': estimatesPagination} %}
+    <div>
+        <div class="card">
+            {% include 'components/table_Invoice_Estimate.html.twig' with {'type': 'estimate', 'pagination': estimatesPagination, 'estimatesTotal': estimatesTotal} %}
+        </div>
+        <div>
+            <div class="flex space-x-16 items-center w-full py-2 px-2 bg-gray-200">
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <iconify-icon icon="flat-color-icons:ok" width="35px"></iconify-icon>
+                    <p class="mb-0">Devis acceptés</p>
+                </div>
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <iconify-icon icon="material-symbols:cancel" style="color: red;" width="35"></iconify-icon>
+                    <p class="mb-0">Devis refusés</p>
+                </div>
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon>
+                    <p class="mb-0">Devis en attente</p>
+                </div>
+            </div>
+        </div>
     </div>
-</div>
     <div class="pagination mt-4 flex justify-between">
-        <a class="no-underline" href="{{ path('back_app_estimate_new') }}">
-            <button type="button" class="button button-details">Nouveau devis</button>
-        </a>
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MECANICIAN') or is_granted('ROLE_ACCOUNTANT') %}
+            <a class="no-underline" href="{{ path('back_app_estimate_new') }}">
+                <button type="button" class="button button-details">Nouveau devis</button>
+            </a>
+        {% endif %}
         {{ knp_pagination_render(estimatesPagination) }}
     </div>
 {% endblock %}

@@ -13,7 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 #[Route('/product')]
 #[Security('is_granted("ROLE_MECHANIC")')]
-class ProductController extends AbstractController
+class ProductController extends AdminController
 {
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
     public function index(ProductRepository $productRepository): Response

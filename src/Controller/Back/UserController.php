@@ -16,7 +16,7 @@ use Symfony\Component\Uid\Uuid;
 use Twig\Environment;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 #[Route('/user')]
-class UserController extends AbstractController
+class UserController extends AdminController
 {
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
     #[Security('is_granted("ROLE_SUPER_ADMIN") or is_granted("ROLE_ADMIN")')]

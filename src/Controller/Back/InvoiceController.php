@@ -20,7 +20,7 @@ use Symfony\Component\Security\Core\Security;
 use Knp\Component\Pager\PaginatorInterface;
 
 #[Route('/invoice')]
-class InvoiceController extends AbstractController
+class InvoiceController extends AdminController
 {
     private $mailer;
 
@@ -31,7 +31,7 @@ class InvoiceController extends AbstractController
 
 
     #[Route('/', name: 'app_invoice_index', methods: ['GET'])]
-    public function index(InvoiceRepository $invoiceRepository, Security $security, Request $request, PaginatorInterface $paginator): Response
+    public function index(InvoiceRepository $invoiceRepository, InvoicePrestationRepository $invoicePrestationRepository ,Security $security, Request $request, PaginatorInterface $paginator): Response
     {
         if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
             $invoices = $invoiceRepository->findAll();
@@ -43,9 +43,13 @@ class InvoiceController extends AbstractController
             $request->query->getInt('page', 1), /*page number*/
             5 /*limit per page*/
         );
+        $invoicesTotal = $this->getInvoiceTotal($invoices, $invoicePrestationRepository);
+
+
         return $this->render('back/invoice/index.html.twig', [
             'invoices' => $invoices,
             'invoicesPagination' => $invoicesPagination,
+            'invoicesTotal'=> $invoicesTotal
         ]);
     }
 

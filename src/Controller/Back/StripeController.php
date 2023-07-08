@@ -31,7 +31,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 #[Route('/stripe')]
-class StripeController extends AbstractController
+class StripeController extends AdminController
 {
 
     #[Route('/{id}', name: 'app_stripe_buy', methods: ['GET'])]

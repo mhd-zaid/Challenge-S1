@@ -10,18 +10,17 @@
                 {{ knp_pagination_sortable(invoicesPagination, 'Facture n°', 'id') }}
             {% endif %}
         </th>
+        {% if type == "estimate" %}
         <th scope="col">Véhicule</th>
+        {% endif %}
+        <th scope="col">Client N°</th>
         <th scope="col">Date du devis</th>
-        <th scope="col">Date de validité</th>
         <th scope="col">Montant</th>
-            {% if type == "invoices" %}
+            {% if type == "invoice" %}
         <th scope="col">{{ knp_pagination_sortable(invoicesPagination, 'Statut', 'isValidated') }}</th>
-            {% elseif type == "estimates" %}
+            {% elseif type == "estimate" %}
         <th scope="col">{{ knp_pagination_sortable(estimatesPagination, 'Statut', 'isValidated') }}</th>
             {% endif %}
-        <th scope="col">
-                <!-- Ajoutez ici le contenu de la colonne -->
-        </th>
     </tr>
     </thead>
     <tbody>
@@ -29,10 +28,13 @@
         {% for invoice in invoicesPagination %}
             <tr>
                 <td>{{ invoice.id }}</td>
-                <td>{{ invoice.customer.lastname }}</td>
-                <td>{{ invoice.status }}</td>
-                <td>77 €</td>
-                <td>En cours</td>
+                <td>{{ invoice.customer.id}}</td>
+                <td>{{ invoice.createdAt|date('d/m/Y') }}</td>
+                {% for total in invoicesTotal %}
+                {% if invoice.id == total.id %}
+                    <td>{{ total.total }}</td>
+                {% endif %}
+                {% endfor %}
                 <td><iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon></td>
                 <td>
                     <a href="{{ path('back_app_invoice_show', {'id': invoice.id}) }}">
@@ -50,11 +52,23 @@
         {% for estimate in estimatesPagination %}
             <tr>
                 <td>{{ estimate.id }}</td>
-                <td>{{ estimate.customer.lastname }}</td>
-                <td>{{ estimate.status }}</td>
-                <td>77 €</td>
-                <td>En cours</td>
-                <td><iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon></td>
+                <td>{{ estimate.carId }}</td>
+                <td>{{ estimate.createdAt|date('d/m/Y')  }}</td>
+                <td>{{ estimate.validityDate|date('d/m/Y') }}</td>
+                {%  for total in estimatesTotal %}
+                    {% if estimate.id == total.id %}
+                        <td>{{ total.total }}</td>
+                    {% endif %}
+                {% endfor %}
+                <td>
+                    {% if estimate.status == 'PAID' %}
+                        <iconify-icon icon="flat-color-icons:ok" width="35px"></iconify-icon>
+                    {% elseif estimate.status == 'PENDING' %}
+                        <iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon>
+                    {% elseif estimate.status == 'REFUSED' %}
+                        <iconify-icon icon="material-symbols:cancel" style="color: red;" width="35"></iconify-icon>
+                    {% endif %}
+                </td>
                 <td>
                     <a href="{{ path('back_app_estimate_show', {'id': estimate.id}) }}">
                         <button type="button" class="button button-details">Details</button>

@@ -15,7 +15,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 #[Route('/accounting')]
 #[Security('is_granted("ROLE_ACCOUNTANT")')]
-class AccountingController extends AbstractController
+class AccountingController extends AdminController
 {
     
     #[Route('/', name: 'app_accounting_index', methods: ['GET'])]

@@ -28,7 +28,7 @@ use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Snappy\Pdf;
 
 #[Route('/estimate')]
-class EstimateController extends AbstractController
+class EstimateController extends AdminController
 {
     private $mailer;
     private $security;
@@ -40,7 +40,7 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/', name: 'app_estimate_index', methods: ['GET'])]
-    public function index(EstimateRepository $estimateRepository, Security $security, Request $request,  PaginatorInterface $paginator): Response
+    public function index(EstimateRepository $estimateRepository, EstimatePrestationRepository $estimatePrestationRepository,Security $security, Request $request,  PaginatorInterface $paginator): Response
     {
         if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
             $estimates = $estimateRepository->findAll();
@@ -53,10 +53,12 @@ class EstimateController extends AbstractController
             $request->query->getInt('page', 1), /*page number*/
             5 /*limit per page*/
         );
+        $estimatesTotal = $this->getEstimateTotal($estimates,$estimatePrestationRepository);
 
         return $this->render('back/estimate/index.html.twig', [
             'estimates' => $estimates,
             'estimatesPagination' => $estimatesPagination,
+            'estimatesTotal' => $estimatesTotal
         ]);
     }
 
@@ -262,5 +264,18 @@ class EstimateController extends AbstractController
         $customerRepository->save($customer,true);
 
         return $customer;
+    }
+
+    public function getEstimateTotal(Array $estimates,EstimatePrestationRepository $estimatePrestationRepository): array
+    {
+        $estimatesTotal = [];
+        foreach ($estimates as $estimate) {
+            $estimatesTotal[] = [
+                'id' => $estimate->getId(),
+                'total' => $estimate->getTotal($estimatePrestationRepository)
+
+            ];
+        }
+        return $estimatesTotal;
     }
 }
