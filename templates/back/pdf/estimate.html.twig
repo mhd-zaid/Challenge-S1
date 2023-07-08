@@ -74,10 +74,10 @@
                 </tr>
             </thead>
             <tbody>
-                    {% for prestation in prestations %}
+                    {% for estimatePrestation in estimatePrestations %}
                         <tr>
-                            <td>{{prestation.name}}
-                            {% for prestationProduct in prestation.prestationProducts %}
+                            <td>{{estimatePrestation.prestation.name}}
+                            {% for prestationProduct in estimatePrestation.prestation.prestationProducts %}
                                 <tr>
                                     <td>{{ prestationProduct.product.title }}</td>
                                     <td>{{ prestationProduct.quantity }}</td>
@@ -87,7 +87,7 @@
                         </tr>
                         <tr>
                             <td class="total">Main d'oeuvre :</td>
-                            <td class="total">{{ prestation.workforce }} €</td>
+                            <td class="total">{{ estimatePrestation.prestation.workforce }} €</td>
                         </tr>
                     {% endfor %}
             </tbody>

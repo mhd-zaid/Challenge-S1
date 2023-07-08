@@ -105,25 +105,6 @@ class InvoiceController extends AbstractController
         );
     }
 
-    #[Route('/{id}/{uuid}', name: 'app_invoice_update', methods: ['GET'])]
-    #[Security('is_granted("ROLE_MECHANIC")')]
-    public function update(Request $request, $uuid, Estimate $estimate, InvoiceRepository $invoiceRepository, EstimateRepository $estimateRepository): Response
-    {
-        if($estimate->getUuidSuccessPayment() !== $uuid){
-            dump($estimate->getUuidSuccessPayment());
-            dump($uuid);
-            die;
-            throw new NotFoundHttpException('Page not found');
-        }
-        $estimate->setStatus('PAID');
-        $estimateRepository->save($estimate, true);
-        $invoice = $estimate->getInvoice();
-
-        $invoice->setStatus('PAID');
-        $invoiceRepository->save($invoice, true);
-        return $this->redirectToRoute('back_app_invoice_success', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
-    }
-
     #[Route('/{id}/show', name: 'app_invoice_show', methods: ['GET'])]
     public function show(Invoice $invoice,InvoicePrestationRepository $invoicePrestationRepository): Response
     {
@@ -136,6 +117,22 @@ class InvoiceController extends AbstractController
             'invoicePrestations' => $invoicePrestations,
             'total' => $total
         ]);
+    }
+
+    #[Route('/{id}/{uuid}', name: 'app_invoice_update', methods: ['GET'])]
+    #[Security('is_granted("ROLE_MECHANIC")')]
+    public function update(Request $request, $uuid, Estimate $estimate, InvoiceRepository $invoiceRepository, EstimateRepository $estimateRepository): Response
+    {
+        if($estimate->getUuidSuccessPayment() !== $uuid){
+            throw new NotFoundHttpException('Page not found');
+        }
+        $estimate->setStatus('PAID');
+        $estimateRepository->save($estimate, true);
+        $invoice = $estimate->getInvoice();
+
+        $invoice->setStatus('PAID');
+        $invoiceRepository->save($invoice, true);
+        return $this->redirectToRoute('back_app_invoice_success', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
     }
 
     // #[Route('/{id}/edit', name: 'app_invoice_edit', methods: ['GET', 'POST'])]

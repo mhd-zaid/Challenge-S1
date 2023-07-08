@@ -56,8 +56,13 @@
                 <td>En cours</td>
                 <td><iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon></td>
                 <td>
-                    <a href="{{ path('back_app_invoice_show', {'id': estimate.id}) }}">
+                    <a href="{{ path('back_app_estimate_show', {'id': estimate.id}) }}">
                         <button type="button" class="button button-details">Details</button>
+                    </a>
+                </td>
+                <td>
+                    <a href="{{ path('back_app_estimate_download', {'id': estimate.id}) }}">
+                        <button type="button" class="button button-details"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
                     </a>
                 </td>
             </tr>
