@@ -31,11 +31,6 @@ class Prestation
     #[Assert\Type(type: 'string', message: 'Le nom de la Prestation doit être une chaîne de caractères')]
     private ?string $name = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le nom de la Catégorie est obligatoire')]
-    #[Assert\Type(type: 'string', message: 'Le nom de la Catégorie doit être une chaîne de caractères')]
-    private ?string $category = null;
-
     #[ORM\Column]
     #[Assert\NotBlank(message: 'L\'estimation de la Durée est obligatoire, elle doit être exprimée en minutes')]
     #[Assert\Type(type: 'integer', message: 'La Durée doit être un entier, elle doit être exprimée en minutes')]
@@ -51,6 +46,10 @@ class Prestation
 
     #[ORM\OneToMany(mappedBy: 'prestation', targetEntity: EstimatePrestation::class, orphanRemoval: true, cascade: ['remove'])]
     private Collection $estimatePrestations;
+
+    #[ORM\ManyToOne(inversedBy: 'prestation')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Category $category = null;
     
     public function __construct()
     {
@@ -71,17 +70,6 @@ class Prestation
     public function setName(string $name): static
     {
         $this->name = $name;
-        return $this;
-    }
-
-    public function getCategory(): ?string
-    {
-        return $this->category;
-    }
-
-    public function setCategory(string $category): static
-    {
-        $this->category = $category;
         return $this;
     }
 
@@ -155,6 +143,18 @@ class Prestation
                 $estimatePrestation->setPrestation(null);
             }
         }
+        return $this;
+    }
+
+    public function getCategory(): ?Category
+    {
+        return $this->category;
+    }
+
+    public function setCategory(?Category $category): static
+    {
+        $this->category = $category;
+
         return $this;
     }
 
