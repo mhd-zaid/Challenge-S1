@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Entity\Estimate;
 use App\Entity\Prestation;
+use App\Validator\EmailUserExist;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -31,7 +32,10 @@ class EstimateType extends AbstractType
             ])
             ->add('email', EmailType::class, [
                 'mapped' => false,
-                'label' => 'Email'
+                'label' => 'Email',
+                'constraints' => [
+                    new EmailUserExist()
+                ]
             ])
             ->add('estimatePrestations', CollectionType::class, [
                 'entry_type' => EntityType::class,
