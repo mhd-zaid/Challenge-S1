@@ -74,6 +74,9 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Invoice::class)]
     private Collection $invoices;
 
+    #[ORM\Column]
+    private ?bool $isRegistered = false;
+
     public function __construct()
     {
         $this->estimates = new ArrayCollection();
@@ -253,6 +256,17 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getIsRegistered(): ?bool
+    {
+        return $this->isRegistered;
+    }
+
+    public function setIsRegistered(bool $isRegistered): self
+    {
+        $this->isRegistered = $isRegistered;
+
+        return $this;
+    }
 
     public function __serialize(): array
     {

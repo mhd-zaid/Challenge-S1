@@ -4,6 +4,7 @@ namespace App\Controller\Back;
 
 use App\Entity\Customer;
 use App\Entity\Estimate;
+use App\Entity\EstimatePrestation;
 use App\Entity\Invoice;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -24,6 +25,14 @@ class DefaultController extends AbstractController
     public function index(ChartBuilderInterface $chartBuilder,EntityManagerInterface $em): Response
     {
         $estimates = $em->getRepository(Estimate::class)->findBy(['customer'=>$this->getUser()],null,5);
+        $estimatesTotal = [];
+        foreach ($estimates as $estimate) {
+            $estimatesTotal[] = [
+                'id' => $estimate->getId(),
+                'total' => $estimate->getTotal($em->getRepository(EstimatePrestation::class))
+
+            ];
+        }    
         $invoices = $em->getRepository(Invoice::class)->findBy(['customer'=>$this->getUser()],null,5);
         $cutomers = $em->getRepository(Customer::class)->findAll();
         $invoicesPaid = $em->getRepository(Invoice::class)->findBy(['status'=>'PAID']);
@@ -71,6 +80,7 @@ class DefaultController extends AbstractController
         return $this->render('back/default/index.html.twig',[
             'chart' => $chart,
             'estimates'=>$estimates,
+            'estimatesTotal'=> $estimatesTotal,
             'invoices'=>$invoices,
             'customers'=>$cutomers,
             'invoicesPaid'=>$invoicesPaid,

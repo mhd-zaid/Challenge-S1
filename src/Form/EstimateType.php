@@ -11,6 +11,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class EstimateType extends AbstractType
@@ -19,6 +20,14 @@ class EstimateType extends AbstractType
     {
         $builder
             ->add('title')
+            ->add('lastname', TextType::class, [
+                'mapped' => false,
+                'label' => 'Lastname'
+            ])
+            ->add('firstname', TextType::class, [
+                'mapped' => false,
+                'label' => 'Firstname'
+            ])
             ->add('email', EmailType::class, [
                 'mapped' => false,
                 'label' => 'Email'

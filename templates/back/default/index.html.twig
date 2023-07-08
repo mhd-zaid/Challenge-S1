@@ -67,12 +67,12 @@
                             {{estimate.validityDate | date('d/m/Y')}}
                         </td>
                         <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            {% set price = 0 %}
-                            {% for estimateProduct in estimate.estimateProducts %}
-                                {% set price = price + (estimateProduct.totalHt + estimateProduct.totalTva ) * estimateProduct.quantity + estimateProduct.workforce
-                                %}
+                            {% for estimateTotal in estimatesTotal %}
+                                {% if estimate.id %}
+                                    {{estimateTotal[]}} €
+                                {% endif %}
+                                
                             {% endfor %}
-                            {{price}} €
                         </td>
                         {# <td class="px-6 py-4 text-center">
                             {% if estimate.status == "PENDING" %}

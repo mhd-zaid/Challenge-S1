@@ -73,11 +73,13 @@ class EstimateController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $customer = $customerRepository->findOneBy([
-                'email' => $form->get('email')->getData()
+                'email' => $form->get('email')->getData(),
+                'isRegistered' => true
             ]);
 
             
             $isCustomerExist = $customer ? true: false;
+
             if ($customer === null) {
                 $id = $this->generateCustomerId($customerRepository);
                 $customer = $this->createCustomer($form,$id, $customerRepository);
@@ -97,8 +99,6 @@ class EstimateController extends AbstractController
             
             $emailCustomer = $form->get('email')->getData();
             $total = $estimate->getTotal($estimatePrestationRepository);
-            
-            if($isCustomerExist){
             $html = $this->renderView('back/pdf/estimate.html.twig', [
                 'estimate' => $estimate,
                 'customer' => $customer,
@@ -110,6 +110,7 @@ class EstimateController extends AbstractController
                 'devis.pdf'
             );
             $pdfContent = $pdfResponse->getContent();
+            if($isCustomerExist){
             $email = (new TemplatedEmail())
             ->from("zaidmouhamad@gmail.com")
             ->to($emailCustomer)
@@ -129,9 +130,12 @@ class EstimateController extends AbstractController
                 ->htmlTemplate('back/email/inscriptionEmail.html.twig')
                 ->context([
                     'customer' => $customer,
-                ]);
+                    'token' => $customer->getValidationToken()
+                ])
+                ->attach($pdfContent, 'file.pdf');
                 $this->mailer->send($email);
             }
+            
 
             foreach($prestations as $prestation){
                 $estimatePrestation = new EstimatePrestation();
@@ -248,6 +252,9 @@ class EstimateController extends AbstractController
     {
         $customer = new Customer();
         $customer->setId($id);
+        $customer->setLastname($form->get('lastname')->getData());
+        $customer->setFirstname($form->get('firstname')->getData());
+        $customer->setEmail($form->get('email')->getData());
         $customer->setValidationToken(Uuid::v4()->__toString());        
     
         $customerRepository->save($customer,true);
