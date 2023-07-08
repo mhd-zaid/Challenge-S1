@@ -2,22 +2,22 @@
 
 namespace App\Entity;
 
-use App\Repository\EstimateProductRepository;
+use App\Repository\PrestationProductRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: EstimateProductRepository::class)]
-class EstimateProduct
+#[ORM\Entity(repositoryClass: PrestationProductRepository::class)]
+class PrestationProduct
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'estimateProducts')]
+    #[ORM\ManyToOne(inversedBy: 'prestationProducts')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Estimate $estimate = null;
+    private ?Prestation $prestation = null;
 
-    #[ORM\ManyToOne(inversedBy: 'estimateProducts')]
+    #[ORM\ManyToOne(inversedBy: 'prestationProducts')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Product $product = null;
 
@@ -38,14 +38,14 @@ class EstimateProduct
         return $this->id;
     }
 
-    public function getEstimate(): ?Estimate
+    public function getPrestation(): ?Prestation
     {
-        return $this->estimate;
+        return $this->prestation;
     }
 
-    public function setEstimate(?Estimate $estimate): static
+    public function setPrestation(?Prestation $prestation): static
     {
-        $this->estimate = $estimate;
+        $this->prestation = $prestation;
 
         return $this;
     }

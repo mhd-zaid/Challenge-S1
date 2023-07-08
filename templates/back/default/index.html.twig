@@ -61,18 +61,18 @@
                             {{estimate.id}}
                         </td>
                         <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            05/07/2023
+                            {{estimate.createdAt | date('d/m/Y')}}
                         </td>
                         <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
                             {{estimate.validityDate | date('d/m/Y')}}
                         </td>
                         <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            {% set price = 0 %}
-                            {% for estimateProduct in estimate.estimateProducts %}
-                                {% set price = price + (estimateProduct.totalHt + estimateProduct.totalTva ) * estimateProduct.quantity + estimateProduct.workforce
-                                %}
+                            {% for estimateTotal in estimatesTotal %}
+                                {% if estimate.id %}
+                                    {{estimateTotal.total}} €
+                                {% endif %}
+                                
                             {% endfor %}
-                            {{price}} €
                         </td>
                         {# <td class="px-6 py-4 text-center">
                             {% if estimate.status == "PENDING" %}
@@ -82,9 +82,9 @@
                             {% endif %}
                         </td> #}
                         <td class="px-6 py-4 text-center">
-                            <a href="{{path('back_app_estimate_show',{'id': estimate.id})}}">
+                            {# <a href="{{path('back_app_estimate_show',{'id': estimate.id})}}">
                             <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
-                            </a>
+                            </a> #}
                         </td>
                         <td class="px-6 py-4 text-center">
                             <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
@@ -153,7 +153,7 @@
                             {{invoice.id}}
                         </td>
                         <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            05/07/2023
+                            {{invoice.createdAt | date('d/m/Y')}}
                         </td>
                         <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
                             {% set price = 0 %}
@@ -171,9 +171,9 @@
                             {% endif %}
                         </td> #}
                         <td class="px-6 py-4 text-center">
-                            <a href="{{path('back_app_invoice_show',{'id': invoice.id})}}">
+                            {# <a href="{{path('back_app_invoice_show',{'id': invoice.id})}}">
                             <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
-                            </a>
+                            </a> #}
                         </td>
                         <td class="px-6 py-4 text-center">
                             <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
@@ -263,7 +263,7 @@
                             {{invoice.id}}
                         </td>
                         <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            05/07/2023
+                            {{invoice.createdAt | date('d/m/Y')}}
                         </td>
                         <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
                             {% set price = 0 %}
@@ -281,9 +281,9 @@
                             {% endif %}
                         </td> #}
                         <td class="px-6 py-4 text-center">
-                            <a href="{{path('back_app_invoice_show',{'id': invoice.id})}}">
+                            {# <a href="{{path('back_app_invoice_show',{'id': invoice.id})}}">
                             <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
-                            </a>
+                            </a> #}
                         </td>
                         <td class="px-6 py-4 text-center">
                             <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
@@ -317,7 +317,7 @@
             <div class="flex space-x-16 items-center">
                 <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                     <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{customers | length  }}</h5>
-                    <p class="font-normal text-gray-700 dark:text-gray-400">Nouveaux clients</p>
+                    <p class="font-normal text-gray-700 dark:text-gray-400">Nouveaux customers</p>
                 </a> 
                 <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                     <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">{{estimates | length  }}</h5>
@@ -381,18 +381,18 @@
                             {{estimate.id}}
                         </td>
                         <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            05/07/2023
+                            {{estimate.createdAt | date('d/m/Y')}}
                         </td>
                         <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
                             {{estimate.validityDate | date('d/m/Y')}}
                         </td>
                         <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                            {% set price = 0 %}
-                            {% for estimateProduct in estimate.estimateProducts %}
-                                {% set price = price + (estimateProduct.totalHt + estimateProduct.totalTva ) * estimateProduct.quantity + estimateProduct.workforce
-                                %}
+                            {% for estimateTotal in estimatesTotal %}
+                                {% if estimate.id %}
+                                    {{estimateTotal.total}} €
+                                {% endif %}
+                                
                             {% endfor %}
-                            {{price}} €
                         </td>
                         {# <td class="px-6 py-4 text-center">
                             {% if estimate.status == "PENDING" %}
@@ -402,9 +402,9 @@
                             {% endif %}
                         </td> #}
                         <td class="px-6 py-4 text-center">
-                            <a href="{{path('back_app_estimate_show',{'id': estimate.id})}}">
+                            {# <a href="{{path('back_app_estimate_show',{'id': estimate.id})}}">
                             <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
-                            </a>
+                            </a> #}
                         </td>
                         <td class="px-6 py-4 text-center">
                             <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
@@ -491,9 +491,9 @@
                             {% endif %}
                         </td> #}
                         <td class="px-6 py-4 text-center">
-                            <a href="{{path('back_app_invoice_show',{'id': invoice.id})}}">
+                            {# <a href="{{path('back_app_invoice_show',{'id': invoice.id})}}">
                             <button type="button" class="button button-details px-6 flex items-center justify-center">Details</button>
-                            </a>
+                            </a> #}
                         </td>
                         <td class="px-6 py-4 text-center">
                             <button type="button" class="button button-details px-6 flex items-center justify-center"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>

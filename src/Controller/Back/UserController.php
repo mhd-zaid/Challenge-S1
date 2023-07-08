@@ -33,7 +33,6 @@ class UserController extends AbstractController
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
-        dump($form);
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setValidationToken(Uuid::v4()->__toString());
             $userRepository->save($user, true);

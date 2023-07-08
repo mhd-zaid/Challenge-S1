@@ -2,26 +2,26 @@
 
 namespace App\Repository;
 
-use App\Entity\InvoiceProduct;
+use App\Entity\InvoicePrestation;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<InvoiceProduct>
+ * @extends ServiceEntityRepository<InvoicePrestation>
  *
- * @method InvoiceProduct|null find($id, $lockMode = null, $lockVersion = null)
- * @method InvoiceProduct|null findOneBy(array $criteria, array $orderBy = null)
- * @method InvoiceProduct[]    findAll()
- * @method InvoiceProduct[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
+ * @method InvoicePrestation|null find($id, $lockMode = null, $lockVersion = null)
+ * @method InvoicePrestation|null findOneBy(array $criteria, array $orderBy = null)
+ * @method InvoicePrestation[]    findAll()
+ * @method InvoicePrestation[]    findBy(array $criteria, array $orderBy = null, $limit = null, $offset = null)
  */
-class InvoiceProductRepository extends ServiceEntityRepository
+class InvoicePrestationRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, InvoiceProduct::class);
+        parent::__construct($registry, InvoicePrestation::class);
     }
 
-    public function save(InvoiceProduct $entity, bool $flush = false): void
+    public function save(InvoicePrestation $entity, bool $flush = false): void
     {
         $this->getEntityManager()->persist($entity);
 
@@ -30,7 +30,7 @@ class InvoiceProductRepository extends ServiceEntityRepository
         }
     }
 
-    public function remove(InvoiceProduct $entity, bool $flush = false): void
+    public function remove(InvoicePrestation $entity, bool $flush = false): void
     {
         $this->getEntityManager()->remove($entity);
 
@@ -40,7 +40,7 @@ class InvoiceProductRepository extends ServiceEntityRepository
     }
 
 //    /**
-//     * @return InvoiceProduct[] Returns an array of InvoiceProduct objects
+//     * @return InvoicePrestation[] Returns an array of InvoicePrestation objects
 //     */
 //    public function findByExampleField($value): array
 //    {
@@ -54,7 +54,7 @@ class InvoiceProductRepository extends ServiceEntityRepository
 //        ;
 //    }
 
-//    public function findOneBySomeField($value): ?InvoiceProduct
+//    public function findOneBySomeField($value): ?InvoicePrestation
 //    {
 //        return $this->createQueryBuilder('i')
 //            ->andWhere('i.exampleField = :val')

@@ -5,6 +5,8 @@ namespace App\Entity;
 use App\Entity\Traits\BlameableTrait;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\PrestationRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
@@ -39,32 +41,23 @@ class Prestation
     #[Assert\Type(type: 'integer', message: 'La Durée doit être un entier, elle doit être exprimée en minutes')]
     private ?int $duration = null;
 
-    #[Vich\UploadableField(mapping: 'prestations', fileNameProperty: 'prestationImageName')]
-    #[Assert\File(
-        maxSize: '1024k',
-        mimeTypes: ['image/jpg', 'image/jpeg', 'image/png'],
-        mimeTypesMessage: 'Veuillez télécharger un fichier jpg, jpeg ou png valide',
-    )]
-    private ?File $prestationImageFile = null;
-
-    #[ORM\Column(nullable: true)]
-    private ?string $prestationImageName = null;
-
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le nom du Technicien est obligatoire')]
-    #[Assert\Type(type: 'string', message: 'Le nom du technicien doit être une chaîne de caractères')]
-    private ?string $technician = null;
+    #[Assert\NotBlank(message: 'La main d\'oeuvre est obligatoire')]
+    #[Assert\Type(type: 'int', message: 'La main d\'oeuvre doit être un nombre')]
+    private ?int $workforce = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
-    #[Assert\NotBlank(message: 'Le Total HT est obligatoire')]
-    #[Assert\Type(type: 'float', message: 'Le Total HT doit être un nombre décimal')]
-    private ?float $total_ht = null;
+    #[ORM\OneToMany(mappedBy: 'prestation', targetEntity: PrestationProduct::class, orphanRemoval: true, cascade: ['remove'])]
+    private Collection $prestationProducts;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
-    #[Assert\NotBlank(message: 'Le Total TVA est obligatoire')]
-    #[Assert\Type(type: 'float', message: 'Le Total TVA doit être un nombre décimal')]
-    private ?float $total_tva = null;
-
+    #[ORM\OneToMany(mappedBy: 'prestation', targetEntity: EstimatePrestation::class, orphanRemoval: true, cascade: ['remove'])]
+    private Collection $estimatePrestations;
+    
+    public function __construct()
+    {
+        $this->prestationProducts = new ArrayCollection();
+        $this->estimatePrestations = new ArrayCollection();
+    }
+    
     public function getId(): ?int
     {
         return $this->id;
@@ -103,84 +96,66 @@ class Prestation
         return $this;
     }
 
-    /**
-     * @return File|null
-     */
-    public function getPrestationImageFile(): ?File
+    public function getWorkforce(): ?int
     {
-        return $this->prestationImageFile;
+        return $this->workforce;
     }
 
-    /**
-     * @param File|null $prestationImageFile
-     * @return Prestation
-     */
-    public function setPrestationImageFile(?File $prestationImageFile): Prestation
+    public function setWorkforce(int $workforce): static
     {
-        $this->prestationImageFile = $prestationImageFile;
-        if (null !== $prestationImageFile) {
-            $this->updatedAt = new \DateTime();
+        $this->workforce = $workforce;
+
+        return $this;
+    }
+
+    public function getPrestationProducts(): ?Collection
+    {
+        return $this->prestationProducts;
+    }
+
+    public function addPrestationProduct(PrestationProduct $prestationProduct): static
+    {
+        if (!$this->prestationProducts->contains($prestationProduct)) {
+            $this->prestationProducts[] = $prestationProduct;
+            $prestationProduct->setPrestation($this);
         }
         return $this;
     }
 
-    public function getPrestationImageName(): ?string
+    public function removePrestationProduct(PrestationProduct $prestationProduct): static
     {
-        return $this->prestationImageName;
-    }
-
-    public function setPrestationImageName(string $prestationImageName): static
-    {
-        $this->prestationImageName = $prestationImageName;
+        if ($this->prestationProducts->removeElement($prestationProduct)) {
+            // set the owning side to null (unless already changed)
+            if ($prestationProduct->getPrestation() === $this) {
+                $prestationProduct->setPrestation(null);
+            }
+        }
         return $this;
     }
 
-    public function getTechnician(): ?string
+    public function getEstimatePrestations(): Collection
     {
-        return $this->technician;
+        return $this->estimatePrestations;
     }
 
-    public function setTechnician(string $technician): static
+    public function addEstimatePrestation(EstimatePrestation $estimatePrestation): static
     {
-        $this->technician = $technician;
+        if (!$this->estimatePrestations->contains($estimatePrestation)) {
+            $this->estimatePrestations[] = $estimatePrestation;
+            $estimatePrestation->setPrestation($this);
+        }
         return $this;
     }
 
-    public function getTotalHT(): ?float
+    public function removeEstimatePrestation(EstimatePrestation $estimatePrestation): static
     {
-        return $this->total_ht;
-    }
-
-    public function setTotalHT(float $total_ht): static
-    {
-        $this->total_ht = $total_ht;
+        if ($this->estimatePrestations->removeElement($estimatePrestation)) {
+            // set the owning side to null (unless already changed)
+            if ($estimatePrestation->getPrestation() === $this) {
+                $estimatePrestation->setPrestation(null);
+            }
+        }
         return $this;
     }
 
-    public function getTotalTVA(): ?float
-    {
-        return $this->total_tva;
-    }
-
-    public function setTotalTVA(float $total_tva): static
-    {
-        $this->total_tva = $total_tva;
-        return $this;
-    }
-
-    public function serialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'email' => $this->email,
-            'password' => $this->password,
-        ];
-    }
-    public function unserialize(array $serialized)
-    {
-        $this->id = $serialized['id'];
-        $this->email = $serialized['email'];
-        $this->password = $serialized['password'];
-        return $this;
-    }
 }

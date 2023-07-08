@@ -12,10 +12,7 @@
                 <th>Name</th>
                 <th>Category</th>
                 <th>Duration</th>
-                <th>PrestationImageName</th>
-                <th>Technician</th>
-                <th>Total_ht</th>
-                <th>Total_tva</th>
+                <th>Workforce</th>
                 <th>CreatedAt</th>
                 <th>UpdatedAt</th>
                 <th>actions</th>
@@ -28,9 +25,7 @@
                 <td>{{ prestation.name }}</td>
                 <td>{{ prestation.category }}</td>
                 <td>{{ prestation.duration }}</td>
-                <td>{{ prestation.technician }}</td>
-                <td>{{ prestation.totalHt }}</td>
-                <td>{{ prestation.totalTva }}</td>
+                <td>{{ prestation.workforce }}</td>
                 <td>
                     <a href="{{ path('back_app_prestation_show', {'id': prestation.id}) }}">show</a>
                     <a href="{{ path('back_app_prestation_edit', {'id': prestation.id}) }}">edit</a>

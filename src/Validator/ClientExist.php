@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraint;
 #[\Attribute]
 class ClientExist extends Constraint
 {
-    public string $message = 'The client id {{ title }} already exist and have an account.';
+    public string $message = 'The customer id {{ title }} already exist and have an account.';
     // If the constraint has configuration options, define them as public properties
     public string $mode = 'strict';
 

@@ -3,6 +3,7 @@
 namespace App\Controller\Front;
 
 use App\Entity\Customer;
+use App\Form\CustomerRegisterType;
 use App\Form\CustomerType;
 use App\Repository\CustomerRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,43 +24,24 @@ class CustomerController extends AbstractController
         $this->mailer = $mailer;
     }
 
-    #[Route('/new', name: 'app_customer_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, CustomerRepository $customerRepository): Response
+    #[Route('/new/{token}', name: 'app_customer_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, CustomerRepository $customerRepository,string $token): Response
     {
-        //utilise $request to get ID PARAM
         $customer = new Customer();
-        $form = $this->createForm(CustomerType::class, $customer);
+        $form = $this->createForm(CustomerRegisterType::class,['token' =>$token]);
         $form->handleRequest($request);
 
+        //dump($form);die;
         if ($form->isSubmitted() && $form->isValid()) {
-            if(isset($_GET['id']) && $_GET['id']){
+            
             $customer = $customerRepository->find($form->get('id')->getData());
-            $customer->setId($_GET['id']);
-        }else{
-            $id = $this->generateCustomerId($customerRepository);
-            $customer->setId($id);
-        }
-        
-            $customer->setLastname($form->get('lastname')->getData());
-            $customer->setFirstname($form->get('firstname')->getData());
-            $customer->setEmail($form->get('email')->getData());
+            $customer->setIsValidated(true);
+            $customer->setId(intval($form->get('id')->getData()));
             $customer->setPlainPassword($form->get('plainPassword')->getData());
-            $customer->setAddress($form->get('address')->getData());
-            $customer->setPhone($form->get('phone')->getData());
-
-            $customer->setValidationToken(Uuid::v4()->__toString());            
-            $email = (new TemplatedEmail())
-            ->from("zaidmouhamad@gmail.com")
-            ->to($customer->getEmail())
-            ->subject('Confirm email')
-            ->htmlTemplate('back/email/confirmEmail.html.twig')
-            ->context([
-                'user' => $customer,
-            ]);
-            $this->mailer->send($email);
+            $customer->setIsRegistered(true);
             
             $customerRepository->save($customer, true);
-            return $this->redirectToRoute('front_app_customer_new', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('front_default_index', [], Response::HTTP_SEE_OTHER);
         }
         return $this->renderForm('front/customer/new.html.twig', [
             'customer' => $customer,

@@ -7,14 +7,11 @@ use App\Entity\Estimate;
 use App\Form\EstimateType;
 use App\Entity\Product;
 use App\Entity\Invoice;
-use App\Entity\EstimateProduct;
-use App\Entity\InvoiceProduct;
 use App\Repository\ProductRepository;
 use App\Repository\EstimateRepository;
 use App\Repository\InvoiceRepository;
-use App\Repository\EstimateProductRepository;
-use App\Repository\InvoiceProductRepository;
 use App\Repository\CustomerRepository;
+use App\Repository\EstimatePrestationRepository;
 use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,26 +33,12 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 #[Route('/stripe')]
 class StripeController extends AbstractController
 {
-    private $em;
-    private $mailer;
-    private $security;
-
-    public function __construct(EntityManagerInterface $em, MailerInterface $mailer, Security $security)
-    {
-        $this->em = $em;
-        $this->mailer = $mailer;
-        $this->security = $security;
-    }
 
     #[Route('/{id}', name: 'app_stripe_buy', methods: ['GET'])]
-    public function download(Estimate $estimate, Pdf $pdf, EstimateProductRepository $estimateProductRepository, ProductRepository $productRepository): Response
+    public function download(Estimate $estimate, Pdf $pdf, EstimatePrestationRepository $estimatePrestationRepository, ProductRepository $productRepository): Response
     {
-        $estimateProduct = $estimateProductRepository->findBy(['estimate' => $estimate]);
-        $total = 0;
-        foreach($estimateProduct as $product){
-            $total += ((($product->getTotalTVA() / 100) * $product->getTotalHT()) + $product->getTotalHT()) * $product->getQuantity();
-        }
-        $total+= $estimateProduct[0]->getWorkforce();
+        $total = $estimate->getTotal($estimatePrestationRepository);
+        
         Stripe::setApiKey($this->getParameter('stripe.sk'));
         $successUrl = $this->generateUrl('back_app_invoice_update', ["id" => $estimate->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
         $cancelUrl = $this->generateUrl('back_app_estimate_index', [], UrlGeneratorInterface::ABSOLUTE_URL);

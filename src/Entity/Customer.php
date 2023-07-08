@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\BlameableTrait;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +19,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableTrait;
-
+    use BlameableTrait;
+    
     #[ORM\Id]
     #[ORM\Column]
     private ?int $id = null;
@@ -66,11 +68,14 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Unique]
     private array $roles = [];
 
-    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Estimate::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Estimate::class, orphanRemoval: true)]
     private Collection $estimates;
 
-    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Invoice::class)]
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Invoice::class)]
     private Collection $invoices;
+
+    #[ORM\Column]
+    private ?bool $isRegistered = false;
 
     public function __construct()
     {
@@ -251,6 +256,17 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getIsRegistered(): ?bool
+    {
+        return $this->isRegistered;
+    }
+
+    public function setIsRegistered(bool $isRegistered): self
+    {
+        $this->isRegistered = $isRegistered;
+
+        return $this;
+    }
 
     public function __serialize(): array
     {
@@ -295,7 +311,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->estimates->contains($estimate)) {
             $this->estimates->add($estimate);
-            $estimate->setClient($this);
+            $estimate->setCustomer($this);
         }
 
         return $this;
@@ -305,8 +321,8 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->estimates->removeElement($estimate)) {
             // set the owning side to null (unless already changed)
-            if ($estimate->getClient() === $this) {
-                $estimate->setClient(null);
+            if ($estimate->getCustomer() === $this) {
+                $estimate->setCustomer(null);
             }
         }
 
@@ -325,7 +341,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->invoices->contains($invoice)) {
             $this->invoices->add($invoice);
-            $invoice->setClient($this);
+            $invoice->setCustomer($this);
         }
 
         return $this;
@@ -335,8 +351,8 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->invoices->removeElement($invoice)) {
             // set the owning side to null (unless already changed)
-            if ($invoice->getClient() === $this) {
-                $invoice->setClient(null);
+            if ($invoice->getCustomer() === $this) {
+                $invoice->setCustomer(null);
             }
         }
 

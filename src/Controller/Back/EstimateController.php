@@ -5,17 +5,13 @@ namespace App\Controller\Back;
 use App\Entity\Customer;
 use App\Entity\Estimate;
 use App\Form\EstimateType;
-use App\Entity\Product;
 use App\Entity\Invoice;
-use App\Entity\EstimateProduct;
-use App\Entity\InvoiceProduct;
-use App\Repository\ProductRepository;
+use App\Entity\InvoicePrestation;
+use App\Entity\EstimatePrestation;
 use App\Repository\EstimateRepository;
-use App\Repository\InvoiceRepository;
-use App\Repository\EstimateProductRepository;
-use App\Repository\InvoiceProductRepository;
 use App\Repository\CustomerRepository;
-use App\Repository\UserRepository;
+use App\Repository\EstimatePrestationRepository;
+use App\Repository\ProductRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,38 +21,33 @@ use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Security\Core\Security;
-use Doctrine\Common\Collections\ArrayCollection;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Snappy\Pdf;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as Sec;
 
 #[Route('/estimate')]
 class EstimateController extends AbstractController
 {
-    private $em;
     private $mailer;
     private $security;
 
-    public function __construct(EntityManagerInterface $em, MailerInterface $mailer, Security $security)
+    public function __construct(MailerInterface $mailer, Security $security)
     {
-        $this->em = $em;
         $this->mailer = $mailer;
         $this->security = $security;
     }
 
     #[Route('/', name: 'app_estimate_index', methods: ['GET'])]
-    #[Security('is_granted("ROLE_CUSTOMER") and !is_granted("ROLE_ACCOUNTANT") or is_granted("ROLE_ADMIN")')]
+    #[Sec('is_granted("ROLE_CUSTOMER") and !is_granted("ROLE_ACCOUNTANT") or is_granted("ROLE_ADMIN")')]
     public function index(EstimateRepository $estimateRepository, Request $request): Response
     {
         if($this->isGranted('ROLE_ADMIN')){
-            dump($estimateRepository->findAll());
             return $this->render('back/estimate/index.html.twig', [
                 'estimates' => $estimateRepository->findAll(),
                 'isUser' => false
             ]);
         }else{
-            $estimates = $estimateRepository->findBy(['client' => $this->security->getUser()]);
-            dump($estimates);
+            $estimates = $estimateRepository->findBy(['customer' => $this->security->getUser()]);
             return $this->render('back/estimate/index.html.twig', [
                 'estimates' => $estimates,
                 'isUser' => true
@@ -65,51 +56,61 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/new', name: 'app_estimate_new', methods: ['GET', 'POST'])]
-    #[Security('is_granted("ROLE_MECHANIC")')]
-    public function new(Pdf $pdf, Request $request, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, ProductRepository $productRepository, CustomerRepository $customerRepository, EstimateProductRepository $estimateProductRepository, InvoiceProductRepository $invoiceProductRepository): Response
+    #[Sec('is_granted("ROLE_MECHANIC")')]
+    public function new(Pdf $pdf, Request $request, EntityManagerInterface $em): Response
     {
         $estimate = new Estimate();
         $invoice = new Invoice();
+        $estimateRepository = $em->getRepository(Estimate::class);
+        $invoiceRepository = $em->getRepository(Invoice::class);
+        $customerRepository = $em->getRepository(Customer::class);
+        $invoicePrestationRepository = $em->getRepository(InvoicePrestation::class);
+        $estimatePrestationRepository = $em->getRepository(EstimatePrestation::class);
 
-        $products = $productRepository->findAll();
         $form = $this->createForm(EstimateType::class, $estimate);
         $form->handleRequest($request);
+        $prestations = $form->get('estimatePrestations')->getData();
 
         if ($form->isSubmitted() && $form->isValid()) {
             $customer = $customerRepository->findOneBy([
-                'email' => $form->get('email')->getData()
+                'email' => $form->get('email')->getData(),
+                'isRegistered' => true
             ]);
+
+            
             $isCustomerExist = $customer ? true: false;
+
             if ($customer === null) {
                 $id = $this->generateCustomerId($customerRepository);
                 $customer = $this->createCustomer($form,$id, $customerRepository);
             }
 
-            $invoice->setClient($customer);
+            $invoice->setCustomer($customer);
             $invoice->setStatus('PENDING');
             $invoiceRepository->save($invoice, true);
 
-            $estimate->setClient($customer);
+            $estimate->setCustomer($customer);
             $estimate->setTitle($form->getData()->getTitle());
-            $estimate->setValidityDate($form->get('validity_date')->getData());
+            $estimate->setValidityDate($form->get('validityDate')->getData());
             $estimate->setInvoice($invoice);
-            $estimate->setStatus('Non Payé');
+            $estimate->setStatus('PENDING');
             $estimateRepository->save($estimate, true);
+
             
             $emailCustomer = $form->get('email')->getData();
-
-            if($isCustomerExist){
+            $total = $estimate->getTotal($estimatePrestationRepository);
             $html = $this->renderView('back/pdf/estimate.html.twig', [
                 'estimate' => $estimate,
                 'customer' => $customer,
-                'workforce' => $form->get('workforce')->getData(),
-                'products' => $form->get('productQuantities')->getData(),
+                'prestations' => $prestations,
+                'total' => $total,
             ]);
             $pdfResponse = new PdfResponse(
                 $pdf->getOutputFromHtml($html),
-                'file.pdf'
+                'devis.pdf'
             );
             $pdfContent = $pdfResponse->getContent();
+            if($isCustomerExist){
             $email = (new TemplatedEmail())
             ->from("zaidmouhamad@gmail.com")
             ->to($emailCustomer)
@@ -129,83 +130,73 @@ class EstimateController extends AbstractController
                 ->htmlTemplate('back/email/inscriptionEmail.html.twig')
                 ->context([
                     'customer' => $customer,
-                ]);
+                    'token' => $customer->getValidationToken()
+                ])
+                ->attach($pdfContent, 'file.pdf');
                 $this->mailer->send($email);
             }
-            $products = $form->get('productQuantities')->getData();
-            foreach($products as $value){
-                $product = $productRepository->find($value['product']->getId());
-                $product->setQuantity($product->getQuantity() - $value['quantity']);
-                $productRepository->save($product, true);
+            
 
-                $estimateProduct = new EstimateProduct();
-                $estimateProduct->setEstimate($estimate);
-                $estimateProduct->setProduct($product);
-                $estimateProduct->setTotalHt($product->getTotalHt());
-                $estimateProduct->setTotalTva($product->getTotalTva());
-                $estimateProduct->setQuantity($value['quantity']);
-                $estimateProduct->setWorkforce($form->get('workforce')->getData());
-                $estimateProductRepository->save($estimateProduct, true);
+            foreach($prestations as $prestation){
+                $estimatePrestation = new EstimatePrestation();
+                $estimatePrestation->setPrestation($prestation);
+                $estimatePrestation->setEstimate($estimate);
+                $estimatePrestationRepository->save($estimatePrestation, true);
 
-                $total = (($product->getTotalTva() / 100) * $product->getTotalHt()) + $product->getTotalHt() + $form->get('workforce')->getData();
+                $invoicePrestation = new InvoicePrestation();
+                $invoicePrestation->setPrestation($prestation);
+                $invoicePrestation->setInvoice($invoice);
+                $invoicePrestationRepository->save($invoicePrestation, true);
 
-                $invoiceProduct = new InvoiceProduct();
-                $invoiceProduct->setProduct($product);
-                $invoiceProduct->setInvoice($invoice);
-                $invoiceProduct->setTotal($total);
-                $invoiceProduct->setQuantity($value['quantity']);
-                $invoiceProductRepository->save($invoiceProduct, true);
             }
 
-            return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
+           return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('back/estimate/new.html.twig', [
             'estimate' => $estimate,
             'form' => $form,
-            'products' => $products
         ]);
     }
 
     #[Route('/decline/{id}', name: 'app_estimate_decline', methods: ['GET'])]
-    #[Security('user.getId() == estimate.getClient().getId() or is_granted("ROLE_MECHANIC")')]
-    public function decline(Estimate $estimate, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, EstimateProductRepository $estimateProductRepository, ProductRepository $productRepository, InvoiceProductRepository $invoiceProductRepository): Response
+    #[Sec('user === estimate.getCustomer() or is_granted("ROLE_MECANIC")"')]
+    public function decline(Estimate $estimate, EntityManagerInterface $em): Response
     {
         //Reset les quantity au product et delete le devis et la facture avec leurs devisProduit et factureProduit correspondant
-        $invoiceProduct = $invoiceProductRepository->findBy(['invoice' => $estimate->getInvoice()]);
-        $estimateProduct = $estimateProductRepository->findBy(['estimate' => $estimate]);
+        $estimatePrestations = $em->getRepository(EstimatePrestation::class)->findBy(['estimate' => $estimate]);
 
-        dump($invoiceProduct);
-        // die;
-        foreach($estimateProduct as $product){
-            $productUpdate = $product->getProduct();
-            $productUpdate->setQuantity($product->getProduct()->getQuantity() + $product->getQuantity());
-            $productRepository->save($productUpdate, true);
+        foreach($estimatePrestations as $estimatePrestation){
+            $prestation = $estimatePrestation->getPrestation();
+            foreach($prestation->getPrestationProducts() as $prestationProduct){
+                $productUpdate = $prestationProduct->getProduct();
+                $productUpdate->setQuantity($prestationProduct->getProduct()->getQuantity() + $prestationProduct->getQuantity());
+                $em->getRepository(Product::class)->save($productUpdate, true);
+            }
+            
         }
-        $estimateRepository->remove($estimate, true);
+        
+        $estimate->setStatus('REFUSED');
+        $em->getRepository(Estimate::class)->save($estimate, true);
+        $invoice = $estimate->getInvoice();
+        $invoice->setStatus('REFUSED');
+        $em->getRepository(Invoice::class)->save($invoice, true);  
         return $this->render('back/estimate/index.html.twig', [
-            'estimates' => $estimateRepository->findAll(),
+            'estimates' => $em->getRepository(Estimate::class)->findAll(),
             'isUser' => false
         ]);
     }
 
-    #[Route('/{id}', name: 'app_estimate_download', methods: ['GET'])]
-    public function download(Estimate $estimate, Pdf $pdf, EstimateProductRepository $estimateProductRepository, ProductRepository $productRepository): Response
+    #[Route('/{id}/download', name: 'app_estimate_download', methods: ['GET'])]
+    public function download(Estimate $estimate, Pdf $pdf, EstimatePrestationRepository $estimatePrestationRepository): Response
     {
-        $estimateProduct = $estimateProductRepository->findBy(['estimate' => $estimate]);
-        $estimateData = [];
-        foreach($estimateProduct as $product){
-            $productData = $product->getProduct();
-            $estimateData[] = [
-                'product' => $productData,
-                'quantity' => $product->getQuantity(),
-            ];
-        }
+        $total = $estimate->getTotal($estimatePrestationRepository);
+        $estimatePrestations = $estimatePrestationRepository->findBy(['estimate' => $estimate]);
         $html = $this->renderView('back/pdf/estimate.html.twig', [
             'estimate' => $estimate,
-            'customer' => $estimate->getClient(),
-            'workforce' => $estimateProduct[0]->getWorkforce(),
-            'products' => $estimateData,
+            'customer' => $estimate->getCustomer(),
+            'estimatePrestations' => $estimatePrestations,
+            'total' => $total
         ]);
         return new PdfResponse(
             $pdf->getOutputFromHtml($html),
@@ -213,27 +204,8 @@ class EstimateController extends AbstractController
         );
     }
 
-    #[Route('/{id}/edit', name: 'app_estimate_edit', methods: ['GET', 'POST'])]
-    #[Security('user.getId() == estimate.getClient().getId() or is_granted("ROLE_MECHANIC")')]
-    public function edit(Request $request, Estimate $estimate, EstimateRepository $estimateRepository): Response
-    {
-        $form = $this->createForm(EstimateType::class, $estimate);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $estimateRepository->save($estimate, true);
-
-            return $this->redirectToRoute('app_estimate_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('back/estimate/edit.html.twig', [
-            'estimate' => $estimate,
-            'form' => $form,
-        ]);
-    }
-
     #[Route('/{id}', name: 'app_estimate_delete', methods: ['POST'])]
-    #[Security('is_granted("ROLE_MECHANIC")')]
+    #[Sec('is_granted("ROLE_MECHANIC")')]
     public function delete(Request $request, Estimate $estimate, EstimateRepository $estimateRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$estimate->getId(), $request->request->get('_token'))) {
@@ -241,6 +213,20 @@ class EstimateController extends AbstractController
         }
 
         return $this->redirectToRoute('app_estimate_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/{id}/show', name: 'app_estimate_show', methods: ['GET'])]
+    public function show(Estimate $estimate,EstimatePrestationRepository $estimatePrestationRepository): Response
+    {
+        $total = $estimate->getTotal($estimatePrestationRepository);
+        $estimatePrestations = $estimatePrestationRepository->findBy(['estimate' => $estimate]);
+
+        return $this->render('back/estimate/show.html.twig', [
+            'estimate' => $estimate,
+            'customer' => $estimate->getCustomer(),
+            'estimatePrestations' => $estimatePrestations,
+            'total' => $total
+        ]);
     }
 
     public function checkId(int $id, CustomerRepository $customerRepository): bool
@@ -266,6 +252,9 @@ class EstimateController extends AbstractController
     {
         $customer = new Customer();
         $customer->setId($id);
+        $customer->setLastname($form->get('lastname')->getData());
+        $customer->setFirstname($form->get('firstname')->getData());
+        $customer->setEmail($form->get('email')->getData());
         $customer->setValidationToken(Uuid::v4()->__toString());        
     
         $customerRepository->save($customer,true);
