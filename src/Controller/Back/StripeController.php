@@ -35,14 +35,16 @@ class StripeController extends AbstractController
 {
 
     #[Route('/{id}', name: 'app_stripe_buy', methods: ['GET'])]
-    public function download(Estimate $estimate, Pdf $pdf, EstimatePrestationRepository $estimatePrestationRepository, ProductRepository $productRepository): Response
+    public function download(Estimate $estimate, Pdf $pdf, EstimatePrestationRepository $estimatePrestationRepository, ProductRepository $productRepository, EstimateRepository $estimateRepository): Response
     {
         $total = $estimate->getTotal($estimatePrestationRepository);
-        
-        Stripe::setApiKey($this->getParameter('stripe.sk'));
-        $successUrl = $this->generateUrl('back_app_invoice_update', ["id" => $estimate->getId()], UrlGeneratorInterface::ABSOLUTE_URL);
-        $cancelUrl = $this->generateUrl('back_app_estimate_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
 
+        $estimate ->setUuidSuccessPayment(Uuid::v4()->__toString());
+        $estimateRepository->save($estimate, true);
+        Stripe::setApiKey($this->getParameter('stripe.sk'));
+        $successUrl = $this->generateUrl('back_app_invoice_update', ["id" => $estimate->getId(), "uuid" => $estimate->getUuidSuccessPayment()], UrlGeneratorInterface::ABSOLUTE_URL);
+        $cancelUrl = $this->generateUrl('back_app_estimate_index', [], UrlGeneratorInterface::ABSOLUTE_URL);
+        
         $session = \Stripe\Checkout\Session::create([
             'line_items' => [
                 [
