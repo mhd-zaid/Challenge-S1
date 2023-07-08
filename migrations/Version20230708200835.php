@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20230708184040 extends AbstractMigration
+final class Version20230708200835 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -20,6 +20,7 @@ final class Version20230708184040 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
+        $this->addSql('CREATE SEQUENCE company_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE estimate_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE estimate_prestation_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE invoice_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
@@ -28,7 +29,8 @@ final class Version20230708184040 extends AbstractMigration
         $this->addSql('CREATE SEQUENCE prestation_product_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE product_id_seq INCREMENT BY 1 MINVALUE 1 START 1');
         $this->addSql('CREATE SEQUENCE "user_id_seq" INCREMENT BY 1 MINVALUE 1 START 1');
-        $this->addSql('CREATE TABLE "customer" (id INT NOT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, lastname VARCHAR(255) DEFAULT NULL, firstname VARCHAR(255) DEFAULT NULL, email VARCHAR(180) DEFAULT NULL, password VARCHAR(255) DEFAULT NULL, address VARCHAR(255) DEFAULT NULL, phone VARCHAR(20) DEFAULT NULL, is_validated BOOLEAN NOT NULL, validation_token VARCHAR(255) DEFAULT NULL, roles JSON NOT NULL, is_registered BOOLEAN NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE company (id INT NOT NULL, name VARCHAR(255) NOT NULL, date_of_creation DATE NOT NULL, owner_first_name VARCHAR(255) NOT NULL, owner_last_name VARCHAR(255) NOT NULL, address VARCHAR(255) NOT NULL, phone_number VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, siret VARCHAR(255) NOT NULL, tva VARCHAR(255) NOT NULL, language VARCHAR(255) NOT NULL, currency VARCHAR(255) NOT NULL, theme VARCHAR(255) NOT NULL, company_image_name VARCHAR(255) DEFAULT NULL, description VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE "customer" (id INT NOT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, lastname VARCHAR(255) DEFAULT NULL, firstname VARCHAR(255) DEFAULT NULL, email VARCHAR(180) DEFAULT NULL, password VARCHAR(255) DEFAULT NULL, plain_password VARCHAR(255) DEFAULT NULL, address VARCHAR(255) DEFAULT NULL, phone VARCHAR(20) DEFAULT NULL, is_validated BOOLEAN NOT NULL, validation_token VARCHAR(255) DEFAULT NULL, roles JSON NOT NULL, is_registered BOOLEAN NOT NULL, city VARCHAR(255) DEFAULT NULL, country VARCHAR(255) DEFAULT NULL, zip_code VARCHAR(255) DEFAULT NULL, theme VARCHAR(255) DEFAULT NULL, language VARCHAR(255) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_81398E09E7927C74 ON "customer" (email)');
         $this->addSql('CREATE INDEX IDX_81398E09B03A8386 ON "customer" (created_by_id)');
         $this->addSql('CREATE INDEX IDX_81398E09896DBBDE ON "customer" (updated_by_id)');
@@ -56,7 +58,7 @@ final class Version20230708184040 extends AbstractMigration
         $this->addSql('CREATE TABLE product (id INT NOT NULL, created_by_id INT DEFAULT NULL, updated_by_id INT DEFAULT NULL, title VARCHAR(100) NOT NULL, quantity INT NOT NULL, total_ht NUMERIC(5, 2) NOT NULL, total_tva NUMERIC(5, 2) NOT NULL, description VARCHAR(255) DEFAULT NULL, product_image_name VARCHAR(255) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_D34A04ADB03A8386 ON product (created_by_id)');
         $this->addSql('CREATE INDEX IDX_D34A04AD896DBBDE ON product (updated_by_id)');
-        $this->addSql('CREATE TABLE "user" (id INT NOT NULL, lastname VARCHAR(255) NOT NULL, firstname VARCHAR(255) NOT NULL, email VARCHAR(180) NOT NULL, password VARCHAR(255) NOT NULL, is_validated BOOLEAN NOT NULL, validation_token VARCHAR(255) NOT NULL, roles JSON NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE "user" (id INT NOT NULL, lastname VARCHAR(255) NOT NULL, firstname VARCHAR(255) NOT NULL, email VARCHAR(180) NOT NULL, password VARCHAR(255) NOT NULL, is_validated BOOLEAN NOT NULL, validation_token VARCHAR(255) NOT NULL, roles JSON NOT NULL, phone VARCHAR(25) DEFAULT NULL, country VARCHAR(255) DEFAULT NULL, zip_code VARCHAR(255) DEFAULT NULL, city VARCHAR(255) DEFAULT NULL, address VARCHAR(255) DEFAULT NULL, theme VARCHAR(255) DEFAULT NULL, language VARCHAR(255) DEFAULT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_8D93D649E7927C74 ON "user" (email)');
         $this->addSql('ALTER TABLE "customer" ADD CONSTRAINT FK_81398E09B03A8386 FOREIGN KEY (created_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE "customer" ADD CONSTRAINT FK_81398E09896DBBDE FOREIGN KEY (updated_by_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
@@ -83,6 +85,7 @@ final class Version20230708184040 extends AbstractMigration
     {
         // this down() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE SCHEMA public');
+        $this->addSql('DROP SEQUENCE company_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE estimate_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE estimate_prestation_id_seq CASCADE');
         $this->addSql('DROP SEQUENCE invoice_id_seq CASCADE');
@@ -110,6 +113,7 @@ final class Version20230708184040 extends AbstractMigration
         $this->addSql('ALTER TABLE prestation_product DROP CONSTRAINT FK_10DCF7344584665A');
         $this->addSql('ALTER TABLE product DROP CONSTRAINT FK_D34A04ADB03A8386');
         $this->addSql('ALTER TABLE product DROP CONSTRAINT FK_D34A04AD896DBBDE');
+        $this->addSql('DROP TABLE company');
         $this->addSql('DROP TABLE "customer"');
         $this->addSql('DROP TABLE estimate');
         $this->addSql('DROP TABLE estimate_prestation');
