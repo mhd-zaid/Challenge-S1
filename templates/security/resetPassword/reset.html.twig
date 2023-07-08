@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Forget Password{% endblock %}
+
+{% block body %}
+    <h1>Forget Password</h1>
+
+    {{ include('security/resetPassword/_form.html.twig') }}
+{% endblock %}
