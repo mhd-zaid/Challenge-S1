@@ -26,14 +26,17 @@ class DefaultController extends AbstractController
 {
     
     #[Route('/', name: 'default_index', methods: ['GET'])]
-    public function index(Request $request,ChartBuilderInterface $chartBuilder, EstimateRepository $estimateRepository, InvoiceRepository $invoiceRepository, Security $security, PaginatorInterface $paginator): Response
+    public function index(Request $request,ChartBuilderInterface $chartBuilder,EntityManagerInterface $em, Security $security, PaginatorInterface $paginator): Response
     {
-        $estimates = $em->getRepository(Estimate::class)->findBy(['customer'=>$this->getUser()],null,5);
-        $estimatesTotal = $this->getEstimateTotal($estimates,$em->getRepository(EstimatePrestation::class));
-        $invoices = $em->getRepository(Invoice::class)->findBy(['customer'=>$this->getUser()],null,5);
+        $estimateRepository = $em->getRepository(Estimate::class);
+        $invoiceRepository = $em->getRepository(Invoice::class);
+
+        $estimates = $estimateRepository->findBy(['client'=>$this->getUser()],null,5);
+        $invoices = $invoiceRepository->findBy(['client'=>$this->getUser()],null,5);
         $cutomers = $em->getRepository(Customer::class)->findAll();
         $invoicesPaid = $em->getRepository(Invoice::class)->findBy(['status'=>'PAID']);
         $invoicesPending = $em->getRepository(Invoice::class)->findBy(['status'=>'PENDING']);
+
         if ($this->isGranted('ROLE_MECHANIC')) {
             $estimates = $em->getRepository(Estimate::class)->findAll();
             $invoices = $em->getRepository(Invoice::class)->findAll();
