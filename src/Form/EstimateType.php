@@ -8,6 +8,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -53,7 +54,27 @@ class EstimateType extends AbstractType
                 'constraints' => [
                     new Assert\GreaterThan('today')
                 ],
-            ]);
+            ])
+            ->add('carId', TextType::class, [
+                'label' => 'Car ID'
+            ])
+
+            ->add('carBrand', TextType::class, [
+                'label' => 'Car Brand'
+            ])
+
+            ->add('carModel', TextType::class, [
+                'label' => 'Car Model'
+            ])
+            ->add('carType', ChoiceType::class, [
+                'choices' => [
+                    'Essence' => 'Essence',
+                    'Diesel' => 'Diesel',
+                    'Hybride' => 'Hybride',
+                    'Electrique' => 'Electrique',
+                ],
+                'label' => 'Car Type'
+            ]); 
     }
 
     public function configureOptions(OptionsResolver $resolver): void

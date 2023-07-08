@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Entity\Estimate;
 use App\Entity\EstimatePrestation;
 use App\Entity\Invoice;
+use App\Repository\EstimatePrestationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,14 +26,7 @@ class DefaultController extends AbstractController
     public function index(ChartBuilderInterface $chartBuilder,EntityManagerInterface $em): Response
     {
         $estimates = $em->getRepository(Estimate::class)->findBy(['customer'=>$this->getUser()],null,5);
-        $estimatesTotal = [];
-        foreach ($estimates as $estimate) {
-            $estimatesTotal[] = [
-                'id' => $estimate->getId(),
-                'total' => $estimate->getTotal($em->getRepository(EstimatePrestation::class))
-
-            ];
-        }    
+        $estimatesTotal = $this->getEstimateTotal($estimates,$em->getRepository(EstimatePrestation::class));
         $invoices = $em->getRepository(Invoice::class)->findBy(['customer'=>$this->getUser()],null,5);
         $cutomers = $em->getRepository(Customer::class)->findAll();
         $invoicesPaid = $em->getRepository(Invoice::class)->findBy(['status'=>'PAID']);
@@ -40,6 +34,7 @@ class DefaultController extends AbstractController
         if ($this->isGranted('ROLE_MECHANIC')) {
             $estimates = $em->getRepository(Estimate::class)->findAll();
             $invoices = $em->getRepository(Invoice::class)->findAll();
+            $estimatesTotal = $this->getEstimateTotal($estimates,$em->getRepository(EstimatePrestation::class));
         }
 
         $chart = $chartBuilder->createChart(Chart::TYPE_PIE);
@@ -97,5 +92,18 @@ class DefaultController extends AbstractController
             $pdf->getOutputFromHtml($html),
             'file.pdf'
         );
+    }
+
+    public function getEstimateTotal(Array $estimates,EstimatePrestationRepository $estimatePrestationRepository): array
+    {
+        $estimatesTotal = [];
+        foreach ($estimates as $estimate) {
+            $estimatesTotal[] = [
+                'id' => $estimate->getId(),
+                'total' => $estimate->getTotal($estimatePrestationRepository)
+
+            ];
+        }  
+        return $estimatesTotal; 
     }
 }

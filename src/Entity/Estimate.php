@@ -37,6 +37,18 @@ class Estimate
     #[ORM\JoinColumn(nullable: false)]
     private ?Invoice $invoice = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $carId = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $carBrand = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $carModel = null;
+
+    #[ORM\Column(length: 15, nullable: true)]
+    private ?string $carType = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -101,6 +113,55 @@ class Estimate
 
         return $this;
     }
+
+    public function getCarId(): ?string
+    {
+        return $this->carId;
+    }
+
+    public function setCarId(?string $carId): static
+    {
+        $this->carId = $carId;
+
+        return $this;
+    }
+
+    public function getCarBrand(): ?string
+    {
+        return $this->carBrand;
+    }
+
+    public function setCarBrand(?string $carBrand): static
+    {
+        $this->carBrand = $carBrand;
+
+        return $this;
+    }
+
+    public function getCarModel(): ?string
+    {
+        return $this->carModel;
+    }
+
+    public function setCarModel(?string $carModel): static
+    {
+        $this->carModel = $carModel;
+
+        return $this;
+    }
+
+    public function getCarType(): ?string
+    {
+        return $this->carType;
+    }
+
+    public function setCarType(?string $carType): static
+    {
+        $this->carType = $carType;
+
+        return $this;
+    }
+
 
     public function getTotal(EstimatePrestationRepository $estimatePrestationRepository)
     {
