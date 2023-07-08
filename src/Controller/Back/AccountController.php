@@ -52,7 +52,7 @@ class AccountController extends AbstractController
         if($user){
             $form = $this->createForm(AccountType::class, $user);
             $form->handleRequest($request);
-            dump($form);
+
             if ($form->isSubmitted() && $form->isValid()) {
                 $em->getRepository(User::class)->save($user, true);
                 return $this->redirectToRoute('back_app_account_show', ['id'=>$user->getId()], Response::HTTP_SEE_OTHER);
@@ -67,7 +67,7 @@ class AccountController extends AbstractController
         else if($customer){
             $form = $this->createForm(AccountType::class, $customer);
             $form->handleRequest($request);
-            dump($form);
+
             if ($form->isSubmitted() && $form->isValid()) {
                 $em->getRepository(Customer::class)->save($customer, true);
                 return $this->redirectToRoute('back_app_account_show', ['id'=>$customer->getId()], Response::HTTP_SEE_OTHER);

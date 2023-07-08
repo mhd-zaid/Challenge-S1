@@ -27,7 +27,8 @@ class AdminAccessSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
         $pathInfo = $request->getPathInfo();
 
-        $this->translator->setLocale('fr');
+        $user = $this->security->getUser();
+        $this->translator->setLocale($user->getLanguage());
 
         if ($this->security->isGranted('IS_AUTHENTICATED_FULLY') && !$this->security->getUser()->getIsValidated() && strpos($pathInfo, '/admin') === 0) {
             

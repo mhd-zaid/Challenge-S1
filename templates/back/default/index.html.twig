@@ -1,6 +1,6 @@
 {% extends 'back/base.html.twig' %}
 
-{% block title %}{{ 'Dashboard' | trans }}{% endblock %}
+{% block title %}{{ 'dashboard' | trans({},'default') }}{% endblock %}
 
 {% block main %}
     {% if is_granted('ROLE_ADMIN') %}
@@ -12,21 +12,21 @@
                 <div class="flex space-x-16 items-center">
                     <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                         <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">26</h5>
-                        <p class="font-normal text-gray-700 dark:text-gray-400">Nouveaux clients</p>
+                        <p class="font-normal text-gray-700 dark:text-gray-400">{{ 'new customers'|trans({}, 'default') }}</p>
                     </a>
                     <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                         <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">37</h5>
-                        <p class="font-normal text-gray-700 dark:text-gray-400">Devis en attente</p>
+                        <p class="font-normal text-gray-700 dark:text-gray-400">{{ 'estimates pending'|trans({}, 'default') }}</p>
                     </a>
                 </div>
                 <div class="flex space-x-16">
                     <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                         <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">8</h5>
-                        <p class="font-normal text-gray-700 dark:text-gray-400">Prestation à venir</p>
+                        <p class="font-normal text-gray-700 dark:text-gray-400">{{ 'prestation to come'|trans({}, 'default') }}</p>
                     </a>
                     <a href="#" class="flex flex-col items-center h-24 w-48 max-w-sm px-3 py-2 border border-gray-200 rounded-lg shadow hover:bg-gray-100 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700">
                         <h5 class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">43</h5>
-                        <p class="font-normal text-gray-700 dark:text-gray-400">Prestation<br>effectuées</p>
+                        <p class="font-normal text-gray-700 dark:text-gray-400">{{ 'prestation performed'|trans({}, 'default') }}</p>
                     </a>
                 </div>
             </div>
@@ -35,13 +35,13 @@
     <div id="last-estimate-dashboard">
         <div class="flex justify-between items-center w-full mt-14">
             {% if is_granted('ROLE_ADMIN') %}
-                <p class="text-main m-0">Derniers devis clients</p>
+                <p class="text-main m-0">{{ 'latest customer estimates'|trans({}, 'default') }}</p>
             {% else %}
-                <p class="text-main m-0">Mes derniers devis</p>
+                <p class="text-main m-0">{{ 'latest estimates'|trans({}, 'default') }}</p>
             {% endif %}
             <div class="text-action flex space-x-4 items-center justify-center">
                 <a href="{{path('back_app_estimate_index')}}" class="no-underline flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white">
-                    <p class="mb-0">Tout voir</p>
+                    <p class="mb-0">{{ 'see all'|trans({}, 'default') }}</p>
                     <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-arrow-right.svg" alt="">
                 </a>
             </div>
@@ -53,15 +53,15 @@
             <div class="flex space-x-16 items-center w-full py-2 px-2 bg-gray-200">
                 <div class="text-medium flex justify-center items-center space-x-4">
                     <iconify-icon icon="flat-color-icons:ok" width="35px"></iconify-icon>
-                    <p class="mb-0">Devis acceptés</p>
+                    <p class="mb-0">{{ 'estimates accepted'|trans({}, 'default') }}</p>
                 </div>
                 <div class="text-medium flex justify-center items-center space-x-4">
                     <iconify-icon icon="material-symbols:cancel" style="color: red;" width="35"></iconify-icon>
-                    <p class="mb-0">Devis refusés</p>
+                    <p class="mb-0">{{ 'estimates refused'|trans({}, 'default') }}</p>
                 </div>
                 <div class="text-medium flex justify-center items-center space-x-4">
                     <iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon>
-                    <p class="mb-0">Devis en attente</p>
+                    <p class="mb-0">{{ 'estimate pending'|trans({}, 'default') }}</p>
                 </div>
             </div>
         </div>
@@ -77,7 +77,7 @@
             {% endif %}
             <div class="text-action flex space-x-4">
                 <a href="{{path('back_app_invoice_index')}}" class="no-underline flex items-start space-x-2.5 p-2 text-gray-900 rounded-lg dark:text-white">
-                    <p class="mb-0">Tout voir</p>
+                    <p class="mb-0">{{ 'see all'|trans({}, 'default') }}</p>
                     <img src="{{ app.request.baseURL }}/uploads/images/icon/icon-arrow-right.svg" alt="">
                 </a>
             </div>

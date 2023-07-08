@@ -33,28 +33,28 @@
             <li>
                 <a href="{{path('back_default_index')}}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                    <img src="{{app.request.baseURL}}/uploads/images/global/dashboard.svg" class="ml-1 h-6" alt="Dashboard" />
-                    <span>Dashboard</span>
+                    <span>{{ 'dashboard'|trans({}, 'default') }}</span>
                 </a>
             </li>
             {% if is_granted('ROLE_CUSTOMER') and not is_granted('ROLE_ACCOUNTANT') or is_granted('ROLE_ADMIN') %}
             <li>
                 <a href="{{path('back_app_estimate_index')}}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/estimate.svg" class="h-6" alt="Estimate"/>
-                    <span>Estimate</span>
+                    <span>{{ 'estimate'|trans({}, 'default') }}</span>
                 </a>
             </li>
             {% endif %}
             <li>
                 <a href="{{path('back_app_invoice_index')}}" class="flex items-start space-x-2.5 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/invoice.svg" class="ml-1 h-6" alt="Invoice" />
-                    <span>Invoice</span>
+                    <span>{{ 'invoice'|trans({}, 'default') }}</span>
                 </a>
             </li>
             {% if is_granted('ROLE_MECHANIC') %}
             <li>
                 <a href="{{path('back_app_customer_index')}}" class="flex items-start space-x-4 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/customer.svg" class="ml-1 h-6" alt="Customer" />
-                    <span>Customer</span>
+                    <span>{{ 'customer'|trans({}, 'default') }}</span>
                 </a>
             </li>
             {% endif %}
@@ -62,7 +62,7 @@
             <li>
                 <a href="{{path('back_app_prestation_index')}}" class="flex items-start p-2 space-x-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/prestation.svg" class="ml-1 h-6" alt="Prestation" />
-                    <span>Prestation</span>
+                    <span>{{ 'prestation'|trans({}, 'default') }}</span>
                 </a>
             </li>
             {% endif %}
@@ -70,7 +70,7 @@
             <li>
                 <a href="{{path('back_app_product_index')}}" class="flex items-start space-x-3 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/product.svg" class="ml-1 h-6" alt="Product" />
-                    <span>Product</span>
+                    <span>{{ 'product'|trans({}, 'default') }}</span>
                 </a>
             </li>
             {% endif %}
@@ -78,7 +78,7 @@
             <li>
                 <a href="{{path('back_app_accounting_index')}}" class="flex items-start space-x-3 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/accounting.svg" class="ml-1 h-6" alt="Product" />
-                    <span>Accounting</span>
+                    <span>{{ 'accounting'|trans({}, 'default') }}</span>
                 </a>
             </li>
             {% endif %}
@@ -86,7 +86,7 @@
             <li>
                 <a href="{{path('back_app_user_index')}}" class="flex items-start space-x-4 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/customer.svg" class="ml-1 h-6" alt="User" />
-                    <span>User</span>
+                    <span>{{ 'user'|trans({}, 'default') }}</span>
                 </a>
             </li>
             {% endif %}
@@ -95,13 +95,13 @@
             <li>
                 <a href="{{ path('back_app_account_show', {'id': app.user.id}) }}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/account.svg" class="h-6" alt="Account" />
-                    <span>My Account</span>
+                    <span>{{ 'my account'|trans({}, 'default') }}</span>
                 </a>
             </li>
             <li>
                 <a href="{{path('app_logout')}}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/logout.svg" class="h-6" alt="Log Out" />
-                    <span>Log Out</span>
+                    <span>{{ 'log out'|trans({}, 'default') }}</span>
                 </a>
             </li>
         </ul>

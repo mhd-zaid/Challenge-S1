@@ -33,7 +33,9 @@ class CustomerType extends AbstractType
                 // 'constraints' => [new CustomerEmail]
             ])
             ->add('plainPassword', PasswordType::class, [
-            'constraints' => [new PasswordMatch]
+                'constraints' => [new PasswordMatch]
+                
+            
             ])
             ->add('password', PasswordType::class, [
                 'mapped' => false,

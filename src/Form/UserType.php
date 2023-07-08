@@ -30,6 +30,7 @@ class UserType extends AbstractType
             ])
             ->add('plainPassword', PasswordType::class, [
                 'label' => 'plainPassword',
+                'required' => false,
             ])
             ->add('roles', CollectionType::class, [
                 'label' => 'Roles',

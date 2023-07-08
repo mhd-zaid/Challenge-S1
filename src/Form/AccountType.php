@@ -15,6 +15,7 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\RepeatedType;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\EqualTo;
+use Symfony\Component\Security\Core\Validator\Constraints\UserPassword;
 use App\Validator\CustomerEmail;
 use App\Validator\PasswordMatch;
 use App\Validator\ClientId;
@@ -30,11 +31,17 @@ class AccountType extends AbstractType
             ->add('email', EmailType::class, [
                 // 'constraints' => [new CustomerEmail]
             ])
+            ->add('currentPassword', PasswordType::class, [
+                'mapped' => false,
+                'constraints' => [new UserPassword(message: 'Please enter your current password to make any changes')],
+            ])
             ->add('plainPassword', PasswordType::class, [
-                'constraints' => [new PasswordMatch]
+                'constraints' => [new PasswordMatch],
+                'required' => false,
             ])
             ->add('password', PasswordType::class, [
                 'mapped' => false,
+                'required' => false,
             ])
             ->add('address')
             ->add('phone')

@@ -46,7 +46,7 @@ class EstimateController extends AbstractController
         }else{
             $estimates = $estimateRepository->findBy(['customer' => $security->getUser()->getId()]);
         }
-        dump($estimates);
+
         $estimatesPagination = $paginator->paginate(
             $estimates, /* query NOT result */
             $request->query->getInt('page', 1), /*page number*/
