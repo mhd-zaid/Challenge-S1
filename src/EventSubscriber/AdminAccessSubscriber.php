@@ -27,11 +27,11 @@ class AdminAccessSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
         $pathInfo = $request->getPathInfo();
 
-        $user = $this->security->getUser();
-        $this->translator->setLocale($user->getLanguage());
-
+        
         if ($this->security->isGranted('IS_AUTHENTICATED_FULLY') && !$this->security->getUser()->getIsValidated() && strpos($pathInfo, '/admin') === 0) {
             
+            $user = $this->security->getUser();
+            $this->translator->setLocale($user->getLanguage());
             $event->setResponse(new RedirectResponse($this->urlGenerator->generate('front_verifEmail')));
         }
     }
