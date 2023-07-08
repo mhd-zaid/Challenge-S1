@@ -15,10 +15,20 @@ use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Snappy\Pdf;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
+use Symfony\Component\Mailer\MailerInterface;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 
 #[Route('/invoice')]
 class InvoiceController extends AbstractController
 {
+    private $mailer;
+
+    public function __construct(MailerInterface $mailer)
+    {
+        $this->mailer = $mailer;
+    }
+
+
     #[Route('/', name: 'app_invoice_index', methods: ['GET'])]
     #[Security('is_granted("ROLE_CUSTOMER") or is_granted("ROLE_ACCOUNTANT")')]
     public function index(InvoiceRepository $invoiceRepository): Response
@@ -32,6 +42,33 @@ class InvoiceController extends AbstractController
     #[Security('user == invoice.getCustomer() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
     public function success(Invoice $invoice,Pdf $pdf,InvoicePrestationRepository $invoicePrestationRepository): Response
     {
+        $invoicePrestations = $invoicePrestationRepository->findBy(['invoice' => $invoice]);
+        $total = $invoice->getTotal($invoicePrestationRepository);
+
+        $html = $this->renderView('back/pdf/invoice.html.twig', [
+            'invoice' => $invoice,
+            'customer' => $invoice->getCustomer(),
+            'invoicePrestations' => $invoicePrestations,
+            'total' => $total
+        ]);
+
+        $pdfResponse = new PdfResponse(
+            $pdf->getOutputFromHtml($html),
+            'facture.pdf'
+        );
+        $pdfContent = $pdfResponse->getContent();
+        $email = (new TemplatedEmail())
+        ->from("zaidmouhamad@gmail.com")
+        ->to($invoice->getCustomer()->getEmail())
+        ->subject('Votre Facture
+        ')
+        ->htmlTemplate('back/email/invoiceEmail.html.twig')
+        ->context([
+            'customer' => $invoice->getCustomer(),
+        ])
+        ->attach($pdfContent, 'file.pdf');
+        $this->mailer->send($email);
+        
         return $this->render('back/invoice/success.html.twig', [
             'invoice' => $invoice
         ]);
