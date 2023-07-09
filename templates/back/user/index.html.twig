@@ -3,33 +3,63 @@
 {% block title %}User index{% endblock %}
 
 {% block main %}
-    <h1>User index</h1>
+    {% include 'components/page_header.html.twig' with {'title': 'Liste des utilisateurs', 'link': path('back_default_index')} %}
 
-    <table class="table">
-        <thead>
+    <div class="card">
+        <table>
+            <thead>
             <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>actions</th>
+                <th scope="col">Nom</th>
+                <th scope="col">Prénom</th>
+                <th scope="col">Email</th>
+                <th scope="col">
+                    {{ knp_pagination_sortable(userPagination, 'Statut', 'isValidated') }}
+                </th>
             </tr>
-        </thead>
-        <tbody>
-        {% for user in users %}
-            <tr>
-                <td>{{ user.id }}</td>
-                <td>{{ user.email }}</td>
-                <td>
-                    <a href="{{ path('back_app_user_show', {'id': user.id}) }}">show</a>
-                    <a href="{{ path('back_app_user_edit', {'id': user.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+            </thead>
+            <tbody>
+            {% for user in users %}
+                {% if user.id != app.user.id %}
+                <tr>
+                    <td>{{ user.lastname }}</td>
+                    <td>{{ user.firstname }}</td>
+                    <td>{{ user.email }}</td>
+                    {% if user.isValidated == 1 %}
+                        <td>
+                            <iconify-icon icon="flat-color-icons:ok" width="35px"></iconify-icon>
+                        </td>
+                    {% else %}
+                        <td>
+                            <iconify-icon icon="flat-color-icons:cancel" width="35px"></iconify-icon>
+                        </td>
+                    {% endif %}
+                    <td>
+                        <a href="{{ path('back_app_user_show', {'id': user.id}) }}">
+                            <button type="button" class="button button-details">Détail</button>
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{ path('back_app_user_edit', {'id': user.id}) }}">
+                            <button type="button" class="button button-details">Modifier</button>
+                        </a>
+                    </td>
+                    <td>
+                        {{  include('back/user/_delete_form.html.twig', {'id': user.id}) }}
+                    </td>
+                </tr>
+                {% endif %}
+            {% else %}
+                <tr>
+                    <td colspan="3">no records found</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 
-    <a href="{{ path('back_app_user_new') }}">Create new</a>
+    <div class="mt-4">
+        <a href="{{ path('back_app_user_new') }}">
+            <button type="button" class="button button-details">Nouveau utilisateur</button>
+        </a>
+    </div>
 {% endblock %}

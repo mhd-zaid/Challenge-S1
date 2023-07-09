@@ -75,11 +75,7 @@ class EstimateController extends AdminController
 
         $form = $this->createForm(EstimateType::class, $estimate);
         $form->handleRequest($request);
-<<<<<<< HEAD
-        
-=======
 
->>>>>>> 1381fad (estimate controller set array prestations)
         if ($form->isSubmitted() && $form->isValid()) {
             $prestations = $form->get('estimatePrestations')->getData();
             $customer = $customerRepository->findOneBy([

@@ -1,4 +1,26 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+<div class="border-gray-200 bg-white shadow-md shadow-gray-400 rounded-lg p-6 mt-14 mb-4">
+    {{ form_errors(form) }}
+    <div class="grid gap-6 mb-6 md:grid-cols-2">
+        <div>
+            {{ form_row(form.name) }}
+        </div>
+        <div>
+            {{ form_row(form.category) }}
+        </div>
+        <div>
+            {{ form_row(form.duration) }}
+        </div>
+        <div>
+            {{ form_row(form.workforce) }}
+        </div>
+        <div>
+            {{ form_row(form.productQuantities) }}
+        </div>
+    </div>
+{#    <button class="btn">{{ button_label|default('Save') }}</button>#}
+    <div class="flex space-x-4">
+    <button type="submit" class="button button-edit px-4 flex items-center justify-center space-x-4"><iconify-icon icon="dashicons:saved" style="color: white;" width="24" height="24"></iconify-icon>{{ button_label|default('Save') }}</button>
+
+
 {{ form_end(form) }}

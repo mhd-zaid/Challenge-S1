@@ -3,7 +3,7 @@
 {% block title %}Prestation index{% endblock %}
 
 {% block main %}
-    <h1>Prestation index</h1>
+    {% include 'components/page_header.html.twig' with {'title': 'Liste des prestations', 'link': path('back_default_index')} %}
     <div class="flex items-start justify-start space-x-32 p-4 mt-8">
     <div class="w-36">
     <button id="dropdownDefault" data-dropdown-toggle="dropdown"
@@ -72,30 +72,35 @@
   </div>
 </div>
 
-    <table class="table">
+<div class="card">
+    <table>
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Duration</th>
-                <th>Workforce</th>
-                <th>CreatedAt</th>
-                <th>UpdatedAt</th>
-                <th>actions</th>
+                <th scope="col">Name</th>
+                <th scope="col">Category</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Workforce</th>
             </tr>
         </thead>
         <tbody>
         {% for prestation in prestations %}
             <tr>
-                <td>{{ prestation.id }}</td>
                 <td>{{ prestation.name }}</td>
                 <td>{{ prestation.category.name }}</td>
                 <td>{{ prestation.duration }}</td>
                 <td>{{ prestation.workforce }}</td>
                 <td>
-                    <a href="{{ path('back_app_prestation_show', {'id': prestation.id}) }}">show</a>
-                    <a href="{{ path('back_app_prestation_edit', {'id': prestation.id}) }}">edit</a>
+                    <a href="{{ path('back_app_prestation_show', {'id': prestation.id}) }}">
+                        <button type="button" class="button button-details">Détails</button>
+                    </a>
+                </td>
+                <td>
+                    <a href="{{ path('back_app_prestation_edit', {'id': prestation.id}) }}">
+                        <button type="button" class="button button-details">Modifier</button>
+                    </a>
+                </td>
+                <td>
+                    {{ include('back/prestation/_delete_form.html.twig') }}
                 </td>
             </tr>
         {% else %}
@@ -105,8 +110,13 @@
         {% endfor %}
         </tbody>
     </table>
+</div>
 
-    <a href="{{ path('back_app_prestation_new') }}">Create new</a>
+    <div class="mt-4">
+        <a href="{{ path('back_app_prestation_new') }}">
+            <button type="button" class="button button-details">Nouvelle prestation</button>
+        </a>
+    </div>
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     const categoryCheckbox = document.getElementById("category");

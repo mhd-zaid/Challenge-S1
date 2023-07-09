@@ -17,37 +17,11 @@
             </tr>
             <tr>
                 <th>Category</th>
-                <td>{{ prestation.category }}</td>
+                <td>{{ prestation.category.name }}</td>
             </tr>
             <tr>
                 <th>Duration</th>
                 <td>{{ prestation.duration }}</td>
-            </tr>
-            <tr>
-                <th>Prestation Image</th>
-                <td>
-                    <img src="{{ vich_uploader_asset(prestation, 'prestationImageFile') }}" alt="{{ prestation.name }}">
-                </td>
-            </tr>
-            <tr>
-                <th>Technician</th>
-                <td>{{ prestation.technician }}</td>
-            </tr>
-            <tr>
-                <th>Total_ht</th>
-                <td>{{ prestation.totalHt }}</td>
-            </tr>
-            <tr>
-                <th>Total_tva</th>
-                <td>{{ prestation.totalTva }}</td>
-            </tr>
-            <tr>
-                <th>CreatedAt</th>
-                <td>{{ prestation.createdAt ? prestation.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>UpdatedAt</th>
-                <td>{{ prestation.updatedAt ? prestation.updatedAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
         </tbody>
     </table>

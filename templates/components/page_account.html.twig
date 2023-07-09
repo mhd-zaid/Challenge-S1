@@ -10,12 +10,26 @@
             {% if user.isValidated %}
                 <p class="text-main text-green-600 flex space-x-2 items-center">
                     <iconify-icon icon="pepicons-print:person-checkmark-circle" style="color: green;"></iconify-icon>
-                    <span>Client actif</span>
+                    <span>
+                        {% if type=='customer' %}
+                        Client
+                        {% elseif type=='user' %}
+                        Utilisateur
+                        {% endif %}
+                        actif
+                    </span>
                 </p>
             {% else %}
                 <p class="text-main text-red-600 flex space-x-2 items-center">
                     <iconify-icon icon="pepicons-print:person-checkmark-circle-off" style="color: red;"></iconify-icon>
-                    <span>Client inactif</span>
+                    <span>
+                        {% if type=='customer' %}
+                        Client
+                        {% elseif type=='user' %}
+                            Utilisateur
+                        {% endif %}
+                        inactif
+                    </span>
                 </p>
             {% endif %}
         </div>

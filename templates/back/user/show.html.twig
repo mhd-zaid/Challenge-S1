@@ -3,7 +3,11 @@
 {% block title %}User{% endblock %}
 
 {% block main %}
-    {% include 'components/page_header.html.twig' with {'title': 'Mon compte', 'link': path('back_default_index')} %}
+    {% if user.id == app.user.id %}
+        {% include 'components/page_header.html.twig' with {'title': 'Mon compte', 'link': path('back_default_index')} %}
+    {% else %}
+        {% include 'components/page_header.html.twig' with {'title': 'Utilisateur n°'~user.id, 'link': path('back_app_user_index')} %}
+    {% endif %}
 
     {% include 'components/page_account.html.twig' with {'user': user, 'type': 'user'} %}
 

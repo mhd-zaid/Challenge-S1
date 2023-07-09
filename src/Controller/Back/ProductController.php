@@ -61,7 +61,6 @@ class ProductController extends AdminController
 
             return $this->redirectToRoute('back_app_product_index', [], Response::HTTP_SEE_OTHER);
         }
-
         return $this->renderForm('back/product/edit.html.twig', [
             'product' => $product,
             'form' => $form,
