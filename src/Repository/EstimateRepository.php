@@ -51,6 +51,19 @@ class EstimateRepository extends ServiceEntityRepository
         return $queryBuilder->getQuery()->getResult();
     }
 
+    public function getEstimateByDateValidity(\DateTime $date): array
+    {
+        $queryBuilder = $this->createQueryBuilder('e');
+
+        $queryBuilder->andWhere('e.validityDate > :date')
+        ->andWhere('e.status = :status')
+        ->setParameter('date', $date)
+        ->setParameter('status', 'PENDING');
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+
 //    /**
 //     * @return Estimate[] Returns an array of Estimate objects
 //     */

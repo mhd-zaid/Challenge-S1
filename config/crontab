@@ -1,1 +1,2 @@
 * * * * * cd /home/jug/Bureau/Challenge-S1 && docker compose exec php bin/console app:add-quantity
+*/5 * * * * cd /home/jug/Bureau/Challenge-S1 && docker compose exec php bin/console app:reminder-mail
