@@ -1,10 +1,10 @@
 {% extends 'back/base.html.twig' %}
 
 
-{% block title %}Presta Auto - Devis{% endblock %}
+{% block title %}Presta Auto - {{ 'estimate'|trans({}, 'estimate') }}{% endblock %}
 
 {% block main %}
-    {% include 'components/page_header.html.twig' with {'title': 'Nouveau devis', 'link': path('back_app_estimate_index')} %}
+    {% include 'components/page_header.html.twig' with {'title': 'new estimate', 'link': path('back_app_estimate_index')} %}
 
     {{ include('back/estimate/_form.html.twig') }}
 

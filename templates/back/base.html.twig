@@ -70,7 +70,7 @@
             <li>
                 <a href="{{path('back_app_category_index')}}" class="flex items-start space-x-3 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/category.svg" class="ml-1 h-6" alt="Product" />
-                    <span>Category</span>
+                    <span>{{ 'category'|trans({}, 'default') }}</span>
                 </a>
             </li>
             <li>

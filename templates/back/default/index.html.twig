@@ -71,9 +71,9 @@
     <div class="mt-20">
         <div class="flex justify-between items-center w-full mt-14">
             {% if is_granted('ROLE_ADMIN') %}
-                <p class="text-main m-0">Dernières factures clientes</p>
+                <p class="text-main m-0">{{ 'latest customer invoices'|trans({}, 'default') }}</p>
             {% else %}
-                <p class="text-main m-0">Mes dernières factures</p>
+                <p class="text-main m-0">{{ 'my latest invoices'|trans({}, 'default') }}</p>
             {% endif %}
             <div class="text-action flex space-x-4">
                 <a href="{{path('back_app_invoice_index')}}" class="no-underline flex items-start space-x-2.5 p-2 text-gray-900 rounded-lg dark:text-white">
@@ -89,11 +89,11 @@
             <div class="flex space-x-16 items-center w-full py-2 px-2 bg-gray-200">
                 <div class="text-medium flex justify-center items-center space-x-4">
                     <iconify-icon icon="flat-color-icons:ok" width="35px"></iconify-icon>
-                    <p class="mb-0">Factures payées</p>
+                    <p class="mb-0">{{ 'invoices paid'|trans({}, 'default') }}</p>
                 </div>
                 <div class="text-medium flex justify-center items-center space-x-4">
                     <iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon>
-                    <p class="mb-0">Factures en attente de règlement</p>
+                    <p class="mb-0">{{ 'invoices awaiting payment: "Factures en attente de paiement"'|trans({}, 'default') }}</p>
                 </div>
             </div>
         </div>
