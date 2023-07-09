@@ -2,10 +2,12 @@
 
 namespace App\Controller\Back;
 
+use App\Entity\Category;
 use App\Entity\Prestation;
 use App\Entity\PrestationProduct;
 use App\Entity\Product;
 use App\Form\PrestationType;
+use App\Repository\CategoryRepository;
 use App\Repository\PrestationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -18,10 +20,11 @@ class PrestationController extends AbstractController
 {
     #[Route('/', name: 'app_prestation_index')]
     #[Security('is_granted("ROLE_CUSTOMER") and !is_granted("ROLE_ACCOUNTANT") or is_granted("ROLE_ADMIN")')]
-    public function index(PrestationRepository $prestationRepository): Response
+    public function index(PrestationRepository $prestationRepository,CategoryRepository $categoryRepository): Response
     {
         return $this->render('back/prestation/index.html.twig', [
             'prestations' => $prestationRepository->findAll(),
+            'categories' => $categoryRepository->findAll()
         ]);
     }
 
@@ -68,8 +71,7 @@ class PrestationController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_prestation_show', methods: ['GET'])]
-    #[Security('user.getId() == invoice.getCustomer() or is_granted("ROLE_MECHANIC")')]
+    #[Route('/{id}/show', name: 'app_prestation_show', methods: ['GET'])]
     public function show(Prestation $prestation): Response
     {
         return $this->render('back/prestation/show.html.twig', [
@@ -78,7 +80,6 @@ class PrestationController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_prestation_edit', methods: ['GET', 'POST'])]
-    #[Security('user.getId() == invoice.getCustomer() or is_granted("ROLE_MECHANIC")')]
     public function edit(Request $request, Prestation $prestation, PrestationRepository $prestationRepository): Response
     {
         $form = $this->createForm(PrestationType::class, $prestation);
@@ -96,7 +97,7 @@ class PrestationController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_prestation_delete', methods: ['POST'])]
+    #[Route('/{id}/delete', name: 'app_prestation_delete', methods: ['POST'])]
     #[Security('is_granted("ROLE_MECHANIC")')]
     public function delete(Request $request, Prestation $prestation, PrestationRepository $prestationRepository): Response
     {
@@ -105,5 +106,27 @@ class PrestationController extends AbstractController
         }
 
         return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/filter', name: 'app_prestation_filter', methods: ['GET'])]
+    public function filter(Request $request,EntityManagerInterface $em): Response
+    {   
+        $filters = [
+            'category' => $request->query->get('category'),
+            'prestation' => $request->query->get('prestation'),
+        ];
+        
+        $filteredParams = array_filter($filters, function($value) {
+            return !empty($value);
+        });
+
+        if (empty($filteredParams)) {
+            
+            return $this->redirectToRoute('back_app_prestation_index');
+        }
+
+        $prestations  = $em->getRepository(Prestation::class)->findByFilter($filteredParams);
+        $categories = $em->getRepository(Category::class)->findAll();
+        return $this->render('back/prestation/index.html.twig',['prestations'=>$prestations,'categories'=>$categories]);
     }
 }
