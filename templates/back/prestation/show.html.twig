@@ -17,7 +17,6 @@
                 <td>{{ prestation.category.name }}</td>
                 <td>{{ prestation.duration }}</td>
                 <td>{{ prestation.workforce }}</td>
-                <td>{{ prestation.prestationProducts }}</td>
             </tr>
             <tr>
                 <th>Category</th>
@@ -25,9 +24,21 @@
             <tr>
                 <th>Duration</th>
             </tr>
+
         </tbody>
     </table>
-
+     <table class="table">
+        <thead>
+            <td>Produits</td>
+            <td>Qté</td>
+        </thead>
+        <tbody>
+            {% for prestationProduct in prestation.prestationProducts %}
+                    <td>{{ prestationProduct.product.title }}</td>
+                    <td>{{ prestationProduct.product.quantity }}</td>
+                {% endfor %}
+        </tbody>
+    </table>
 
     <a href="{{ path('back_app_prestation_edit', {'id': prestation.id}) }}">edit</a>
 

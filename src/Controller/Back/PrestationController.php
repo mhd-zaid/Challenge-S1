@@ -3,11 +3,14 @@
 namespace App\Controller\Back;
 
 use App\Entity\Category;
+use App\Entity\EstimatePrestation;
 use App\Entity\Prestation;
 use App\Entity\PrestationProduct;
 use App\Entity\Product;
 use App\Form\PrestationType;
 use App\Repository\CategoryRepository;
+use App\Repository\EstimatePrestationRepository;
+use App\Repository\PrestationProductRepository;
 use App\Repository\PrestationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -73,21 +76,36 @@ class PrestationController extends AdminController
 
     #[Route('/{id}/show', name: 'app_prestation_show', methods: ['GET'])]
     public function show(Prestation $prestation): Response
-    {
+    {   
         return $this->render('back/prestation/show.html.twig', [
             'prestation' => $prestation,
         ]);
     }
 
     #[Route('/{id}/edit', name: 'app_prestation_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Prestation $prestation, PrestationRepository $prestationRepository): Response
+    public function edit(Request $request, Prestation $prestation, PrestationRepository $prestationRepository, PrestationProductRepository $prestationProductRepository): Response
     {
         $form = $this->createForm(PrestationType::class, $prestation);
+        
+        $prestationProducts = $prestationProductRepository->findBy([
+            'prestation' => $prestation
+        ]);
+        
+        $productQuantitiesData = [];
+
+        foreach ($prestationProducts as $prestationProduct) {
+            $productQuantitiesData[] = [
+                'product' => $prestationProduct->getProduct(),
+                'quantity' => $prestationProduct->getQuantity(),
+            ];
+        }
+        $form->get('productQuantities')->setData($productQuantitiesData);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
             $prestationRepository->save($prestation, true);
-
+            
             return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);
         }
 
