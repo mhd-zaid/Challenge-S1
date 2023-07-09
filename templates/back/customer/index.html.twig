@@ -1,22 +1,22 @@
 {% extends 'back/base.html.twig' %}
 
-{% block title %}User index{% endblock %}
+{% block title %}{{ 'customer index' | trans({},'customer') }}{% endblock %}
 
 {% block main %}
-    {% include 'components/page_header.html.twig' with {'title': 'Liste des clients', 'link': path('back_default_index')} %}
+    {% include 'components/page_header.html.twig' with {'title': 'list of customer' | trans({},'customer') , 'link': path('back_default_index')} %}
 
     <div class="card">
         <table>
             <thead>
             <tr>
                 <th scope="col" class="px-6 py-3 text-center">
-                    {{ knp_pagination_sortable(customersPagination, 'Client n°', 'id') }}
+                    {{ knp_pagination_sortable(customersPagination, 'customer no.' | trans({},'customer'), 'id') }}
                 </th>
-                <th scope="col">Nom</th>
-                <th scope="col">Prénom</th>
-                <th scope="col">Email</th>
+                <th scope="col">{{ 'lastname' | trans({},'customer') }}</th>
+                <th scope="col">{{ 'firstname' | trans({},'customer') }}</th>
+                <th scope="col">{{ 'email' | trans({},'customer') }}</th>
                 <th scope="col">
-                    {{ knp_pagination_sortable(customersPagination, 'Statut', 'isValidated') }}
+                    {{ knp_pagination_sortable(customersPagination, 'status' | trans({},'customer'), 'isValidated') }}
                 </th>
             </tr>
             </thead>
@@ -40,12 +40,12 @@
                             {% endif %}
                             <td>
                                 <a class="no-underline" href="{{ path('back_app_customer_show', {'id': customer.id}) }}">
-                                    <button type="button" class="button button-details">Détails</button>
+                                    <button type="button" class="button button-details">{{ 'details' | trans({},'customer') }}</button>
                                 </a>
                             </td>
                             <td>
                                 <a class="no-underline" href="{{ path('back_app_customer_edit', {'id': customer.id}) }}">
-                                    <button type="button" class="button button-details">Editer</button>
+                                    <button type="button" class="button button-details">{{ 'edit' | trans({},'customer') }}</button>
                                 </a>
                             </td>
                             {% if customer.isValidated != 1 %}
@@ -58,7 +58,7 @@
                 {% endfor %}
             {% else %}
                 <tr>
-                    <td colspan="7">Aucun client</td>
+                    <td colspan="7">{{ 'no customer' | trans({},'customer') }}</td>
                 </tr>
             {% endif %}
             </tbody>

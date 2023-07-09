@@ -1,6 +1,6 @@
 {% extends 'back/base.html.twig' %}
 
-{% block title %}Invoice{% endblock %}
+{% block title %}{{ 'invoice'|trans({},'invoice') }}{% endblock %}
 {% block main %}
 <style>
         body {
@@ -53,21 +53,21 @@
         }
     </style>
     <div class="container">
-        <h1>facture</h1>
+        <h1>{{ 'invoice'|trans({},'invoice') }}</h1>
         <div class="info">
-            <p>Information de la société (nom et adresse)</p>
-            <p>Date du jour : {{ "now"|date("d-m-Y") }}</p>
-            <p>Nom: {{ customer.lastname }}</p>
-            <p>Prénom {{ customer.firstname }}</p>
-            <p>Email: {{ customer.email }} </p>
+            <p>{{ 'company information'|trans({}, 'invoice') }} : (nom et adresse)</p>
+            <p>{{ 'today\'s date'|trans({}, 'invoice') }} : {{ "now"|date("d-m-Y") }}</p>
+            <p>{{ 'lastname'|trans({}, 'invoice') }} : {{ customer.lastname }}</p>
+            <p>{{ 'firstname'|trans({}, 'invoice') }} : {{ customer.firstname }}</p>
+            <p>{{ 'email'|trans({}, 'invoice') }} : {{ customer.email }} </p>
         </div>
         <table>
             <thead>
                 <tr>
                     <th></th>
                     <th></th>
-                    <th>Qté</th>
-                    <th>Total TTC</th>
+                    <th>{{ 'quantity'|trans({}, 'invoice') }}</th>
+                    <th>{{ 'total vat included'|trans({}, 'invoice') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -83,14 +83,14 @@
                             {% endfor %}
                         </tr>
                         <tr>
-                            <td class="total">Main d'oeuvre :</td>
+                            <td class="total">{{ 'workforce'|trans({}, 'invoice') }} :</td>
                             <td class="total">{{ invoicePrestation.prestation.workforce }} €</td>
                         </tr>
                     {% endfor %}
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="4" class="total">Total :</td>
+                    <td colspan="4" class="total">{{ 'total'|trans({}, 'invoice') }} :</td>
                     <td class="total">{{ total }} €</td>
                 </tr>
             </tfoot>

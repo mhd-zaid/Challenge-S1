@@ -4,7 +4,7 @@
     <div class="grid gap-6 mb-6 md:grid-cols-2">
         {{ form_row(form.title) }}
     </div>
-    <p class="text-main mb-3">Informations personnels</p>
+    <p class="text-main mb-3">{{ 'personal information'|trans({}, 'estimate') }}</p>
     <div class="grid gap-6 mb-6 md:grid-cols-2">
         <div>
             {{ form_row(form.firstname) }}
@@ -16,7 +16,7 @@
             {{ form_row(form.email) }}
         </div>
     </div>
-    <p class="text-main mb-3">Informations sur le véhicule</p>
+    <p class="text-main mb-3">{{ 'car information'|trans({}, 'estimate') }}</p>
     <div class="grid gap-6 mb-6 md:grid-cols-2">
         <div>
             {{ form_row(form.carId) }}
@@ -31,7 +31,7 @@
             {{ form_row(form.carModel) }}
         </div>
     </div>
-    <p class="text-main mb-3">Informations sur le devis</p>
+    <p class="text-main mb-3">{{ 'estimate information'|trans({}, 'estimate') }}</p>
     <div class="grid gap-6 mb-6 md:grid-cols-2">
         {{ form_row(form.validityDate) }}
     </div>
@@ -52,5 +52,5 @@
 {#{{ form_row(form.carModel) }}#}
 
 {#</div>#}
-<button class="rounded-full button button-valid">{{ button_label|default('Save') }}</button>
+<button class="rounded-full button button-valid">{{ button_label|default('save') |trans({}, 'estimate') }}</button>
 {{ form_end(form) }}

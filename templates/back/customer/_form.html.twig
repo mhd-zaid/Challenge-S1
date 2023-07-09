@@ -1,7 +1,7 @@
 {{ form_start(form) }}
 <div class="border-gray-200 bg-white shadow-md shadow-gray-400 rounded-lg p-6 mt-14 mb-4">
     {{ form_errors(form) }}
-    <p class="text-main mb-3">Informations personnels</p>
+    <p class="text-main mb-3">{{ 'personal informations' | trans({},'customer') }}</p>
     <div class="grid gap-6 mb-6 md:grid-cols-2">
         <div>
             {{ form_row(form.firstname) }}
@@ -16,7 +16,7 @@
             {{ form_row(form.phone) }}
         </div>
     </div>
-    <p class="text-main mb-3">Adresse de facturation</p>
+    <p class="text-main mb-3">{{ 'invoice address' | trans({},'customer') }}</p>
     <div class="grid gap-6 mb-6 md:grid-cols-2">
         <div>
             {{ form_row(form.address) }}
@@ -33,6 +33,6 @@
     </div>
     <div class="flex space-x-4">
     <a class="no-underline" href="{{ path('back_app_customer_edit', {'id': customer.id}) }}">
-        <button type="submit" class="button button-edit px-4 flex items-center justify-center space-x-4"><iconify-icon icon="dashicons:saved" style="color: white;" width="24" height="24"></iconify-icon>{{ button_label|default('Save') }}</button>
+        <button type="submit" class="button button-edit px-4 flex items-center justify-center space-x-4"><iconify-icon icon="dashicons:saved" style="color: white;" width="24" height="24"></iconify-icon>{{ button_label|default('save') }}</button>
     </a>
 {{ form_end(form) }}

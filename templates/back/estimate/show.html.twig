@@ -1,6 +1,6 @@
 {% extends 'back/base.html.twig' %}
 
-{% block title %}Estimate{% endblock %}
+{% block title %}{{ 'estimate'|trans({}, 'estimate') }}{% endblock %}
 
 {% block main %}
     <style>
@@ -56,22 +56,22 @@
 </head>
 <body>
     <div class="container">
-        <h1>Devis</h1>
+        <h1>{{ 'estimate'|trans({}, 'estimate') }}</h1>
         <div class="info">
-            <p>Information de la société (nom et adresse)</p>
-            <p>Date du jour : {{ "now"|date("d-m-Y") }}</p>
-            <p>Validity Date: {{ estimate.getValidityDate()|date('d-m-Y') }}</p>
-            <p>Nom: {{ customer.lastname }}</p>
-            <p>Prénom {{ customer.firstname }}</p>
-            <p>Email: {{ customer.email }} </p>
+            <p>{{ 'company information'|trans({}, 'estimate') }} : (nom et adresse)</p>
+            <p>{{ 'today\'s date'|trans({}, 'estimate') }} : {{ "now"|date("d-m-Y") }}</p>
+            <p>{{ 'validity date'|trans({}, 'estimate') }} : {{ estimate.getValidityDate()|date('d-m-Y') }}</p>
+            <p>{{ 'lastname'|trans({}, 'estimate') }} : {{ customer.lastname }}</p>
+            <p>{{ 'firstname'|trans({}, 'estimate') }} : {{ customer.firstname }}</p>
+            <p>{{ 'email'|trans({}, 'estimate') }} : {{ customer.email }} </p>
         </div>
         <table>
             <thead>
                 <tr>
                     <th></th>
                     <th></th>
-                    <th>Qté</th>
-                    <th>Total TTC</th>
+                    <th>{{ 'quantity'|trans({}, 'estimate') }}</th>
+                    <th>{{ 'total vat included'|trans({}, 'estimate') }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -87,18 +87,18 @@
                             {% endfor %}
                         </tr>
                         <tr>
-                            <td class="total">Main d'oeuvre :</td>
+                            <td class="total">{{ 'workforce'|trans({}, 'estimate') }} :</td>
                             <td class="total">{{ estimatePrestation.prestation.workforce }} €</td>
                         </tr>
                     {% endfor %}
             </tbody>
             <tfoot>
                 <tr>
-                    <td colspan="4" class="total">Total :</td>
+                    <td colspan="4" class="total">{{ 'total'|trans({}, 'estimate') }} :</td>
                     <td class="total">{{ total }} €</td>
                 </tr>
             </tfoot>
         </table>
-        <p>Devis gratuit</p>
+        <p>{{ 'free estimate'|trans({}, 'estimate') }}</p>
     </div>
 {% endblock %}
