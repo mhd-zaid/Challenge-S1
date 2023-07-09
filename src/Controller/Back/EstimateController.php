@@ -166,6 +166,7 @@ class EstimateController extends AdminController
            return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        dump($form);
         return $this->renderForm('back/estimate/new.html.twig', [
             'estimate' => $estimate,
             'form' => $form,

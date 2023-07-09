@@ -23,7 +23,11 @@
     <div class="border-gray-200 bg-white shadow-md shadow-gray-400 rounded-lg p-6 mt-14">
         <div class="flex justify-between items-center">
             <p class="text-main mb-3">Informations personnels</p>
+            {% if type=='customer' %}
+            <a class="no-underline" href="{{ path('back_app_customer_edit', {'id': user.id}) }}">
+            {% elseif type=='user' %}
             <a class="no-underline" href="{{ path('back_app_account_edit', {'id': user.id}) }}">
+            {% endif %}
                 <button type="button" class="button button-edit flex items-center">
                     <iconify-icon class="mr-3" icon="iconamoon:edit-bold" style="color: white;" width="24" height="24"></iconify-icon>
                     <p class="text-medium m-0">Modifier</p>
@@ -90,14 +94,14 @@
         </div>
 
     </div>
-    <div class="flex space-x-4">
+    <div class="flex space-x-4 mt-4">
         {% if type=='customer' %}
-            {{ include('back/customer/_delete_form.html.twig') }}
+            {% include 'back/customer/_delete_form.html.twig' with {'from': 'edit'} %}
             {% if customer.isValidated == false %}
-                {{ include('back/customer/_validate_form.html.twig') }}
+                {% include 'back/customer/_validate_form.html.twig' with {'from':'show'} %}
             {% endif %}
         {% elseif type=='user' %}
-            {{ include('back/user/_delete_form.html.twig') }}
+            {% include 'back/customer/_delete_form.html.twig' with {'from': 'account'} %}
         {% endif %}
     </div>
 </div>

@@ -5,16 +5,16 @@
 {% block main %}
     <h1>Product index</h1>
 
-    <table class="table">
+    <div class="card">
+    <table>
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Quantity</th>
-                <th>Total_ht</th>
-                <th>Total_tva</th>
-                <th>Description</th>
-                <th>actions</th>
+                <th scope="col">Id</th>
+                <th scope="col">Title</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total_ht</th>
+                <th scope="col">Total_tva</th>
+                <th scope="col">Description</th>
             </tr>
         </thead>
         <tbody>
@@ -28,6 +28,7 @@
                 <td>{{ product.description }}</td>
                 <td>
                     <a href="{{ path('back_app_product_show', {'id': product.id}) }}">show</a>
+                <td>
                     <a href="{{ path('back_app_product_edit', {'id': product.id}) }}">edit</a>
                 </td>
             </tr>
@@ -38,6 +39,7 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
     <a href="{{ path('back_app_product_new') }}">Create new</a>
 {% endblock %}
