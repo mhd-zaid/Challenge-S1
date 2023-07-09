@@ -75,7 +75,11 @@ class EstimateController extends AdminController
 
         $form = $this->createForm(EstimateType::class, $estimate);
         $form->handleRequest($request);
+<<<<<<< HEAD
         
+=======
+
+>>>>>>> 1381fad (estimate controller set array prestations)
         if ($form->isSubmitted() && $form->isValid()) {
             $prestations = $form->get('estimatePrestations')->getData();
             $customer = $customerRepository->findOneBy([
@@ -83,7 +87,7 @@ class EstimateController extends AdminController
                 'isRegistered' => true
             ]);
 
-            
+                        
             $isCustomerExist = $customer ? true: false;
 
             if ($customer === null) {
@@ -102,6 +106,9 @@ class EstimateController extends AdminController
             $estimate->setStatus('PENDING');
             $estimateRepository->save($estimate, true);
 
+
+            
+            $prestations = $form->get('estimatePrestations')->getData();
 
             $emailCustomer = $form->get('email')->getData();
             $total = $estimate->getTotal($estimatePrestationRepository);
@@ -197,10 +204,16 @@ class EstimateController extends AdminController
     {
         $total = $estimate->getTotal($estimatePrestationRepository);
         $estimatePrestations = $estimatePrestationRepository->findBy(['estimate' => $estimate]);
+
+        $prestations = [];
+
+        foreach($estimatePrestations as $estimatePrestation){
+            $prestations[] = $estimatePrestation->getPrestation();
+        }
         $html = $this->renderView('back/pdf/estimate.html.twig', [
             'estimate' => $estimate,
             'customer' => $estimate->getCustomer(),
-            'estimatePrestations' => $estimatePrestations,
+            'prestations' => $prestations,
             'total' => $total
         ]);
         return new PdfResponse(
