@@ -74,6 +74,7 @@ class PrestationController extends AdminController
     #[Route('/{id}/show', name: 'app_prestation_show', methods: ['GET'])]
     public function show(Prestation $prestation): Response
     {
+        dump($prestation);
         return $this->render('back/prestation/show.html.twig', [
             'prestation' => $prestation,
         ]);
