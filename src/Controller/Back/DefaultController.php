@@ -6,6 +6,7 @@ use App\Entity\Customer;
 use App\Entity\Estimate;
 use App\Entity\EstimatePrestation;
 use App\Entity\Invoice;
+use App\Entity\InvoicePrestation;
 use App\Repository\EstimatePrestationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Repository\EstimateRepository;
@@ -22,7 +23,7 @@ use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 use Symfony\Component\HttpFoundation\Request;
 
-class DefaultController extends AbstractController
+class DefaultController extends AdminController
 {
     
     #[Route('/', name: 'default_index', methods: ['GET'])]
@@ -40,7 +41,6 @@ class DefaultController extends AbstractController
         if ($this->isGranted('ROLE_MECHANIC')) {
             $estimates = $em->getRepository(Estimate::class)->findAll();
             $invoices = $em->getRepository(Invoice::class)->findAll();
-            $estimatesTotal = $this->getEstimateTotal($estimates,$em->getRepository(EstimatePrestation::class));
         }
 
         $chart = $chartBuilder->createChart(Chart::TYPE_PIE);
@@ -62,6 +62,9 @@ class DefaultController extends AbstractController
             $request->query->getInt('page', 1),
             5
         );
+        $estimatesTotal = $this->getEstimateTotal($estimates,$em->getRepository(EstimatePrestation::class));
+        $invoicesTotal = $this->getInvoiceTotal($invoices,$em->getRepository(InvoicePrestation::class));
+
         $chart->setData([
             'labels' => ['Nouveau Clients', 'Devis en attente', 'Prestation en attente', 'Presation effectuée'],
             'datasets' => [
@@ -94,11 +97,13 @@ class DefaultController extends AbstractController
                 ],
             ],
         ]);
-
+        dump($invoicesPagination);
+        dump($estimatesPagination);
         return $this->render('back/default/index.html.twig',[
             'chart' => $chart,
             'estimates'=>$estimates,
             'estimatesTotal'=> $estimatesTotal,
+            'invoicesTotal'=> $invoicesTotal,
             'invoices'=>$invoices,
             'customers'=>$cutomers,
             'invoicesPaid'=>$invoicesPaid,

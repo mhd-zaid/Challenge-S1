@@ -58,6 +58,9 @@ class EstimateType extends AbstractType
                 'constraints' => [
                     new Assert\GreaterThan('today')
                 ],
+                'attr' => [
+                    'class' => 'datepicker',
+                ],
             ])
             ->add('carId', TextType::class, [
                 'label' => 'Car ID'

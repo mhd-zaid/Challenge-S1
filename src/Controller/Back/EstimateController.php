@@ -28,7 +28,7 @@ use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Snappy\Pdf;
 
 #[Route('/estimate')]
-class EstimateController extends AbstractController
+class EstimateController extends AdminController
 {
     private $mailer;
     private $security;
@@ -40,7 +40,7 @@ class EstimateController extends AbstractController
     }
 
     #[Route('/', name: 'app_estimate_index', methods: ['GET'])]
-    public function index(EstimateRepository $estimateRepository, Security $security, Request $request,  PaginatorInterface $paginator): Response
+    public function index(EstimateRepository $estimateRepository, EstimatePrestationRepository $estimatePrestationRepository,Security $security, Request $request,  PaginatorInterface $paginator): Response
     {
         if($this->isGranted('ROLE_ADMIN') || $this->isGranted('ROLE_MECHANIC') || $this->isGranted('ROLE_ACCOUNTANT')){
             $estimates = $estimateRepository->findAll();
@@ -53,10 +53,12 @@ class EstimateController extends AbstractController
             $request->query->getInt('page', 1), /*page number*/
             5 /*limit per page*/
         );
+        $estimatesTotal = $this->getEstimateTotal($estimates,$estimatePrestationRepository);
 
         return $this->render('back/estimate/index.html.twig', [
             'estimates' => $estimates,
             'estimatesPagination' => $estimatesPagination,
+            'estimatesTotal' => $estimatesTotal
         ]);
     }
 
@@ -73,7 +75,7 @@ class EstimateController extends AbstractController
 
         $form = $this->createForm(EstimateType::class, $estimate);
         $form->handleRequest($request);
-        
+
         if ($form->isSubmitted() && $form->isValid()) {
             $prestations = $form->get('estimatePrestations')->getData();
             $customer = $customerRepository->findOneBy([
@@ -81,7 +83,7 @@ class EstimateController extends AbstractController
                 'isRegistered' => true
             ]);
 
-            
+                        
             $isCustomerExist = $customer ? true: false;
 
             if ($customer === null) {
@@ -100,6 +102,9 @@ class EstimateController extends AbstractController
             $estimate->setStatus('PENDING');
             $estimateRepository->save($estimate, true);
 
+
+            
+            $prestations = $form->get('estimatePrestations')->getData();
 
             $emailCustomer = $form->get('email')->getData();
             $total = $estimate->getTotal($estimatePrestationRepository);
@@ -157,6 +162,7 @@ class EstimateController extends AbstractController
            return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        dump($form);
         return $this->renderForm('back/estimate/new.html.twig', [
             'estimate' => $estimate,
             'form' => $form,
@@ -195,10 +201,16 @@ class EstimateController extends AbstractController
     {
         $total = $estimate->getTotal($estimatePrestationRepository);
         $estimatePrestations = $estimatePrestationRepository->findBy(['estimate' => $estimate]);
+
+        $prestations = [];
+
+        foreach($estimatePrestations as $estimatePrestation){
+            $prestations[] = $estimatePrestation->getPrestation();
+        }
         $html = $this->renderView('back/pdf/estimate.html.twig', [
             'estimate' => $estimate,
             'customer' => $estimate->getCustomer(),
-            'estimatePrestations' => $estimatePrestations,
+            'prestations' => $prestations,
             'total' => $total
         ]);
         return new PdfResponse(
@@ -262,5 +274,18 @@ class EstimateController extends AbstractController
         $customerRepository->save($customer,true);
 
         return $customer;
+    }
+
+    public function getEstimateTotal(Array $estimates,EstimatePrestationRepository $estimatePrestationRepository): array
+    {
+        $estimatesTotal = [];
+        foreach ($estimates as $estimate) {
+            $estimatesTotal[] = [
+                'id' => $estimate->getId(),
+                'total' => $estimate->getTotal($estimatePrestationRepository)
+
+            ];
+        }
+        return $estimatesTotal;
     }
 }

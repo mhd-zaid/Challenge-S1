@@ -11,13 +11,14 @@ use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 
 #[Route('/customer')]
-class CustomerController extends AbstractController
+class CustomerController extends AdminController
 {
     private $mailer;
 
@@ -69,11 +70,18 @@ class CustomerController extends AbstractController
     }
 
     #[Route('/{id}/validate', name: 'app_customer_validate', methods: ['POST'])]
-    public function validate(Customer $customer, CustomerRepository $customerRepository): Response
+    public function validate(Customer $customer, CustomerRepository $customerRepository, RequestStack $requestStack): Response
     {
         $customer->setIsValidated(true);
-        $customerRepository->save($customer, true);
-        return $this->redirectToRoute('back_app_customer_show', ['id'=>$customer->getId()] , Response::HTTP_SEE_OTHER);
+        $request = $requestStack->getMainRequest();
+        $referer = $request->headers->get('referer');
+        if(str_contains($referer, $customer->getId())){
+            $customerRepository->save($customer, true);
+            return $this->redirectToRoute('back_app_customer_show', ['id'=>$customer->getId()] , Response::HTTP_SEE_OTHER);
+        }else{
+            $customerRepository->save($customer, true);
+            return $this->redirectToRoute('back_app_customer_index', [], Response::HTTP_SEE_OTHER);
+        }
     }
 
     #[Route('/new/{token}', name: 'app_customer_new', methods: ['GET', 'POST'])]

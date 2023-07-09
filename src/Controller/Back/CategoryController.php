@@ -5,6 +5,7 @@ namespace App\Controller\Back;
 use App\Entity\Category;
 use App\Form\CategoryType;
 use App\Repository\CategoryRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,38 +14,30 @@ use Symfony\Component\Routing\Annotation\Route;
 #[Route('/category')]
 class CategoryController extends AbstractController
 {
-    #[Route('/', name: 'app_category_index', methods: ['GET'])]
-    public function index(CategoryRepository $categoryRepository): Response
-    {
-        return $this->render('back/category/index.html.twig', [
-            'categories' => $categoryRepository->findAll(),
-        ]);
-    }
-
-    #[Route('/new', name: 'app_category_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, CategoryRepository $categoryRepository): Response
+    #[Route('/', name: 'app_category_index', methods: ['GET', 'POST'])]
+    public function index(Request $request, CategoryRepository $categoryRepository, PaginatorInterface $paginator): Response
     {
         $category = new Category();
         $form = $this->createForm(CategoryType::class, $category);
         $form->handleRequest($request);
 
+
         if ($form->isSubmitted() && $form->isValid()) {
             $categoryRepository->save($category, true);
-
             return $this->redirectToRoute('back_app_category_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        return $this->renderForm('back/category/new.html.twig', [
+        $category = $categoryRepository->findAll();
+        $categoriesPagination = $paginator->paginate(
+            $category, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            5 /*limit per page*/
+        );
+        return $this->renderForm('back/category/index.html.twig', [
+            'categories' => $categoryRepository->findAll(),
             'category' => $category,
             'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_category_show', methods: ['GET'])]
-    public function show(Category $category): Response
-    {
-        return $this->render('back/category/show.html.twig', [
-            'category' => $category,
+            'categoriesPagination' => $categoriesPagination
         ]);
     }
 

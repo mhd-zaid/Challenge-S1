@@ -7,7 +7,7 @@
 
     <div>
         <div class="card">
-            {% include 'components/table_Invoice_Estimate.html.twig' with {'type': 'invoice', 'pagination': invoicesPagination} %}
+            {% include 'components/table_Invoice_Estimate.html.twig' with {'type': 'invoice', 'pagination': invoicesPagination, 'invoicesTotal': invoicesTotal} %}
         </div>
         <div>
             <div class="flex space-x-16 items-center w-full py-2 px-2 bg-gray-200">

@@ -7,6 +7,9 @@
 @import "~bootstrap/scss/bootstrap";
 body{
     @apply h-full;
+    & a{
+        @apply no-underline;
+    }
     & .text{
         color: $color-main-text;
         &-title{

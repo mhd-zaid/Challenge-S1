@@ -3,7 +3,7 @@
 {% block title %}Presta Auto - Client{% endblock %}
 
 {% block main %}
-    {% include 'components/page_header.html.twig' with {'title': 'Mon compte', 'link': path('back_app_customer_index')} %}
+    {% include 'components/page_header.html.twig' with {'title': 'Client n°'~customer.id, 'link': path('back_app_customer_index')} %}
 
     {% include 'components/page_account.html.twig' with {'user': customer, 'type': 'customer'} %}
 

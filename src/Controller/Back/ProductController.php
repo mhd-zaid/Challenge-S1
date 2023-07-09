@@ -13,7 +13,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 #[Route('/product')]
 #[Security('is_granted("ROLE_MECHANIC")')]
-class ProductController extends AbstractController
+class ProductController extends AdminController
 {
     #[Route('/', name: 'app_product_index', methods: ['GET'])]
     public function index(ProductRepository $productRepository): Response
@@ -61,7 +61,6 @@ class ProductController extends AbstractController
 
             return $this->redirectToRoute('back_app_product_index', [], Response::HTTP_SEE_OTHER);
         }
-
         return $this->renderForm('back/product/edit.html.twig', [
             'product' => $product,
             'form' => $form,

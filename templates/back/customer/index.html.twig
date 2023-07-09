@@ -50,9 +50,7 @@
                             </td>
                             {% if customer.isValidated != 1 %}
                                 <td>
-                                    <a class="no-underline" href="{{ path('back_app_customer_edit', {'id': customer.id}) }}">
-                                        <button type="button" class="button button-details">Valider</button>
-                                    </a>
+                                    {% include 'back/customer/_validate_form.html.twig'  with {'from': 'index'} %}
                                 </td>
                             {% endif %}
                         </tr>

@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\UserType;
 use App\Form\UserUpdateType;
 use App\Repository\UserRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,14 +17,22 @@ use Symfony\Component\Uid\Uuid;
 use Twig\Environment;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 #[Route('/user')]
-class UserController extends AbstractController
+class UserController extends AdminController
 {
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
     #[Security('is_granted("ROLE_SUPER_ADMIN") or is_granted("ROLE_ADMIN")')]
-    public function index(UserRepository $userRepository): Response
+    public function index(UserRepository $userRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        $user = $userRepository->findAll();
+        $userPagination = $paginator->paginate(
+            $user, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            5 /*limit per page*/
+        );
+        dump($userRepository->findAll());
         return $this->render('back/user/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $user,
+            'userPagination' => $userPagination,
         ]);
     }
 
