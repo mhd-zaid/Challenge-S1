@@ -16,8 +16,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 #[Route('/customer')]
+#[Security('is_granted("ROLE_MECHANIC")')]
 class CustomerController extends AdminController
 {
     private $mailer;
@@ -62,7 +64,6 @@ class CustomerController extends AdminController
             return $this->redirectToRoute('back_app_customer_index', [], Response::HTTP_SEE_OTHER);
         }
 
-        dump($form);
         return $this->renderForm('back/customer/edit.html.twig', [
             'customer' => $customer,
             'form' => $form,

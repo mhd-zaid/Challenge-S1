@@ -18,7 +18,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Security\Core\Security;
 use Knp\Component\Pager\PaginatorInterface;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as Sec;
 #[Route('/invoice')]
 class InvoiceController extends AdminController
 {
@@ -54,7 +54,7 @@ class InvoiceController extends AdminController
     }
 
     #[Route('/{id}/success', name: 'app_invoice_success', methods: ['GET'])]
-    #[Security('user == invoice.getCustomer() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
+    #[Sec('user == invoice.getCustomer() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
     public function success(Invoice $invoice,Pdf $pdf,InvoicePrestationRepository $invoicePrestationRepository): Response
     {
         $invoicePrestations = $invoicePrestationRepository->findBy(['invoice' => $invoice]);
@@ -90,13 +90,12 @@ class InvoiceController extends AdminController
     }
 
     #[Route('/{id}/download', name: 'app_invoice_download', methods: ['GET'])]
-    #[Security('user == invoice.getCustomer() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
+    #[Sec('user == invoice.getCustomer() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
     public function download(Invoice $invoice,Pdf $pdf,InvoicePrestationRepository $invoicePrestationRepository): Response
     {
    
         $total = $invoice->getTotal($invoicePrestationRepository);
         $invoicePrestations = $invoicePrestationRepository->findBy(['invoice' => $invoice]);
-        dump($invoicePrestations);
         $html = $this->renderView('back/pdf/invoice.html.twig', [
             'invoice' => $invoice,
             'customer' => $invoice->getCustomer(),
@@ -110,6 +109,7 @@ class InvoiceController extends AdminController
     }
 
     #[Route('/{id}/show', name: 'app_invoice_show', methods: ['GET'])]
+    #[Sec('user == invoice.getCustomer() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
     public function show(Invoice $invoice,InvoicePrestationRepository $invoicePrestationRepository): Response
     {
         $total = $invoice->getTotal($invoicePrestationRepository);
@@ -124,7 +124,6 @@ class InvoiceController extends AdminController
     }
 
     #[Route('/{id}/{uuid}', name: 'app_invoice_update', methods: ['GET'])]
-    #[Security('is_granted("ROLE_MECHANIC")')]
     public function update(Request $request, $uuid, Estimate $estimate, InvoiceRepository $invoiceRepository, EstimateRepository $estimateRepository): Response
     {
         if($estimate->getUuidSuccessPayment() !== $uuid){
@@ -138,24 +137,6 @@ class InvoiceController extends AdminController
         $invoiceRepository->save($invoice, true);
         return $this->redirectToRoute('back_app_invoice_success', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
     }
-
-    // #[Route('/{id}/edit', name: 'app_invoice_edit', methods: ['GET', 'POST'])]
-    // public function edit(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository): Response
-    // {
-    //     $form = $this->createForm(InvoiceType::class, $invoice);
-    //     $form->handleRequest($request);
-
-    //     if ($form->isSubmitted() && $form->isValid()) {
-    //         $invoiceRepository->save($invoice, true);
-
-    //         return $this->redirectToRoute('app_invoice_index', [], Response::HTTP_SEE_OTHER);
-    //     }
-
-    //     return $this->renderForm('invoice/edit.html.twig', [
-    //         'invoice' => $invoice,
-    //         'form' => $form,
-    //     ]);
-    // }
 
     #[Route('/{id}', name: 'app_invoice_delete', methods: ['POST'])]
     #[Security('is_granted("ROLE_ADMIN")')]

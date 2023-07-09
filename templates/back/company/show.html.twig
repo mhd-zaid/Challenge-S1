@@ -1,8 +1,8 @@
-{% extends 'base.html.twig' %}
+{% extends 'back/base.html.twig' %}
 
 {% block title %}Company{% endblock %}
 
-{% block body %}
+{% block main %}
     <h1>Company</h1>
 
     <table class="table">
@@ -61,14 +61,15 @@
             </tr>
             <tr>
                 <th>CompanyImageName</th>
-                <td>{{ company.companyImageName }}</td>
+                <td>
+                    <img class="w-32" src="{{ vich_uploader_asset(company, 'companyImageFile') }}" alt="logo" class="w-full h-auto m-4">
+                <td>
             </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('back_app_company_index') }}">back to list</a>
+    <a href="{{ path('back_app_company_edit', {'id': company.id}) }}">
+            <button type="submit" class="button button-edit px-4 flex items-center justify-center space-x-4"><iconify-icon icon="dashicons:saved" style="color: white;" width="24" height="24"></iconify-icon>{{ button_label|default('Modifier') }}</button>
+        </a>
 
-    <a href="{{ path('back_app_company_edit', {'id': company.id}) }}">edit</a>
-
-    {{ include('back/company/_delete_form.html.twig') }}
 {% endblock %}

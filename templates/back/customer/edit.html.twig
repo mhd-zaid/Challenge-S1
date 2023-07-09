@@ -3,7 +3,7 @@
 {% block title %}Presta Auto - {{ 'customer' | trans({},'customer') }}{% endblock %}
 
 {% block main %}
-    {% include 'components/page_header.html.twig' with {'title': {{ 'edit customer no.' | trans({},'customer') }}~customer.id, 'link': path('back_app_customer_show', {'id': customer.id})} %}
+    {% include 'components/page_header.html.twig' with {'title': 'edit customer no.' | trans({},'customer')~customer.id, 'link': path('back_app_customer_show', {'id': customer.id})} %}
 
     {{ include('back/customer/_form.html.twig', {'button_label': 'update'}) }}
 

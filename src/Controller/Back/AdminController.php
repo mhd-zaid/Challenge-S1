@@ -9,7 +9,6 @@ use App\Repository\InvoicePrestationRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Routing\Annotation\Route;
 
-#[Route('/estimate')]
 class AdminController extends AbstractController
 {
 

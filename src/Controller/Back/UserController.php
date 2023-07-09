@@ -17,6 +17,7 @@ use Symfony\Component\Uid\Uuid;
 use Twig\Environment;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 #[Route('/user')]
+#[Security('is_granted("ROLE_ADMIN")')]
 class UserController extends AdminController
 {
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
@@ -29,7 +30,7 @@ class UserController extends AdminController
             $request->query->getInt('page', 1), /*page number*/
             5 /*limit per page*/
         );
-        dump($userRepository->findAll());
+        
         return $this->render('back/user/index.html.twig', [
             'users' => $user,
             'userPagination' => $userPagination,
@@ -37,7 +38,6 @@ class UserController extends AdminController
     }
 
     #[Route('/new', name: 'app_user_new', methods: ['GET', 'POST'])]
-    #[Security('is_granted("ROLE_SUPER_ADMIN") or is_granted("ROLE_ADMIN")')]
     public function new(Request $request, UserRepository $userRepository,MailerInterface $mailer): Response
     {
         $user = new User();
@@ -96,7 +96,6 @@ class UserController extends AdminController
     }
 
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
-    #[Security('is_granted("ROLE_SUPER_ADMIN") or is_granted("ROLE_ADMIN")')]
     public function delete(Request $request, User $user, UserRepository $userRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {

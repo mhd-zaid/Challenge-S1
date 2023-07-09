@@ -9,40 +9,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 #[Route('/company')]
+#[Security('is_granted("ROLE_ADMIN")')]
 class CompanyController extends AbstractController
 {
-    #[Route('/', name: 'app_company_index', methods: ['GET'])]
-    public function index(CompanyRepository $companyRepository): Response
+    #[Route('/', name: 'app_company_show', methods: ['GET'])]
+    public function show(CompanyRepository $companyRepository): Response
     {
-        return $this->render('back/company/index.html.twig', [
-            'companies' => $companyRepository->findAll(),
+        $company = $companyRepository->findOneBy([
+            'id' => 1
         ]);
-    }
 
-    #[Route('/new', name: 'app_company_new', methods: ['GET', 'POST'])]
-    public function new(Request $request, CompanyRepository $companyRepository): Response
-    {
-        $company = new Company();
-        $form = $this->createForm(CompanyType::class, $company);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $companyRepository->save($company, true);
-
-            return $this->redirectToRoute('back_app_company_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('back/company/new.html.twig', [
-            'company' => $company,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_company_show', methods: ['GET'])]
-    public function show(Company $company): Response
-    {
         return $this->render('back/company/show.html.twig', [
             'company' => $company,
         ]);

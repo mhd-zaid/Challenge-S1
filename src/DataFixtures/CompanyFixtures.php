@@ -17,6 +17,7 @@ class CompanyFixtures extends Fixture
         $tva = $faker->regexify('FR[0-9]{2}[0-9]{9}');
 
         $object = (new Company())
+            ->setId(1)
             ->setName("Presta Auto")
             ->setEmail($faker->email)
             ->setOwnerFirstName($faker->firstName)

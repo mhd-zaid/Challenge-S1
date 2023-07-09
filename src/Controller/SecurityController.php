@@ -50,8 +50,6 @@ class SecurityController extends AbstractController
             $customer = $em->getRepository(Customer::class)->findOneBy([
                 'email' => $form->get('email')->getData()
             ]);
-            dump($user);
-            dump($customer);
 
             if(!empty($user)){
                 $user->setValidationToken(Uuid::v4()->__toString());

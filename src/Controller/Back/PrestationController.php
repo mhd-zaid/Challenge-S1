@@ -16,10 +16,10 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 #[Route('/prestation')]
+#[Security('is_granted("ROLE_MECHANIC")')]
 class PrestationController extends AdminController
 {
     #[Route('/', name: 'app_prestation_index')]
-    #[Security('is_granted("ROLE_CUSTOMER") and !is_granted("ROLE_ACCOUNTANT") or is_granted("ROLE_ADMIN")')]
     public function index(PrestationRepository $prestationRepository,CategoryRepository $categoryRepository): Response
     {
         return $this->render('back/prestation/index.html.twig', [
@@ -74,7 +74,6 @@ class PrestationController extends AdminController
     #[Route('/{id}/show', name: 'app_prestation_show', methods: ['GET'])]
     public function show(Prestation $prestation): Response
     {
-        dump($prestation);
         return $this->render('back/prestation/show.html.twig', [
             'prestation' => $prestation,
         ]);

@@ -13,24 +13,17 @@ use App\Repository\InvoiceRepository;
 use App\Repository\CustomerRepository;
 use App\Repository\EstimatePrestationRepository;
 use App\Repository\UserRepository;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Security\Core\Security;
-use Doctrine\Common\Collections\ArrayCollection;
-use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Snappy\Pdf;
 use Stripe\Stripe;
-use Stripe\Checkout\Session;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 #[Route('/stripe')]
+#[Security('user === estimate.getCustomer()')]
 class StripeController extends AdminController
 {
 
@@ -63,33 +56,5 @@ class StripeController extends AdminController
             'cancel_url' => $cancelUrl,
         ]);
         return new RedirectResponse($session->url);
-    }
-
-    #[Route('/{id}/edit', name: 'app_estimate_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Estimate $estimate, EstimateRepository $estimateRepository): Response
-    {
-        $form = $this->createForm(EstimateType::class, $estimate);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $estimateRepository->save($estimate, true);
-
-            return $this->redirectToRoute('app_estimate_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->renderForm('back/estimate/edit.html.twig', [
-            'estimate' => $estimate,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/{id}', name: 'app_estimate_delete', methods: ['POST'])]
-    public function delete(Request $request, Estimate $estimate, EstimateRepository $estimateRepository): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$estimate->getId(), $request->request->get('_token'))) {
-            $estimateRepository->remove($estimate, true);
-        }
-
-        return $this->redirectToRoute('app_estimate_index', [], Response::HTTP_SEE_OTHER);
     }
 }

@@ -4,25 +4,18 @@ namespace App\Controller\Back;
 use App\Entity\Customer;
 use App\Entity\User;
 use App\Form\AccountType;
-use App\Form\CustomerType;
-use App\Form\UserType;
-use App\Repository\UserRepository;
-use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bridge\Twig\Mime\TemplatedEmail;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Uid\Uuid;
-use Twig\Environment;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 #[Route('/account')]
 class AccountController extends AdminController
 {
 
     #[Route('/{id}', name: 'app_account_show', methods: ['GET'])]
+    #[Security('user === user')]
     public function show(EntityManagerInterface $em): Response
     {
         $user = $em->getRepository(User::class)->findOneBy(['id' => $this->getUser()]);
@@ -42,8 +35,9 @@ class AccountController extends AdminController
             return $this->redirectToRoute('back_default_index');
         }
     }
-
+    
     #[Route('/{id}/edit', name: 'app_account_edit', methods: ['GET', 'POST'])]
+    #[Security('user === user')]
     public function edit(Request $request, EntityManagerInterface $em): Response
     {
         $user = $em->getRepository(User::class)->findOneBy(['id' => $this->getUser()]);

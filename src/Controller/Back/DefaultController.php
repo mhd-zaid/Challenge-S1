@@ -97,8 +97,7 @@ class DefaultController extends AdminController
                 ],
             ],
         ]);
-        dump($invoicesPagination);
-        dump($estimatesPagination);
+
         return $this->render('back/default/index.html.twig',[
             'chart' => $chart,
             'estimates'=>$estimates,
