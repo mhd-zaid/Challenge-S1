@@ -75,6 +75,7 @@ class EstimateController extends AdminController
 
         $form = $this->createForm(EstimateType::class, $estimate);
         $form->handleRequest($request);
+        
 
         if ($form->isSubmitted() && $form->isValid()) {
             $prestations = $form->get('estimatePrestations')->getData();

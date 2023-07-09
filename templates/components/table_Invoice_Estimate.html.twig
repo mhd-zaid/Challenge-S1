@@ -1,25 +1,25 @@
-{% set NO_DATA_MESSAGE = "Aucun devis" %}
+{% set NO_DATA_MESSAGE =  'no estimate'|trans({}, 'estimate') %}
 
 <table>
     <thead>
     <tr>
         <th scope="col" class="px-6 py-3 text-center">
             {% if type == "estimate" and estimatesPagination is not null %}
-                {{ knp_pagination_sortable(estimatesPagination, 'Devis n°', 'id') }}
+                {{ knp_pagination_sortable(estimatesPagination, 'estimate no.'|trans({}, 'estimate') , 'id') }}
             {% elseif type == "invoice" and invoicesPagination is not null %}
-                {{ knp_pagination_sortable(invoicesPagination, 'Facture n°', 'id') }}
+                {{ knp_pagination_sortable(invoicesPagination, 'invoice no.'|trans({}, 'invoice') , 'id') }}
             {% endif %}
         </th>
         {% if type == "estimate" %}
-        <th scope="col">Véhicule</th>
+        <th scope="col">{{ 'car'|trans({}, 'estimate') }}</th>
         {% endif %}
-        <th scope="col">Client N°</th>
-        <th scope="col">Date du devis</th>
-        <th scope="col">Montant</th>
+        <th scope="col">{{ 'customer no.'|trans({}, 'estimate') }}</th>
+        <th scope="col">{{ 'estimate date'|trans({}, 'estimate') }}</th>
+        <th scope="col">{{ 'amount'|trans({}, 'estimate') }}</th>
             {% if type == "invoice" %}
-        <th scope="col">{{ knp_pagination_sortable(invoicesPagination, 'Statut', 'isValidated') }}</th>
+        <th scope="col">{{ knp_pagination_sortable(invoicesPagination, 'status'|trans({}, 'estimate') , 'isValidated') }}</th>
             {% elseif type == "estimate" %}
-        <th scope="col">{{ knp_pagination_sortable(estimatesPagination, 'Statut', 'isValidated') }}</th>
+        <th scope="col">{{ knp_pagination_sortable(estimatesPagination, 'status'|trans({}, 'invoice') , 'isValidated') }}</th>
             {% endif %}
     </tr>
     </thead>
@@ -38,7 +38,7 @@
                 <td><iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon></td>
                 <td>
                     <a href="{{ path('back_app_invoice_show', {'id': invoice.id}) }}">
-                        <button type="button" class="button button-details">Details</button>
+                        <button type="button" class="button button-details">{{ 'details'|trans({}, 'invoice') }}</button>
                     </a>
                 </td>
                 <td>
@@ -71,7 +71,7 @@
                 </td>
                 <td>
                     <a href="{{ path('back_app_estimate_show', {'id': estimate.id}) }}">
-                        <button type="button" class="button button-details">Details</button>
+                        <button type="button" class="button button-details">{{ 'details'|trans({}, 'estimate') }}</button>
                     </a>
                 </td>
                 <td>
@@ -83,7 +83,7 @@
         {% endfor %}
     {% else %}
         <tr>
-            <td colspan="7">Aucun devis</td>
+            <td colspan="7">{{ 'no estimate'|trans({}, 'estimate') }}</td>
         </tr>
     {% endif %}
     </tbody>
