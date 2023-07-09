@@ -172,31 +172,62 @@ class EstimateController extends AdminController
     }
 
     #[Route('/decline/{id}', name: 'app_estimate_decline', methods: ['GET'])]
-    #[Sec('user == estimate.getCustomer() or is_granted("ROLE_MECHANIC")')]
+    #[Sec('user == estimate.getCustomer() or is_granted("ROLE_MECHANIC") and estimate.getStatus() == "PENDING"')]
     public function decline(Estimate $estimate, EntityManagerInterface $em): Response
     {
-        //Reset les quantity au product et delete le devis et la facture avec leurs devisProduit et factureProduit correspondant
-        $estimatePrestations = $em->getRepository(EstimatePrestation::class)->findBy(['estimate' => $estimate]);
-
-        foreach($estimatePrestations as $estimatePrestation){
-            $prestation = $estimatePrestation->getPrestation();
-            foreach($prestation->getPrestationProducts() as $prestationProduct){
-                $productUpdate = $prestationProduct->getProduct();
-                $productUpdate->setQuantity($prestationProduct->getProduct()->getQuantity() + $prestationProduct->getQuantity());
-                $em->getRepository(Product::class)->save($productUpdate, true);
+        if($estimate->getStatus() == "PENDING")
+        {
+            //Reset les quantity au product et delete le devis et la facture avec leurs devisProduit et factureProduit correspondant
+            $estimatePrestations = $em->getRepository(EstimatePrestation::class)->findBy(['estimate' => $estimate]);
+    
+            foreach($estimatePrestations as $estimatePrestation){
+                $prestation = $estimatePrestation->getPrestation();
+                foreach($prestation->getPrestationProducts() as $prestationProduct){
+                    $productUpdate = $prestationProduct->getProduct();
+                    $productUpdate->setQuantity($prestationProduct->getProduct()->getQuantity() + $prestationProduct->getQuantity());
+                    $em->getRepository(Product::class)->save($productUpdate, true);
+                }
+                
             }
             
+            $estimate->setStatus('REFUSED');
+            $em->getRepository(Estimate::class)->save($estimate, true);
+            $invoice = $estimate->getInvoice();
+            $invoice->setStatus('REFUSED');
+            $em->getRepository(Invoice::class)->save($invoice, true);  
+            return $this->render('back/estimate/index.html.twig', [
+                'estimates' => $em->getRepository(Estimate::class)->findAll(),
+                'isUser' => false
+            ]);
         }
-        
-        $estimate->setStatus('REFUSED');
-        $em->getRepository(Estimate::class)->save($estimate, true);
-        $invoice = $estimate->getInvoice();
-        $invoice->setStatus('REFUSED');
-        $em->getRepository(Invoice::class)->save($invoice, true);  
-        return $this->render('back/estimate/index.html.twig', [
-            'estimates' => $em->getRepository(Estimate::class)->findAll(),
-            'isUser' => false
-        ]);
+    }
+
+    #[Route('/delete/{id}', name: 'app_estimate_delete', methods: ['POST'])]
+    #[Sec('is_granted("ROLE_MECHANIC")')]
+    public function delete(Request $request, Estimate $estimate, EntityManagerInterface $em): Response
+    {
+        if ($estimate->getStatus() != "PAID") {
+            $estimatePrestations = $em->getRepository(EstimatePrestation::class)->findBy(['estimate' => $estimate]);
+    
+            foreach($estimatePrestations as $estimatePrestation){
+                $prestation = $estimatePrestation->getPrestation();
+                foreach($prestation->getPrestationProducts() as $prestationProduct){
+                    $productUpdate = $prestationProduct->getProduct();
+                    $productUpdate->setQuantity($prestationProduct->getProduct()->getQuantity() + $prestationProduct->getQuantity());
+                    $em->getRepository(Product::class)->save($productUpdate, true);
+                }
+                
+            }
+        }
+
+        if ($this->isCsrfTokenValid('delete'.$estimate->getId(), $request->request->get('_token'))) {
+            if ($estimate->getStatus() != "PAID") {
+                $em->getRepository(Invoice::class)->remove($estimate->getInvoice(), true);
+            }
+            $em->getRepository(Estimate::class)->remove($estimate, true);
+        }
+
+        return $this->redirectToRoute('app_estimate_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/download', name: 'app_estimate_download', methods: ['GET'])]
