@@ -1,0 +1,112 @@
+{% set NO_DATA_MESSAGE =  'no estimate'|trans({}, 'estimate') %}
+
+<table>
+    <thead>
+    <tr>
+        <th scope="col" class="px-6 py-3 text-center">
+            {% if type == "estimate" and estimatesPagination is not null %}
+                {{ knp_pagination_sortable(estimatesPagination, 'estimate no.'|trans({}, 'estimate') , 'id') }}
+            {% elseif type == "invoice" and invoicesPagination is not null %}
+                {{ knp_pagination_sortable(invoicesPagination, 'invoice no.'|trans({}, 'invoice') , 'id') }}
+            {% endif %}
+        </th>
+        {% if type == "estimate" %}
+        <th scope="col">{{ 'car'|trans({}, 'estimate') }}</th>
+        {% endif %}
+        <th scope="col">{{ 'customer no.'|trans({}, 'estimate') }}</th>
+        <th scope="col">{{ 'estimate date'|trans({}, 'estimate') }}</th>
+        <th scope="col">{{ 'amount'|trans({}, 'estimate') }}</th>
+            {% if type == "invoice" %}
+        <th scope="col">{{ knp_pagination_sortable(invoicesPagination, 'status'|trans({}, 'estimate') , 'isValidated') }}</th>
+            {% elseif type == "estimate" %}
+        <th scope="col">{{ knp_pagination_sortable(estimatesPagination, 'status'|trans({}, 'invoice') , 'isValidated') }}</th>
+            {% endif %}
+    </tr>
+    </thead>
+    <tbody>
+    {% if type == "invoice" and invoicesPagination is not empty %}
+        {% for invoice in invoicesPagination %}
+            <tr>
+                <td>{{ invoice.id }}</td>
+                <td>{{ invoice.customer.id}}</td>
+                <td>{{ invoice.createdAt|date('d/m/Y') }}</td>
+                {% for total in invoicesTotal %}
+                {% if invoice.id == total.id %}
+                    <td>{{ total.total }}</td>
+                {% endif %}
+                {% endfor %}
+                <td><iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon></td>
+                <td>
+                    <a href="{{ path('back_app_invoice_show', {'id': invoice.id}) }}">
+                        <button type="button" class="button button-details">{{ 'details'|trans({}, 'invoice') }}</button>
+                    </a>
+                </td>
+                <td>
+                    <a href="{{ path('back_app_invoice_download', {'id': invoice.id}) }}">
+                        <button type="button" class="button button-details"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
+                    </a>
+                </td>
+            </tr>
+        {% endfor %}
+    {% elseif type == "estimate" and estimatesPagination is not empty %}
+        {% for estimate in estimatesPagination %}
+            <tr>
+                <td>{{ estimate.id }}</td>
+                <td>{{ estimate.carId }}</td>
+                <td>{{ estimate.createdAt|date('d/m/Y')  }}</td>
+                <td>{{ estimate.validityDate|date('d/m/Y') }}</td>
+                {%  for total in estimatesTotal %}
+                    {% if estimate.id == total.id %}
+                        <td>{{ total.total }}</td>
+                    {% endif %}
+                {% endfor %}
+                <td>
+                    {% if estimate.status == 'PAID' %}
+                        <iconify-icon icon="flat-color-icons:ok" width="35px"></iconify-icon>
+                    {% elseif estimate.status == 'PENDING' %}
+                        <iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon>
+                    {% elseif estimate.status == 'REFUSED' %}
+                        <iconify-icon icon="material-symbols:cancel" style="color: red;" width="35"></iconify-icon>
+                    {% endif %}
+                </td>
+                <td>
+                    <a href="{{ path('back_app_estimate_show', {'id': estimate.id}) }}">
+                        <button type="button" class="button button-details">{{ 'details'|trans({}, 'estimate') }}</button>
+                    </a>
+                </td>
+                <td>
+                    <a href="{{ path('back_app_estimate_download', {'id': estimate.id}) }}">
+                        <button type="button" class="button button-details"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
+                    </a>
+                </td>
+                {% if is_granted('ROLE_MECHANIC') %}
+                    <td>
+                        <a href="{{ path('back_app_estimate_delete', {'id': estimate.id}) }}">
+                            <button type="button" class="button button-details">{{ 'delete'|trans({}, 'estimate') }}</iconify-icon></button>
+                        </a>
+                    </td>
+                {% endif %}
+                {% if  (estimate.customer == app.user or is_granted('ROLE_MECHANIC')) and  estimate.status == "PENDING" %}
+                    <td>
+                        <a href="{{ path('back_app_estimate_decline', {'id': estimate.id}) }}">
+                            <button type="button" class="button button-details">{{ 'decline'|trans({}, 'estimate') }}</iconify-icon></button>
+                        </a>
+                    </td>
+                {% endif %}
+                {% if estimate.customer == app.user %}
+                    <td>
+                        <a href="{{ path('back_app_stripe_buy', {'id': estimate.id}) }}">
+                            <button type="button" class="button button-details">{{ 'paid'|trans({}, 'estimate') }}</iconify-icon></button>
+                        </a>
+                    </td>
+                {% endif %}
+                
+            </tr>
+        {% endfor %}
+    {% else %}
+        <tr>
+            <td colspan="7">{{ 'no estimate'|trans({}, 'estimate') }}</td>
+        </tr>
+    {% endif %}
+    </tbody>
+</table>

@@ -1,4 +1,56 @@
 {{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
+<div class="border-gray-200 bg-white shadow-md shadow-gray-400 rounded-lg p-6 mt-14 mb-4">
+    {{ form_errors(form) }}
+    <div class="grid gap-6 mb-6 md:grid-cols-2">
+        {{ form_row(form.title) }}
+    </div>
+    <p class="text-main mb-3">{{ 'personal information'|trans({}, 'estimate') }}</p>
+    <div class="grid gap-6 mb-6 md:grid-cols-2">
+        <div>
+            {{ form_row(form.firstname) }}
+        </div>
+        <div>
+            {{ form_row(form.lastname) }}
+        </div>
+        <div>
+            {{ form_row(form.email) }}
+        </div>
+    </div>
+    <p class="text-main mb-3">{{ 'car information'|trans({}, 'estimate') }}</p>
+    <div class="grid gap-6 mb-6 md:grid-cols-2">
+        <div>
+            {{ form_row(form.carId) }}
+        </div>
+        <div>
+            {{ form_row(form.carBrand) }}
+        </div>
+        <div>
+            {{ form_row(form.carType) }}
+        </div>
+        <div>
+            {{ form_row(form.carModel) }}
+        </div>
+    </div>
+    <p class="text-main mb-3">{{ 'estimate information'|trans({}, 'estimate') }}</p>
+    <div class="grid gap-6 mb-6 md:grid-cols-2">
+        {{ form_row(form.validityDate) }}
+    </div>
+    <div class="grid gap-6 mb-6 md:grid-cols-2">
+        {{ form_row(form.estimatePrestations) }}
+    </div>
+</div>
+
+
+{#{{ form_row(form.firstname) }}#}
+{#{{ form_row(form.lastname) }}#}
+{#{{ form_row(form.email) }}#}
+{#{{ form_row(form.estimatePrestations) }}#}
+{#{{ form_row(form.validityDate) }}#}
+{#{{ form_row(form.carId) }}#}
+{#{{ form_row(form.carBrand) }}#}
+{#{{ form_row(form.carType) }}#}
+{#{{ form_row(form.carModel) }}#}
+
+{#</div>#}
+<button class="rounded-full button button-valid">{{ button_label|default('save') |trans({}, 'estimate') }}</button>
 {{ form_end(form) }}

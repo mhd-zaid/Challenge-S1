@@ -1,7 +1,8 @@
 <h1>Welcome !</h1>
-<p>Inscrivez vous pour avoir accès à votre devis</p>
+<p>Votre devis a été créé avec succès</p>
+<p>Inscrivez vous pour avoir accès à votre devis depuis votre espace</p>
 <p>Voici votre Client ID : {{ customer.id }}
 <p>Utilisez le pour vous inscrire</p>
 <p>
-    <a href="{{url('front_app_customer_new', {'id': customer.id})}}">Click here to activate your account</a>
+    <a href="{{url('back_app_customer_new',{'token':token})}}">Click here to activate your account</a>
 </p>

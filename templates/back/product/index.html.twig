@@ -3,32 +3,40 @@
 {% block title %}Product index{% endblock %}
 
 {% block main %}
-    <h1>Product index</h1>
+    {% include 'components/page_header.html.twig' with {'title': 'Liste des produits', 'link': path('back_default_index')} %}
 
-    <table class="table">
+    <div class="card">
+    <table>
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Title</th>
-                <th>Quantity</th>
-                <th>Total_ht</th>
-                <th>Total_tva</th>
-                <th>Description</th>
-                <th>actions</th>
+                <th scope="col">Id</th>
+                <th scope="col">Title</th>
+                <th scope="col">Quantity</th>
+                <th scope="col">Total_ht</th>
+                <th scope="col">Total_tva</th>
+                <th scope="col">Description</th>
             </tr>
         </thead>
         <tbody>
         {% for product in products %}
             <tr>
-                <td>{{ product.id }}</td>
+{#                <td>{{ product.id }}</td>#}
                 <td>{{ product.title }}</td>
                 <td>{{ product.quantity }}</td>
                 <td>{{ product.totalHt }}</td>
                 <td>{{ product.totalTva }}</td>
-                <td>{{ product.description }}</td>
+                <td>{{ product.description|slice(0, 50) ~ '...' }}</td>
                 <td>
-                    <a href="{{ path('back_app_product_show', {'id': product.id}) }}">show</a>
-                    <a href="{{ path('back_app_product_edit', {'id': product.id}) }}">edit</a>
+                    <a href="{{ path('back_app_product_show', {'id': product.id}) }}">
+                        <button type="button" class="button button-details">Détails</button>
+                    </a>
+                <td>
+                    <a href="{{ path('back_app_product_edit', {'id': product.id}) }}">
+                        <button type="button" class="button button-details">Modifier</button>
+                    </a>
+                </td>
+                <td>
+                    {{ include('back/product/_delete_form.html.twig') }}
                 </td>
             </tr>
         {% else %}
@@ -38,6 +46,11 @@
         {% endfor %}
         </tbody>
     </table>
+    </div>
 
-    <a href="{{ path('back_app_product_new') }}">Create new</a>
+    <div class="mt-4">
+        <a class="no-underline" href="{{ path('back_app_product_new') }}">
+            <button type="button" class="button button-details">Nouveau produit</button>
+        </a>
+    </div>
 {% endblock %}

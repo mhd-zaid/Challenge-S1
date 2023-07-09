@@ -1,36 +1,37 @@
 {% extends 'back/base.html.twig' %}
 
-{% block title %}Estimate{% endblock %}
+{% block title %}{{ 'estimate'|trans({}, 'estimate') }}{% endblock %}
 
 {% block main %}
-    <h1>Estimate index</h1>
-    <a href="{{ path('back_app_estimate_new') }}">Create new</a>
-    <h1>Vos devis</h1>
+    {% include 'components/page_header.html.twig' with {'title': 'list of estimate', 'link': path('back_default_index')} %}
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Title</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for estimate in estimates %}
-            <tr>
-                <td>{{ estimate.title }}</td>
-                <td>{{ estimate.status }}</td>
-                <td><a href="{{ path('back_app_estimate_download', {'id': estimate.id}) }}">Télécharger</a></td>
-
-            {% if estimate.status == 'Non Payé' %}
-                <td><a href="{{ path('back_app_stripe_buy', {'id': estimate.id}) }}">Payé</a></td>
-                <td><a href="{{ path('back_app_estimate_decline', {'id': estimate.id}) }}">Refuser le devis</a></td>
-            {% endif %}
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="3">Pad de devis</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div>
+        <div class="card">
+            {% include 'components/table_Invoice_Estimate.html.twig' with {'type': 'estimate', 'pagination': estimatesPagination, 'estimatesTotal': estimatesTotal} %}
+        </div>
+        <div>
+            <div class="flex space-x-16 items-center w-full py-2 px-2 bg-gray-200">
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <iconify-icon icon="flat-color-icons:ok" width="35px"></iconify-icon>
+                    <p class="mb-0">{{ 'estimate paid'|trans({}, 'estimate') }}</p>
+                </div>
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <iconify-icon icon="material-symbols:cancel" style="color: red;" width="35"></iconify-icon>
+                    <p class="mb-0">{{ 'estimate refused'|trans({}, 'estimate') }}</p>
+                </div>
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon>
+                    <p class="mb-0">{{ 'estimate pending'|trans({}, 'estimate') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="pagination mt-4 flex justify-between">
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MECANICIAN') or is_granted('ROLE_ACCOUNTANT') %}
+            <a class="no-underline" href="{{ path('back_app_estimate_new') }}">
+                <button type="button" class="button button-details">{{ 'new estimate'|trans({}, 'estimate') }}</button>
+            </a>
+        {% endif %}
+        {{ knp_pagination_render(estimatesPagination) }}
+    </div>
 {% endblock %}

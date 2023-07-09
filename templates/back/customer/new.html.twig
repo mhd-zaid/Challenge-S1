@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'new customer' | trans({},'customer') }}{% endblock %}
+
+{% block body %}
+    <h1>{{ 'create new customer' | trans({},'customer') }}</h1>
+
+    {{ include('front/customer/_form.html.twig') }}
+{% endblock %}

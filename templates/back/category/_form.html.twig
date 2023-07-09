@@ -1,0 +1,13 @@
+{{ form_start(form) }}
+<div class="border-gray-200 bg-white shadow-md shadow-gray-400 rounded-lg p-6 mt-14 mb-4">
+    <div class="flex space-x-4">
+        <p class="flex items-center mb-0 text-medium">
+            Saisissez le nom de la catégorie à créer
+        </p>
+        <div>
+            {{ form_widget(form.name) }}
+        </div>
+        <button class="button button-edit px-4 flex items-center justify-center space-x-4">{{ button_label|default('Ajouter') }}</button>
+    </div>
+</div>
+{{ form_end(form) }}

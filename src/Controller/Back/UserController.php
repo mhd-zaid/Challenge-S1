@@ -4,7 +4,9 @@ namespace App\Controller\Back;
 
 use App\Entity\User;
 use App\Form\UserType;
+use App\Form\UserUpdateType;
 use App\Repository\UserRepository;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,15 +15,25 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Uid\Uuid;
 use Twig\Environment;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 #[Route('/user')]
-class UserController extends AbstractController
+#[Security('is_granted("ROLE_ADMIN")')]
+class UserController extends AdminController
 {
     #[Route('/', name: 'app_user_index', methods: ['GET'])]
-    public function index(UserRepository $userRepository): Response
+    #[Security('is_granted("ROLE_SUPER_ADMIN") or is_granted("ROLE_ADMIN")')]
+    public function index(UserRepository $userRepository, PaginatorInterface $paginator, Request $request): Response
     {
+        $user = $userRepository->findAll();
+        $userPagination = $paginator->paginate(
+            $user, /* query NOT result */
+            $request->query->getInt('page', 1), /*page number*/
+            5 /*limit per page*/
+        );
+        
         return $this->render('back/user/index.html.twig', [
-            'users' => $userRepository->findAll(),
+            'users' => $user,
+            'userPagination' => $userPagination,
         ]);
     }
 
@@ -31,7 +43,6 @@ class UserController extends AbstractController
         $user = new User();
         $form = $this->createForm(UserType::class, $user);
         $form->handleRequest($request);
-        dump($form);
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setValidationToken(Uuid::v4()->__toString());
             $userRepository->save($user, true);
@@ -57,6 +68,7 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_user_show', methods: ['GET'])]
+    #[Security('user.getId() == id or is_granted("ROLE_SUPER_ADMIN") or is_granted("ROLE_ADMIN")')]
     public function show(User $user): Response
     {
         return $this->render('back/user/show.html.twig', [
@@ -65,9 +77,10 @@ class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
+    #[Security('user.getId() == id or is_granted("ROLE_SUPER_ADMIN") or is_granted("ROLE_ADMIN")')]
     public function edit(Request $request, User $user, UserRepository $userRepository): Response
     {
-        $form = $this->createForm(UserType::class, $user);
+        $form = $this->createForm(UserUpdateType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {

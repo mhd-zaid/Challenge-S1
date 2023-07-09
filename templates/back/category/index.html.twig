@@ -1,0 +1,49 @@
+{% extends 'back/base.html.twig' %}
+
+{% block title %}Presta Auto - Category{% endblock %}
+
+{% block main %}
+    <h1>Ajouter une nouvelle catégorie</h1>
+
+    {{ include('back/category/_form.html.twig') }}
+
+    <h1 class="mt-4">Liste des catégorie</h1>
+
+    <div class="card">
+    <table>
+        <thead>
+            <tr>
+                <th scope="col">Id</th>
+                <th scope="col">{{ knp_pagination_sortable(categoriesPagination, 'Nom', 'Name') }}</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for category in categories %}
+            <tr>
+                <td>{{ category.id }}</td>
+                <td>{{ category.name }}</td>
+                <td>
+                    <a href="{{ path('back_app_category_edit', {'id': category.id}) }}">
+                        <button type="button" class="button button-details">Modifier</button>
+                    </a>
+                </td>
+                <td>
+                    {{ include('back/category/_delete_form.html.twig') }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="3">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+        </tfoot>
+    </table>
+    </div>
+{#    <div class="mt-4">#}
+{#        {{ knp_pagination_render(categoriesPagination) }}#}
+{#    </div>#}
+
+{#    <a href="{{ path('back_app_category_new') }}">Create new</a>#}
+{% endblock %}

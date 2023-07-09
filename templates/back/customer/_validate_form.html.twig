@@ -1,0 +1,8 @@
+<form method="post" action="{{ path('back_app_customer_validate', {'id': customer.id}) }}" onsubmit="return confirm('{{ 'valid message' | trans({},'customer') }} {{ customer.id}} ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ customer.id) }}">
+    {% if from == 'show' %}
+        <button class="button button-valid px-6 flex items-center justify-center text-medium">{{ 'valid account' | trans({},'customer') }}</button>
+    {% else %}
+        <button class="button button-details px-6 flex items-center justify-center text-medium">{{ 'valid' | trans({},'customer') }}</button>
+    {% endif %}
+</form>

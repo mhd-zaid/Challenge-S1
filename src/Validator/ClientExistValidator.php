@@ -20,7 +20,8 @@ class ClientExistValidator extends ConstraintValidator
     {
         $id = $this->context->getValue();
         $customer = $this->customerRepository->findOneBy([
-            'id' => $id
+            'id' => $id,
+            'isRegistered' => true
         ]);
         if($customer !== null && $customer->getEmail() !== null){
             $this->context->buildViolation($constraint->message)

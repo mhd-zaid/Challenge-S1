@@ -4,7 +4,12 @@
 
 @import "colors.scss";
 @import "font.scss";
+@import "~bootstrap/scss/bootstrap";
 body{
+    @apply h-full;
+    & a{
+        @apply no-underline;
+    }
     & .text{
         color: $color-main-text;
         &-title{
@@ -23,10 +28,11 @@ body{
             color: $color-p-4;
         }
     }
+
     & .button{
-        @include text-style-titre-3;
-        @apply rounded-md text-center py-3 text-white;
+        @apply rounded-md text-center py-2 px-4 text-white text-lg;
         &-details{
+            @apply px-6 flex items-center justify-center;
             background-color: $color-p-3;
             &:hover{
                 background-color: $color-p-5;
@@ -35,7 +41,7 @@ body{
         &-valid{
             @apply bg-green-400;
             &:hover{
-                @apply bg-green-600;
+                @apply bg-green-500;
             }
         }
         &-invalid{
@@ -52,7 +58,7 @@ body{
         }
     }
 
-    & nav{
+    &>nav{
         background-color: $color-p-1;
         & div{
             & :first-child{
@@ -66,20 +72,52 @@ body{
     }
 
     & main {
-        background-color: $color-background-2;
+        //background-color: $color-background-2;
         & #chart-dashboard{
             width: 250px;
         }
 
-        & #cards{
+        & #badge{
             & div{
                 & a{
+                    @apply no-underline;
                     background-color: $color-p-1;
                     & p {
                         color: $color-secondary-text;
                     }
                     & h5{
                         color: $color-secondary-text;
+                    }
+                }
+            }
+        }
+
+        & .card{
+            @apply relative bg-gray-50 overflow-x-auto shadow-xl sm:rounded-lg mt-14 px-8;
+        }
+        & table{
+            @apply w-full text-sm text-left text-gray-500 dark:text-gray-400;
+            & thead{
+                @apply text-xs text-gray-700 uppercase dark:bg-gray-700 dark:text-gray-400;
+                & tr{
+                    @apply border-b-2 border-gray-500;
+                    & th{
+                        @apply px-6 py-3 text-center  text-xl;
+                        & a{
+                            @apply no-underline text-gray-700;
+                        }
+                    }
+                }
+            }
+            & tbody{
+                & tr{
+                    @apply border-b bg-gray-50 dark:bg-gray-800 dark:border-gray-700;
+                    & td{
+                        @apply px-6 py-3 text-center text-lg;
+                        text-align: -webkit-center;
+                        & a{
+                            @apply no-underline text-black;
+                        }
                     }
                 }
             }

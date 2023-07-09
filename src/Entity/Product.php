@@ -12,6 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Entity\PrestationProduct;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
 #[Vich\Uploadable]
@@ -39,12 +40,12 @@ class Product
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
     #[Assert\NotBlank(message: 'Le Total HT est obligatoire')]
     #[Assert\Type(type: 'float', message: 'Le Total HT doit être un nombre décimal')]
-    private ?float $total_ht = null;
+    private ?float $totalHt = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
     #[Assert\NotBlank(message: 'Le Total TVA est obligatoire')]
     #[Assert\Type(type: 'float', message: 'Le Total TVA doit être un nombre décimal')]
-    private ?float $total_tva = null;
+    private ?float $totalTva = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\Type(type: 'string', message: 'La description doit être une chaîne de caractères')]
@@ -61,12 +62,12 @@ class Product
     #[ORM\Column(nullable: true)]
     private ?string $productImageName = null;
 
-    #[ORM\OneToMany(mappedBy: 'product', targetEntity: EstimateProduct::class)]
-    private Collection $estimateProducts;
+    #[ORM\OneToMany(mappedBy: 'product', targetEntity: PrestationProduct::class)]
+    private Collection $prestationProducts;
 
     public function __construct()
     {
-        $this->estimateProducts = new ArrayCollection();
+        $this->prestationProducts = new ArrayCollection();
     }
 
 
@@ -107,23 +108,23 @@ class Product
 
     public function getTotalHT(): ?float
     {
-        return $this->total_ht;
+        return $this->totalHt;
     }
 
-    public function setTotalHT(float $total_ht): static
+    public function setTotalHT(float $totalHt): static
     {
-        $this->total_ht = $total_ht;
+        $this->totalHt = $totalHt;
         return $this;
     }
 
     public function getTotalTVA(): ?float
     {
-        return $this->total_tva;
+        return $this->totalTva;
     }
 
-    public function setTotalTVA(float $total_tva): static
+    public function setTotalTVA(float $totalTva): static
     {
-        $this->total_tva = $total_tva;
+        $this->totalTva = $totalTva;
         return $this;
     }
 
@@ -180,46 +181,30 @@ class Product
         return $this;
     }
 
-    public function serialize(): array
-    {
-        return [
-            'id' => $this->id,
-            'email' => $this->email,
-            'password' => $this->password,
-        ];
-    }
-    public function unserialize(array $serialized)
-    {
-        $this->id = $serialized['id'];
-        $this->email = $serialized['email'];
-        $this->password = $serialized['password'];
-        return $this;
-    }
-
     /**
-     * @return Collection<int, EstimateProduct>
+     * @return Collection|PresationProduct[]
      */
-    public function getEstimateProducts(): Collection
+    public function getprestationProducts(): Collection
     {
-        return $this->estimateProducts;
+        return $this->prestationProducts;
     }
 
-    public function addEstimateProduct(EstimateProduct $estimateProduct): static
+    public function addPrestationProduct(PrestationProduct $prestationProduct): self
     {
-        if (!$this->estimateProducts->contains($estimateProduct)) {
-            $this->estimateProducts->add($estimateProduct);
-            $estimateProduct->setProduct($this);
+        if (!$this->prestationProducts->contains($prestationProduct)) {
+            $this->prestationProducts[] = $prestationProduct;
+            $prestationProduct->setProduct($this);
         }
 
         return $this;
     }
 
-    public function removeEstimateProduct(EstimateProduct $estimateProduct): static
+    public function removePresationProduct(PrestationProduct $prestationProduct): self
     {
-        if ($this->estimateProducts->removeElement($estimateProduct)) {
+        if ($this->prestationProducts->removeElement($prestationProduct)) {
             // set the owning side to null (unless already changed)
-            if ($estimateProduct->getProduct() === $this) {
-                $estimateProduct->setProduct(null);
+            if ($prestationProduct->getProduct() === $this) {
+                $prestationProduct->setProduct(null);
             }
         }
 

@@ -2,15 +2,19 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\BlameableTrait;
+use App\Entity\Traits\TimestampableTrait;
+use App\Repository\EstimatePrestationRepository;
 use App\Repository\EstimateRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-
+use Symfony\Component\Validator\Constraints as Assert;
 #[ORM\Entity(repositoryClass: EstimateRepository::class)]
 class Estimate
 {
+    use TimestampableTrait;
+    use BlameableTrait;
+
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -21,13 +25,10 @@ class Estimate
 
     #[ORM\ManyToOne(inversedBy: 'estimates')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Customer $client = null;
-
-    #[ORM\OneToMany(mappedBy: 'estimate', targetEntity: EstimateProduct::class, orphanRemoval: true, cascade: ['remove'])]
-    private Collection $estimateProducts;
+    private ?Customer $customer = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $validity_date = null;
+    private ?\DateTimeInterface $validityDate = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $status = null;
@@ -36,26 +37,23 @@ class Estimate
     #[ORM\JoinColumn(nullable: false)]
     private ?Invoice $invoice = null;
 
-    public function __construct()
-    {
-        $this->estimateProducts = new ArrayCollection();
-    }
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $carId = null;
+
+    #[ORM\Column(length: 20, nullable: true)]
+    private ?string $carBrand = null;
+
+    #[ORM\Column(length: 50, nullable: true)]
+    private ?string $carModel = null;
+
+    #[ORM\Column(length: 15, nullable: true)]
+    private ?string $carType = null;
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $uuid_success_payment = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getClientId(): ?int
-    {
-        return $this->client_id;
-    }
-
-    public function setClientId(int $client_id): static
-    {
-        $this->client_id = $client_id;
-
-        return $this;
     }
 
     public function getTitle(): ?string
@@ -70,56 +68,26 @@ class Estimate
         return $this;
     }
 
-    public function getClient(): ?Customer
+    public function getCustomer(): ?Customer
     {
-        return $this->client;
+        return $this->customer;
     }
 
-    public function setClient(?Customer $client): static
+    public function setCustomer(?Customer $customer): static
     {
-        $this->client = $client;
-
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, EstimateProduct>
-     */
-    public function getEstimateProducts(): Collection
-    {
-        return $this->estimateProducts;
-    }
-
-    public function addEstimateProduct(EstimateProduct $estimateProduct): static
-    {
-        if (!$this->estimateProducts->contains($estimateProduct)) {
-            $this->estimateProducts->add($estimateProduct);
-            $estimateProduct->setEstimate($this);
-        }
-
-        return $this;
-    }
-
-    public function removeEstimateProduct(EstimateProduct $estimateProduct): static
-    {
-        if ($this->estimateProducts->removeElement($estimateProduct)) {
-            // set the owning side to null (unless already changed)
-            if ($estimateProduct->getEstimate() === $this) {
-                $estimateProduct->setEstimate(null);
-            }
-        }
+        $this->customer = $customer;
 
         return $this;
     }
 
     public function getValidityDate(): ?\DateTimeInterface
     {
-        return $this->validity_date;
+        return $this->validityDate;
     }
 
-    public function setValidityDate(\DateTimeInterface $validity_date): static
+    public function setValidityDate(\DateTimeInterface $validityDate): static
     {
-        $this->validity_date = $validity_date;
+        $this->validityDate = $validityDate;
 
         return $this;
     }
@@ -144,6 +112,84 @@ class Estimate
     public function setInvoice(Invoice $invoice): static
     {
         $this->invoice = $invoice;
+
+        return $this;
+    }
+
+    public function getCarId(): ?string
+    {
+        return $this->carId;
+    }
+
+    public function setCarId(?string $carId): static
+    {
+        $this->carId = $carId;
+
+        return $this;
+    }
+
+    public function getCarBrand(): ?string
+    {
+        return $this->carBrand;
+    }
+
+    public function setCarBrand(?string $carBrand): static
+    {
+        $this->carBrand = $carBrand;
+
+        return $this;
+    }
+
+    public function getCarModel(): ?string
+    {
+        return $this->carModel;
+    }
+
+    public function setCarModel(?string $carModel): static
+    {
+        $this->carModel = $carModel;
+
+        return $this;
+    }
+
+    public function getCarType(): ?string
+    {
+        return $this->carType;
+    }
+
+    public function setCarType(?string $carType): static
+    {
+        $this->carType = $carType;
+
+        return $this;
+    }
+
+
+    public function getTotal(EstimatePrestationRepository $estimatePrestationRepository)
+    {
+        $total = 0 ;
+        $estimatePrestations = $estimatePrestationRepository->findBy(['estimate' => $this->getId()]);
+        foreach($estimatePrestations as $estimatePrestation){
+            $prestation = $estimatePrestation->getPrestation();
+            $totalPrestation = 0;
+            foreach($prestation->getPrestationProducts() as $prestationProduct){
+                $totalPrestation += ((($prestationProduct->getProduct()->getTotalTVA() / 100) * $prestationProduct->getProduct()->getTotalHT()) + $prestationProduct->getProduct()->getTotalHT()) * $prestationProduct->getQuantity();
+                         
+            }
+            $totalPrestation += $prestation->getWorkforce();
+            $total += $totalPrestation;
+        }
+        return $total;
+    }
+
+    public function getUuidSuccessPayment(): ?string
+    {
+        return $this->uuid_success_payment;
+    }
+
+    public function setUuidSuccessPayment(?string $uuid_success_payment): static
+    {
+        $this->uuid_success_payment = $uuid_success_payment;
 
         return $this;
     }

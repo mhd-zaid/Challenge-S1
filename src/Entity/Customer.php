@@ -2,6 +2,7 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\BlameableTrait;
 use App\Entity\Traits\TimestampableTrait;
 use App\Repository\CustomerRepository;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -18,7 +19,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableTrait;
-
+    use BlameableTrait;
+    
     #[ORM\Id]
     #[ORM\Column]
     private ?int $id = null;
@@ -45,7 +47,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable : true)]
     private ?string $password = null;
 
-    #[Assert\NotBlank]
+    #[ORM\Column(nullable : true)]
     #[Assert\Regex('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z\d\W]{8,}$/')]
     private ?string $plainPassword = null;
 
@@ -66,11 +68,35 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\Unique]
     private array $roles = [];
 
-    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Estimate::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Estimate::class, orphanRemoval: true)]
     private Collection $estimates;
 
-    #[ORM\OneToMany(mappedBy: 'client', targetEntity: Invoice::class)]
+    #[ORM\OneToMany(mappedBy: 'customer', targetEntity: Invoice::class)]
     private Collection $invoices;
+
+    #[ORM\Column]
+    private ?bool $isRegistered = false;
+    
+    #[ORM\Column(length: 255, nullable : true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2,minMessage:'Le nom de la ville doit comporter au moins 2 caractères')]
+    private ?string $city = null;
+
+    #[ORM\Column(length: 255, nullable : true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 2,minMessage:'Le nom du pays doit comporter au moins 2 caractères')]
+    private ?string $country = null;
+
+    #[ORM\Column(nullable : true)]
+    #[Assert\NotBlank]
+    #[Assert\Length(min: 5,minMessage:'Le code postal doit comporter au moins 5 caractères')]
+    private ?string $zipCode = null;
+
+    #[ORM\Column(length: 255, nullable : true)]
+    private ?string $theme = null;
+
+    #[ORM\Column(length: 255, nullable : true)]
+    private ?string $language = null;
 
     public function __construct()
     {
@@ -100,6 +126,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
+
 
     /**
      * A visual identifier that represents this user.
@@ -251,6 +278,17 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+    public function getIsRegistered(): ?bool
+    {
+        return $this->isRegistered;
+    }
+
+    public function setIsRegistered(bool $isRegistered): self
+    {
+        $this->isRegistered = $isRegistered;
+
+        return $this;
+    }
 
     public function __serialize(): array
     {
@@ -295,7 +333,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->estimates->contains($estimate)) {
             $this->estimates->add($estimate);
-            $estimate->setClient($this);
+            $estimate->setCustomer($this);
         }
 
         return $this;
@@ -305,8 +343,8 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->estimates->removeElement($estimate)) {
             // set the owning side to null (unless already changed)
-            if ($estimate->getClient() === $this) {
-                $estimate->setClient(null);
+            if ($estimate->getCustomer() === $this) {
+                $estimate->setCustomer(null);
             }
         }
 
@@ -325,7 +363,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if (!$this->invoices->contains($invoice)) {
             $this->invoices->add($invoice);
-            $invoice->setClient($this);
+            $invoice->setCustomer($this);
         }
 
         return $this;
@@ -335,10 +373,70 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     {
         if ($this->invoices->removeElement($invoice)) {
             // set the owning side to null (unless already changed)
-            if ($invoice->getClient() === $this) {
-                $invoice->setClient(null);
+            if ($invoice->getCustomer() === $this) {
+                $invoice->setCustomer(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getCity(): ?string
+    {
+        return $this->city;
+    }
+
+    public function setCity(string $city): static
+    {
+        $this->city = $city;
+
+        return $this;
+    }
+
+    public function getCountry(): ?string
+    {
+        return $this->country;
+    }
+
+    public function setCountry(string $country): static
+    {
+        $this->country = $country;
+
+        return $this;
+    }
+
+    public function getZipCode(): ?string
+    {
+        return $this->zipCode;
+    }
+
+    public function setZipCode(string $zipCode): static
+    {
+        $this->zipCode = $zipCode;
+
+        return $this;
+    }
+
+    public function getTheme(): ?string
+    {
+        return $this->theme;
+    }
+
+    public function setTheme(string $theme): static
+    {
+        $this->theme = $theme;
+
+        return $this;
+    }
+
+    public function getLanguage(): ?string
+    {
+        return $this->language;
+    }
+
+    public function setLanguage(string $language): static
+    {
+        $this->language = $language;
 
         return $this;
     }

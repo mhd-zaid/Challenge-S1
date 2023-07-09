@@ -1,33 +1,29 @@
 {% extends 'back/base.html.twig' %}
 
-{% block title %}Invoice index{% endblock %}
+{% block title %}Presta Auto - {{ 'invoice'|trans({}, 'invoice') }}{% endblock %}
 
 {% block main %}
-    <h1>Invoice index</h1>
+    {% include 'components/page_header.html.twig' with {'title': 'list of invoices', 'link': path('back_default_index')} %}
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for invoice in invoices %}
-            <tr>
-                <td>{{ invoice.id }}</td>
-                <td>
-                    <a href="{{ path('back_app_invoice_show', {'id': invoice.id}) }}">show</a>
-                    <a href="{{ path('back_app_invoice_edit', {'id': invoice.id}) }}">edit</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="2">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div>
+        <div class="card">
+            {% include 'components/table_Invoice_Estimate.html.twig' with {'type': 'invoice', 'pagination': invoicesPagination, 'invoicesTotal': invoicesTotal} %}
+        </div>
+        <div>
+            <div class="flex space-x-16 items-center w-full py-2 px-2 bg-gray-200">
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <iconify-icon icon="flat-color-icons:ok" width="35px"></iconify-icon>
+                    <p class="mb-0">{{ 'invoice paid'|trans({}, 'invoice') }}</p>
+                </div>
+                <div class="text-medium flex justify-center items-center space-x-4">
+                    <iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon>
+                    <p class="mb-0">{{ 'invoice awaiting payment'|trans({}, 'invoice') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <a href="{{ path('back_app_invoice_new') }}">Create new</a>
+    <div class="pagination mt-4 flex justify-between">
+        {{ knp_pagination_render(invoicesPagination) }}
+    </div>
 {% endblock %}

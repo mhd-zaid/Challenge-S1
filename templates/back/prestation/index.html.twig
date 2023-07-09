@@ -3,37 +3,104 @@
 {% block title %}Prestation index{% endblock %}
 
 {% block main %}
-    <h1>Prestation index</h1>
+    {% include 'components/page_header.html.twig' with {'title': 'Liste des prestations', 'link': path('back_default_index')} %}
+    <div class="flex items-start justify-start space-x-32 p-4 mt-8">
+    <div class="w-36">
+    <button id="dropdownDefault" data-dropdown-toggle="dropdown"
+      class="w-full text-white bg-primary-700 hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-4 py-2.5 text-center inline-flex items-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
+      type="button">
+      <span class="ml-4">Filter</span>
+      <svg class="w-4 h-4 ml-2" aria-hidden="true" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+      </svg>
+    </button>
 
-    <table class="table">
+    <!-- Dropdown menu -->
+    <div id="dropdown" class="z-10 hidden w-32 p-3 bg-white rounded-lg shadow dark:bg-gray-700">
+      <ul class="space-y-2 text-sm p-0" aria-labelledby="dropdownDefault">
+        <li class="flex items-center">
+          <input id="category" type="checkbox"
+            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+          <label for="category" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+            Category
+          </label>
+        </li>
+        <li class="flex items-center">
+          <input id="prestation" type="checkbox"
+            class="w-4 h-4 bg-gray-100 border-gray-300 rounded text-primary-600 focus:ring-primary-500 dark:focus:ring-primary-600 dark:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500" />
+          <label for="prestation" class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-100">
+            Prestation
+          </label>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div id= "filter-form" class="w-full w-48">
+    <form class="flex flex-wrap space-x-1 px-8 pt-6 pb-8 mb-4" action="{{path('back_app_prestation_filter')}}" method="GET">
+      <div id = "filter-category" class="mt-4">
+        <label for="category" class="sr-only">Choose a category</label>
+        <select name ="category" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-r-lg border-l-gray-100 dark:border-l-gray-700 border-l-2 focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+            <option value="">Choose a category</option>
+            {% for category in categories %}
+                <option value={{category.id}}>{{category.name}}</option>
+            {% endfor %}
+        </select>
+      </div>
+      <div id = "filter-prestation" class="mb-3">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="prestation">
+          Prestation
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" name="prestation" type="text" placeholder="Prestation name">
+      </div>
+      <div id="filter-submit" class="mb-3">
+        <label class="block text-gray-700 text-sm font-bold mb-2" for="submit">
+          Filter
+        </label>
+        <input class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" type="submit">
+      </div>
+      {% if app.request.get('_route') == 'back_app_prestation_filter' %}
+        <div id="filter-submit" class="mb-3">
+          <a href="{{path('back_app_prestation_index')}}">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="submit">
+              Effacer le filtre
+            </label>
+          </a>
+        </div>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<div class="card">
+    <table>
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Duration</th>
-                <th>PrestationImageName</th>
-                <th>Technician</th>
-                <th>Total_ht</th>
-                <th>Total_tva</th>
-                <th>CreatedAt</th>
-                <th>UpdatedAt</th>
-                <th>actions</th>
+                <th scope="col">Name</th>
+                <th scope="col">Category</th>
+                <th scope="col">Duration</th>
+                <th scope="col">Workforce</th>
             </tr>
         </thead>
         <tbody>
         {% for prestation in prestations %}
             <tr>
-                <td>{{ prestation.id }}</td>
                 <td>{{ prestation.name }}</td>
-                <td>{{ prestation.category }}</td>
+                <td>{{ prestation.category.name }}</td>
                 <td>{{ prestation.duration }}</td>
-                <td>{{ prestation.technician }}</td>
-                <td>{{ prestation.totalHt }}</td>
-                <td>{{ prestation.totalTva }}</td>
+                <td>{{ prestation.workforce }}</td>
                 <td>
-                    <a href="{{ path('back_app_prestation_show', {'id': prestation.id}) }}">show</a>
-                    <a href="{{ path('back_app_prestation_edit', {'id': prestation.id}) }}">edit</a>
+                    <a href="{{ path('back_app_prestation_show', {'id': prestation.id}) }}">
+                        <button type="button" class="button button-details">Détails</button>
+                    </a>
+                </td>
+                <td>
+                    <a href="{{ path('back_app_prestation_edit', {'id': prestation.id}) }}">
+                        <button type="button" class="button button-details">Modifier</button>
+                    </a>
+                </td>
+                <td>
+                    {{ include('back/prestation/_delete_form.html.twig') }}
                 </td>
             </tr>
         {% else %}
@@ -43,6 +110,60 @@
         {% endfor %}
         </tbody>
     </table>
+</div>
 
-    <a href="{{ path('back_app_prestation_new') }}">Create new</a>
+    <div class="mt-4">
+        <a href="{{ path('back_app_prestation_new') }}">
+            <button type="button" class="button button-details">Nouvelle prestation</button>
+        </a>
+    </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const categoryCheckbox = document.getElementById("category");
+    const prestationCheckbox = document.getElementById("prestation");
+    const categoryField = document.getElementById("filter-category");
+    const prestationField = document.getElementById("filter-prestation");
+
+
+    hideForm();
+    displaysubmit([categoryField,prestationField])
+    
+    categoryCheckbox.addEventListener("change", function() {
+      showOrHideFilterInput(categoryCheckbox,categoryField,'block');
+      displaysubmit([categoryField,prestationField])
+    });
+
+    prestationCheckbox.addEventListener("change", function() {
+      showOrHideFilterInput(prestationCheckbox,prestationField,'block');
+      displaysubmit([categoryField,prestationField])
+    });
+  });
+
+  function hideForm(){
+    document.getElementById('filter-category').style.display = 'none';
+    document.getElementById('filter-prestation').style.display = 'none';
+    document.getElementById('filter-submit').style.display = 'none';
+  }
+
+  function showOrHideFilterInput(checkbox,input,displayType){
+    input.style.display = checkbox.checked ? displayType : "none";
+  }
+
+  function displaysubmit(fields)
+  {
+    const submitField = document.getElementById('filter-submit');
+    let boutonDisplay = false
+    for (let field of fields) {
+      if(field.style.display != 'none' )
+      {
+        submitField.style.display = 'block';
+        boutonDisplay = true;
+      }
+    }
+
+    if(! boutonDisplay){
+      submitField.style.display = 'none';
+    }
+  }
+</script>
 {% endblock %}

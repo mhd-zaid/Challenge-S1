@@ -1,0 +1,14 @@
+{% extends 'back/base.html.twig' %}
+
+{% block title %}Presta Auto - Mon compte{% endblock %}
+
+{% block main %}
+    {% if entity == 'customer' %}
+        {% include 'components/page_header.html.twig' with {'title': 'Mon compte Customer', 'link': path('back_app_account_show', {'id': app.user.id}) } %}
+    {% elseif entity == 'user' %}
+        {% include 'components/page_header.html.twig' with {'title': 'Mon compte Utilisateur', 'link': path('back_app_account_show', {'id': app.user.id}) } %}
+    {% endif %}
+    {{ include('back/account/_form.html.twig', {'button_label': 'Update'}) }}
+
+
+{% endblock %}

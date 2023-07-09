@@ -1,17 +1,8 @@
 {% extends 'base.html.twig' %}
 {% block body %}
 <nav class="fixed top-0 left-64 z-50 w-full">
-    <div class="px-3 py-3 lg:px-5 lg:pl-3 flex">
-            <form class="w-[762.32px]">
-                <label for="default-search" class="mb-2 text-sm font-medium text-gray-900 sr-only dark:text-white">Search</label>
-                <div class="relative">
-                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
-                    </div>
-                    <input type="search" id="default-search" class="block w-full p-4 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Search Mockups, Logos..." required>
-                    <button type="submit" class="text-white absolute right-2.5 bottom-2.5 bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Search</button>
-                </div>
-            </form>
+    <div class="px-3 py-3 lg:px-5 lg:pl-3 flex justify-center">
+            <span class="l-40" >Company</span>
 
     </div>
 </nav>
@@ -33,57 +24,87 @@
             <li>
                 <a href="{{path('back_default_index')}}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                    <img src="{{app.request.baseURL}}/uploads/images/global/dashboard.svg" class="ml-1 h-6" alt="Dashboard" />
-                    <span>Dashboard</span>
+                    <span>{{ 'dashboard'|trans({}, 'default') }}</span>
                 </a>
             </li>
+            {% if is_granted('ROLE_CUSTOMER') and not is_granted('ROLE_ACCOUNTANT') or is_granted('ROLE_ADMIN') %}
             <li>
                 <a href="{{path('back_app_estimate_index')}}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/estimate.svg" class="h-6" alt="Estimate"/>
-                    <span>Estimate</span>
+                    <span>{{ 'estimate'|trans({}, 'default') }}</span>
                 </a>
             </li>
+            {% endif %}
             <li>
                 <a href="{{path('back_app_invoice_index')}}" class="flex items-start space-x-2.5 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/invoice.svg" class="ml-1 h-6" alt="Invoice" />
-                    <span>Invoice</span>
+                    <span>{{ 'invoice'|trans({}, 'default') }}</span>
                 </a>
             </li>
+            {% if is_granted('ROLE_MECHANIC') %}
             <li>
-                <a href="#" class="flex items-start space-x-4 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                <a href="{{path('back_app_customer_index')}}" class="flex items-start space-x-4 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/customer.svg" class="ml-1 h-6" alt="Customer" />
-                    <span>Customer</span>
+                    <span>{{ 'customer'|trans({}, 'default') }}</span>
                 </a>
             </li>
+            {% endif %}
+            {% if is_granted('ROLE_CUSTOMER') and not is_granted('ROLE_ACCOUNTANT') or is_granted('ROLE_ADMIN') %}
             <li>
                 <a href="{{path('back_app_prestation_index')}}" class="flex items-start p-2 space-x-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/prestation.svg" class="ml-1 h-6" alt="Prestation" />
-                    <span>Prestation</span>
+                    <span>{{ 'prestation'|trans({}, 'default') }}</span>
+                </a>
+            </li>
+            {% endif %}
+            {% if is_granted('ROLE_MECHANIC') %}
+            <li>
+                <a href="{{path('back_app_category_index')}}" class="flex items-start space-x-3 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="{{app.request.baseURL}}/uploads/images/global/category.svg" class="ml-1 h-6" alt="Product" />
+                    <span>{{ 'category'|trans({}, 'default') }}</span>
                 </a>
             </li>
             <li>
                 <a href="{{path('back_app_product_index')}}" class="flex items-start space-x-3 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/product.svg" class="ml-1 h-6" alt="Product" />
-                    <span>Product</span>
+                    <span>{{ 'product'|trans({}, 'default') }}</span>
                 </a>
             </li>
+            {% endif %}
+            {% if is_granted('ROLE_ACCOUNTANT') %}
             <li>
                 <a href="{{path('back_app_accounting_index')}}" class="flex items-start space-x-3 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/accounting.svg" class="ml-1 h-6" alt="Product" />
-                    <span>Accounting</span>
+                    <span>{{ 'accounting'|trans({}, 'default') }}</span>
                 </a>
             </li>
+            {% endif %}
+            {% if is_granted('ROLE_ADMIN') %}
+            <li>
+                <a href="{{path('back_app_user_index')}}" class="flex items-start space-x-4 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="{{app.request.baseURL}}/uploads/images/global/customer.svg" class="ml-1 h-6" alt="User" />
+                    <span>{{ 'user'|trans({}, 'default') }}</span>
+                </a>
+            </li>
+            {% endif %}
         </ul>
         <ul class="font-medium top-[800px] absolute ml-4">
             <li>
-                <a href="#" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                <a href="{{ path('back_app_company_show') }}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
+                    <img src="{{app.request.baseURL}}/uploads/images/global/site.svg" class="h-6" alt="Account" />
+                    <span>{{ 'my site'|trans({}, 'default') }}</span>
+                </a>
+            </li>
+            <li>
+                <a href="{{ path('back_app_account_show', {'id': app.user.id}) }}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/account.svg" class="h-6" alt="Account" />
-                    <span>My Account</span>
+                    <span>{{ 'my account'|trans({}, 'default') }}</span>
                 </a>
             </li>
             <li>
                 <a href="{{path('app_logout')}}" class="flex items-start space-x-2 p-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/logout.svg" class="h-6" alt="Log Out" />
-                    <span>Log Out</span>
+                    <span>{{ 'log out'|trans({}, 'default') }}</span>
                 </a>
             </li>
         </ul>
@@ -91,8 +112,9 @@
 </aside>
 
 <main class="p-4 sm:ml-64 mt-14 h-full">
-    <div class="p-4 dark:border-gray-700 mt-14">
-        {% block main %}{% endblock %}
+    <div class="p-4 dark:border-gray-700 mt-14 container mx-auto">
+        {% block main %}
+        {% endblock %}
     </div>
 </main>
 {% endblock %}

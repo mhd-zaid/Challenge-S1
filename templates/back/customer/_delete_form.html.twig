@@ -1,0 +1,15 @@
+{% if from == 'edit' %}
+    <form method="post" action="{{ path('back_app_customer_delete', {'id': customer.id}) }}" onsubmit="return confirm(' {{ 'delete message' | trans({},'customer') }} {{ customer.id}} ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ customer.id) }}">
+{% else %}
+    <form method="post" action="{{ path('back_app_user_delete', {'id': app.user.id}) }}" onsubmit="return confirm('{{ 'delete account message' | trans({},'customer') }} ?');">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ app.user.id) }}">
+{% endif %}
+    <button class="button button-invalid px-6 flex items-center justify-center text-medium">
+        {% if from == 'edit' %}
+            {{ 'delete' | trans({},'customer') }}
+        {% else %}
+           {{ 'delete account' | trans({},'customer') }}
+        {% endif %}
+    </button>
+</form>

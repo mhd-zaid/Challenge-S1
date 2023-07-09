@@ -51,7 +51,6 @@ security:
             - ROLE_ACCOUNTANT
             - ROLE_CUSTOMER
         ROLE_MECHANIC: ROLE_CUSTOMER
-        ROLE_ACCOUNTANT: ROLE_CUSTOMER
 
 when@test:
     security:

@@ -2,12 +2,11 @@
 
 {% block title %}Edit Prestation{% endblock %}
 
-{% block body %}
-    <h1>Edit Prestation</h1>
+{% block main %}
+    {% include 'components/page_header.html.twig' with {'title': 'Modification de la prestation n°'~prestation.id, 'link': path('back_app_prestation_index')} %}
 
     {{ include('back/prestation/_form.html.twig', {'button_label': 'Update'}) }}
 
-    <a href="{{ path('back_app_prestation_index') }}">back to list</a>
-
     {{ include('back/prestation/_delete_form.html.twig') }}
+    </div>
 {% endblock %}

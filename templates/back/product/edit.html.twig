@@ -3,11 +3,10 @@
 {% block title %}Edit Product{% endblock %}
 
 {% block main %}
-    <h1>Edit Product</h1>
+    {% include 'components/page_header.html.twig' with {'title': 'Modification du produit n°'~product.id, 'link': path('back_app_product_index')} %}
 
     {{ include('back/product/_form.html.twig', {'button_label': 'Update'}) }}
 
-    <a href="{{ path('back_app_product_index') }}">back to list</a>
-
     {{ include('back/product/_delete_form.html.twig') }}
+    </div>
 {% endblock %}

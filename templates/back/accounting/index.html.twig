@@ -148,16 +148,16 @@
                 {{invoice.id}}
             </td>
             <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                {{invoice.client.id}}
+                {{invoice.customer.id}}
             </td>
             <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                {{invoice.client.lastname}}
+                {{invoice.customer.lastname}}
             </td>
             <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                {{invoice.client.firstname}}
+                {{invoice.customer.firstname}}
             </td>
             <td scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white text-center">
-                {{invoice.client.email}}
+                {{invoice.customer.email}}
             </td>
              <td class="px-6 py-4 text-center">
                 {% if invoice.status == "PENDING" %}

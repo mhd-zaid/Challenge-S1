@@ -11,6 +11,7 @@ use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use App\Validator\EmailExist;
 
 class UserType extends AbstractType
 {
@@ -23,11 +24,13 @@ class UserType extends AbstractType
             ->add('firstname', TextType::class, [
                 'label' => 'Firstname',
             ])
-            ->add('email', TextType::class, [
+            ->add('email', EmailType::class, [
                 'label' => 'Email',
+                'constraints' => [new EmailExist]
             ])
             ->add('plainPassword', PasswordType::class, [
                 'label' => 'plainPassword',
+                'required' => false,
             ])
             ->add('roles', CollectionType::class, [
                 'label' => 'Roles',

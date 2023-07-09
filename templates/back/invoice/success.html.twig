@@ -1,0 +1,10 @@
+{% extends 'back/base.html.twig' %}
+
+{% block title %} {{ 'invoice success'|trans({},'invoice') }} {% endblock %}
+
+{% block body %}
+    <h1>{{ 'congratulations'|trans({},'invoice') }}</h1>
+
+    <a href="{{ path('back_app_invoice_index') }}">{{ 'back to home page'|trans({},'invoice') }}</a>
+    <a href="{{ path('back_app_invoice_download', {'id': invoice.id}) }}">{{ 'download my invoice'|trans({},'invoice') }}</a>
+{% endblock %}

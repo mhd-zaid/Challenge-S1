@@ -2,6 +2,9 @@
 
 namespace App\Entity;
 
+use App\Entity\Traits\BlameableTrait;
+use App\Entity\Traits\TimestampableTrait;
+use App\Repository\InvoicePrestationRepository;
 use App\Repository\InvoiceRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -10,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity(repositoryClass: InvoiceRepository::class)]
 class Invoice
 {
+    use TimestampableTrait;
+    use BlameableTrait;
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -17,17 +23,17 @@ class Invoice
 
     #[ORM\ManyToOne(inversedBy: 'invoice')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Customer $client = null;
+    private ?Customer $customer = null;
 
     #[ORM\Column(length: 255)]
     private ?string $status = null;
 
-    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoiceProduct::class, orphanRemoval: true, cascade: ['remove'])]
-    private Collection $invoiceProducts;
+    #[ORM\OneToMany(mappedBy: 'invoice', targetEntity: InvoicePrestation::class, orphanRemoval: true, cascade: ['remove'])]
+    private Collection $invoicePrestations;
 
     public function __construct()
     {
-        $this->invoiceProducts = new ArrayCollection();
+        $this->invoicePrestations = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -35,14 +41,14 @@ class Invoice
         return $this->id;
     }
 
-    public function getClient(): ?Customer
+    public function getCustomer(): ?Customer
     {
-        return $this->client;
+        return $this->customer;
     }
 
-    public function setClient(?Customer $client): static
+    public function setCustomer(?Customer $customer): static
     {
-        $this->client = $client;
+        $this->customer = $customer;
 
         return $this;
     }
@@ -64,28 +70,45 @@ class Invoice
      */
     public function getInvoiceProducts(): Collection
     {
-        return $this->invoiceProducts;
+        return $this->invoicePrestations;
     }
 
-    public function addInvoiceProduct(InvoiceProduct $invoiceProduct): static
+    public function addInvoiceProduct(InvoicePrestation $invoicePrestation): static
     {
-        if (!$this->invoiceProducts->contains($invoiceProduct)) {
-            $this->invoiceProducts->add($invoiceProduct);
-            $invoiceProduct->setInvoices($this);
+        if (!$this->invoicePrestations->contains($invoicePrestation)) {
+            $this->invoicePrestations->add($invoicePrestation);
+            $invoicePrestation->setInvoice($this);
         }
 
         return $this;
     }
 
-    public function removeInvoiceProduct(InvoiceProduct $invoiceProduct): static
+    public function removeInvoiceProduct(InvoicePrestation $invoicePrestations): static
     {
-        if ($this->invoiceProducts->removeElement($invoiceProduct)) {
+        if ($this->invoicePrestations->removeElement($invoicePrestations)) {
             // set the owning side to null (unless already changed)
-            if ($invoiceProduct->getInvoices() === $this) {
-                $invoiceProduct->setInvoices(null);
+            if ($invoicePrestations->getInvoice() === $this) {
+                $invoicePrestations->setInvoice(null);
             }
         }
 
         return $this;
+    }
+
+    public function getTotal(InvoicePrestationRepository $invoicePrestationRepository)
+    {
+        $total = 0 ;
+        $invoicePrestations = $invoicePrestationRepository->findBy(['invoice' => $this->getId()]);
+        foreach($invoicePrestations as $invoicePrestation){
+            $prestation = $invoicePrestation->getPrestation();
+            $totalPrestation = 0;
+            foreach($prestation->getPrestationProducts() as $prestationProduct){
+                $totalPrestation += ((($prestationProduct->getProduct()->getTotalTVA() / 100) * $prestationProduct->getProduct()->getTotalHT()) + $prestationProduct->getProduct()->getTotalHT()) * $prestationProduct->getQuantity();
+                         
+            }
+            $totalPrestation += $prestation->getWorkforce();
+            $total += $totalPrestation;
+        }
+        return $total;
     }
 }

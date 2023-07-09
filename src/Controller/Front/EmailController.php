@@ -106,8 +106,7 @@ class EmailController extends AbstractController
             ->context([
                 'user' => $customer,
             ]);
-            // dump($customer);
-            // die;
+
             $mailer->send($email);
             
             return $this->render('back/user/sendEmail.html.twig',['message'=>'send','user'=>$customer]);
