@@ -39,6 +39,23 @@ class PrestationRepository extends ServiceEntityRepository
         }
     }
 
+    public function findByFilter(array $filters): array
+    {
+        $queryBuilder = $this->createQueryBuilder('p');
+
+        if (isset($filters['category'])) {
+            $queryBuilder->andWhere('p.category = :category')
+                ->setParameter('category', strtoupper($filters['category']));
+        }
+        
+        if (isset($filters['prestation'])) {
+            $queryBuilder->andWhere('p.name LIKE :prestation')
+                ->setParameter('prestation', '%' . $filters['prestation'] . '%');
+        }
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
 //    /**
 //     * @return Prestation[] Returns an array of Prestation objects
 //     */

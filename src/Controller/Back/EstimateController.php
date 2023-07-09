@@ -13,6 +13,7 @@ use App\Repository\CustomerRepository;
 use App\Repository\EstimatePrestationRepository;
 use App\Repository\ProductRepository;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\Collection;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -72,9 +73,9 @@ class EstimateController extends AbstractController
 
         $form = $this->createForm(EstimateType::class, $estimate);
         $form->handleRequest($request);
-        $prestations = $form->get('estimatePrestations')->getData();
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
+            $prestations = $form->get('estimatePrestations')->getData();
             $customer = $customerRepository->findOneBy([
                 'email' => $form->get('email')->getData(),
                 'isRegistered' => true
