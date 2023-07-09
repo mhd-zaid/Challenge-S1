@@ -1,9 +1,9 @@
 {% extends 'back/base.html.twig' %}
 
-{% block title %}Presta Auto - Facture{% endblock %}
+{% block title %}Presta Auto - {{ 'invoice'|trans({}, 'invoice') }}{% endblock %}
 
 {% block main %}
-    {% include 'components/page_header.html.twig' with {'title': 'Liste des factures', 'link': path('back_default_index')} %}
+    {% include 'components/page_header.html.twig' with {'title': 'list of invoices', 'link': path('back_default_index')} %}
 
     <div>
         <div class="card">
@@ -13,11 +13,11 @@
             <div class="flex space-x-16 items-center w-full py-2 px-2 bg-gray-200">
                 <div class="text-medium flex justify-center items-center space-x-4">
                     <iconify-icon icon="flat-color-icons:ok" width="35px"></iconify-icon>
-                    <p class="mb-0">Factures payées</p>
+                    <p class="mb-0">{{ 'invoice paid'|trans({}, 'invoice') }}</p>
                 </div>
                 <div class="text-medium flex justify-center items-center space-x-4">
                     <iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon>
-                    <p class="mb-0">Factures en attente de règlement</p>
+                    <p class="mb-0">{{ 'invoice awaiting payment'|trans({}, 'invoice') }}</p>
                 </div>
             </div>
         </div>

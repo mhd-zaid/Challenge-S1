@@ -1,11 +1,11 @@
 {% extends 'back/base.html.twig' %}
 
-{% block title %}New Invoice{% endblock %}
+{% block title %}{{ 'new invoice'|trans({}, 'invoice') }}{% endblock %}
 
 {% block main %}
-    <h1>Create new Invoice</h1>
+    <h1>{{ 'create new invoice'|trans({}, 'invoice') }}</h1>
 
     {{ include('back/invoice/_form.html.twig') }}
 
-    <a href="{{ path('back_app_invoice_index') }}">back to list</a>
+    <a href="{{ path('back_app_invoice_index') }}">{{ 'back to list'|trans({}, 'invoice') }}</a>
 {% endblock %}
