@@ -20,7 +20,6 @@ class Estimate
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
     private ?string $title = null;
 
     #[ORM\ManyToOne(inversedBy: 'estimates')]
@@ -37,21 +36,17 @@ class Estimate
     #[ORM\JoinColumn(nullable: false)]
     private ?Invoice $invoice = null;
 
-    #[ORM\Column(length: 32, nullable: true)]
-    #[Assert\NotBlank]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $carId = null;
 
     #[ORM\Column(length: 20, nullable: true)]
-    #[Assert\NotBlank]
     private ?string $carBrand = null;
 
     #[ORM\Column(length: 50, nullable: true)]
-    #[Assert\NotBlank]
     private ?string $carModel = null;
 
     #[ORM\Column(length: 15, nullable: true)]
     private ?string $carType = null;
-    #[Assert\NotBlank]
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $uuid_success_payment = null;
 

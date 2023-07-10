@@ -268,8 +268,11 @@ class EstimateController extends AdminController
 
     #[Route('/{id}/show', name: 'app_estimate_show', methods: ['GET'])]
     #[Sec('user == estimate.getCustomer() or is_granted("ROLE_MECHANIC")')]
-    public function show(Estimate $estimate,EstimatePrestationRepository $estimatePrestationRepository): Response
+    public function show(Estimate $estimate,EstimatePrestationRepository $estimatePrestationRepository, EntityManagerInterface $em): Response
     {
+        $company = $em->getRepository(Company::class)->findOneBy([
+            'id' => 1
+        ]);
         $total = $estimate->getTotal($estimatePrestationRepository);
         $estimatePrestations = $estimatePrestationRepository->findBy(['estimate' => $estimate]);
 
@@ -277,7 +280,8 @@ class EstimateController extends AdminController
             'estimate' => $estimate,
             'customer' => $estimate->getCustomer(),
             'estimatePrestations' => $estimatePrestations,
-            'total' => $total
+            'total' => $total,
+            "company" => $company
         ]);
     }
 

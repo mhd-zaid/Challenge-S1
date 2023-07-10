@@ -29,7 +29,7 @@ class UserType extends AbstractType
                 'constraints' => [new EmailExist]
             ])
             ->add('plainPassword', PasswordType::class, [
-                'label' => 'plainPassword',
+                'label' => 'Password',
                 'required' => false,
             ])
             ->add('roles', CollectionType::class, [
