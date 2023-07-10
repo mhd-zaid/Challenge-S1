@@ -57,8 +57,10 @@ class UserController extends AdminController
             ]);
 
             $mailer->send($email);
-
+            $this->addFlash('success', 'Utilisateur créé avec succès');
             return $this->redirectToRoute('back_app_user_index', [], Response::HTTP_SEE_OTHER);
+        }elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Erreur lors de la création de l\'utilisateur');
         }
 
         return $this->renderForm('back/user/new.html.twig', [
@@ -85,8 +87,10 @@ class UserController extends AdminController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $userRepository->save($user, true);
-
+            $this->addFlash('success', 'Le profil a bien été modifié');
             return $this->redirectToRoute('back_app_user_index', [], Response::HTTP_SEE_OTHER);
+        }elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Erreur lors de la modification du profil<');
         }
 
         return $this->renderForm('back/user/edit.html.twig', [
@@ -101,6 +105,7 @@ class UserController extends AdminController
     {
         $user->setIsValidated(true);
         $userRepository->save($user, true);
+        $this->addFlash('success', 'Utilisateur validé avec succès');
         return $this->redirectToRoute('back_app_user_index', [], Response::HTTP_SEE_OTHER);
     }
     
@@ -110,6 +115,9 @@ class UserController extends AdminController
     {
         if ($this->isCsrfTokenValid('delete'.$user->getId(), $request->request->get('_token'))) {
             $userRepository->remove($user, true);
+            $this->addFlash('success', 'Utilisateur supprimé avec succès');
+        }else{
+            $this->addFlash('error', 'Erreur lors de la suppression de l\'utilisateur');
         }
 
         return $this->redirectToRoute('back_app_user_index', [], Response::HTTP_SEE_OTHER);

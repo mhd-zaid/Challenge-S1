@@ -132,10 +132,6 @@ class SecurityController extends AbstractController
                 'success',
                 'Votre mot de passe a bien été modifié'
             );
-            $this->addFlash(
-                'info',
-                'Votre mot de passe a bien été modifié'
-            );
             return $this->redirectToRoute('app_login');
         }elseif ($form->isSubmitted() && !$form->isValid()) {
             $this->addFlash(

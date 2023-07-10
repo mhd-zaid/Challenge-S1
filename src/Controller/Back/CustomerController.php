@@ -62,8 +62,11 @@ class CustomerController extends AdminController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $customerRepository->save($customer, true);
+            $this->addFlash(
+                'success',
+                'Client modifié'
+            );
             return $this->redirectToRoute('back_app_customer_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -90,7 +93,16 @@ class CustomerController extends AdminController
             $customer->setIsRegistered(true);
             
             $customerRepository->save($customer, true);
+            $this->addFlash(
+                'success',
+                'Client ajouté'
+            );
             return $this->redirectToRoute('front_default_index', [], Response::HTTP_SEE_OTHER);
+        }else{
+            $this->addFlash(
+                'error',
+                'Erreur lors de l\'ajout'
+            );
         }
         return $this->renderForm('front/customer/new.html.twig', [
             'customer' => $customer,
@@ -104,6 +116,15 @@ class CustomerController extends AdminController
     {
         if ($this->isCsrfTokenValid('delete'.$customer->getId(), $request->request->get('_token'))) {
             $customerRepository->remove($customer, true);
+            $this->addFlash(
+                'success',
+                'Client supprimé'
+            );
+        }else{
+            $this->addFlash(
+                'error',
+                'Erreur lors de la suppression'
+            );
         }
 
         return $this->redirectToRoute('back_app_customer_index', [], Response::HTTP_SEE_OTHER);
