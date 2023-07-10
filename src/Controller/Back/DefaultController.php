@@ -22,12 +22,13 @@ use Symfony\Component\Uid\Uuid;
 use Symfony\UX\Chartjs\Builder\ChartBuilderInterface;
 use Symfony\UX\Chartjs\Model\Chart;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DefaultController extends AdminController
 {
     
     #[Route('/', name: 'default_index', methods: ['GET'])]
-    public function index(Request $request,ChartBuilderInterface $chartBuilder,EntityManagerInterface $em, Security $security, PaginatorInterface $paginator): Response
+    public function index(Request $request,ChartBuilderInterface $chartBuilder,EntityManagerInterface $em, Security $security, PaginatorInterface $paginator, TranslatorInterface $translator): Response
     {
         $estimateRepository = $em->getRepository(Estimate::class);
         $invoiceRepository = $em->getRepository(Invoice::class);
@@ -37,7 +38,7 @@ class DefaultController extends AdminController
         $cutomers = $em->getRepository(Customer::class)->findAll();
         $invoicesPaid = $em->getRepository(Invoice::class)->findBy(['status'=>'PAID']);
         $invoicesPending = $em->getRepository(Invoice::class)->findBy(['status'=>'PENDING']);
-
+        $pendingEstimates = $em->getRepository(Estimate::class)->findBy(['status'=>'PENDING']);
         if ($this->isGranted('ROLE_MECHANIC')) {
             $estimates = $em->getRepository(Estimate::class)->findAll();
             $invoices = $em->getRepository(Invoice::class)->findAll();
@@ -66,12 +67,16 @@ class DefaultController extends AdminController
         $invoicesTotal = $this->getInvoiceTotal($invoices,$em->getRepository(InvoicePrestation::class));
 
         $chart->setData([
-            'labels' => ['Nouveau Clients', 'Devis en attente', 'Prestation en attente', 'Presation effectuée'],
+            'labels' => [
+                $translator->trans('customers',[],'default'),
+                $translator->trans('estimates pending',[],'default'),
+                $translator->trans('invoices paid',[],'default')
+            ],
             'datasets' => [
                 [
                     'label' => 'dashboard',
                     'backgroundColor' => ["#54bebe", "#76c8c8", "#98d1d1", "#badbdb"],
-                    'data' => [count($cutomers),count($estimates) , 8, 43],
+                    'data' => [count($cutomers),count($pendingEstimates) , count($invoicesPaid)],
                 ],
             ],
         ]);
@@ -109,6 +114,8 @@ class DefaultController extends AdminController
             'invoicesPending'=>$invoicesPending,
             'invoicesPagination' => $invoicesPagination,
             'estimatesPagination' => $estimatesPagination,
+            'pendingEstimates' => $pendingEstimates,
+            'salesFigures' => $this->getSalesFigures($em)
         ]);
     }
 
@@ -134,5 +141,16 @@ class DefaultController extends AdminController
             ];
         }  
         return $estimatesTotal; 
+    }
+
+    public function getSalesFigures(EntityManagerInterface $em): float
+    {
+        $invoices = $em->getRepository(Invoice::class)->findAll();
+        $salesFigures = [];
+        foreach ($invoices as $invoice) {
+            $salesFigures[] = $invoice->getTotal($em->getRepository(InvoicePrestation::class));
+        }
+        
+        return array_sum($salesFigures);
     }
 }
