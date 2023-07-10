@@ -50,6 +50,11 @@ class EstimateType extends AbstractType
                     'class' => '',
                 ],
                 'mapped' => false,
+                'constraints' => [
+                    new Assert\NotBlank([
+                        'message' => 'Vous devez ajouter au moins une prestation à un devis.',
+                    ]),
+                ],
             ])
             ->add('validityDate', DateType::class, [
                 'mapped' => false,

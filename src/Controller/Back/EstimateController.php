@@ -109,6 +109,20 @@ class EstimateController extends AdminController
             $prestations = $form->get('estimatePrestations')->getData();
 
             $emailCustomer = $form->get('email')->getData();
+
+            foreach($prestations as $prestation){
+                $estimatePrestation = new EstimatePrestation();
+                $estimatePrestation->setPrestation($prestation);
+                $estimatePrestation->setEstimate($estimate);
+                $estimatePrestationRepository->save($estimatePrestation, true);
+
+                $invoicePrestation = new InvoicePrestation();
+                $invoicePrestation->setPrestation($prestation);
+                $invoicePrestation->setInvoice($invoice);
+                $invoicePrestationRepository->save($invoicePrestation, true);
+
+            }
+
             $total = $estimate->getTotal($estimatePrestationRepository);
             $html = $this->renderView('back/pdf/estimate.html.twig', [
                 'estimate' => $estimate,
@@ -145,20 +159,6 @@ class EstimateController extends AdminController
                 ])
                 ->attach($pdfContent, 'file.pdf');
                 $this->mailer->send($email);
-            }
-            
-
-            foreach($prestations as $prestation){
-                $estimatePrestation = new EstimatePrestation();
-                $estimatePrestation->setPrestation($prestation);
-                $estimatePrestation->setEstimate($estimate);
-                $estimatePrestationRepository->save($estimatePrestation, true);
-
-                $invoicePrestation = new InvoicePrestation();
-                $invoicePrestation->setPrestation($prestation);
-                $invoicePrestation->setInvoice($invoice);
-                $invoicePrestationRepository->save($invoicePrestation, true);
-
             }
 
            return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
