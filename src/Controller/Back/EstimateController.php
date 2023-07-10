@@ -6,6 +6,8 @@ use App\Entity\Customer;
 use App\Entity\Estimate;
 use App\Form\EstimateType;
 use App\Entity\Invoice;
+use App\Entity\Company;
+use App\Entity\CompanyRepository;
 use App\Entity\InvoicePrestation;
 use App\Entity\EstimatePrestation;
 use App\Repository\EstimateRepository;
@@ -124,11 +126,15 @@ class EstimateController extends AdminController
             }
 
             $total = $estimate->getTotal($estimatePrestationRepository);
+            $company = $em->getRepository(Company::class)->findOneBy([
+                'id' => 1
+            ]);
             $html = $this->renderView('back/pdf/estimate.html.twig', [
                 'estimate' => $estimate,
                 'customer' => $customer,
                 'prestations' => $prestations,
                 'total' => $total,
+                'company' => $company
             ]);
             $pdfResponse = new PdfResponse(
                 $pdf->getOutputFromHtml($html),
@@ -231,9 +237,14 @@ class EstimateController extends AdminController
 
     #[Route('/{id}/download', name: 'app_estimate_download', methods: ['GET'])]
     #[Sec('user == estimate.getCustomer() or is_granted("ROLE_MECHANIC")')]
-    public function download(Estimate $estimate, Pdf $pdf, EstimatePrestationRepository $estimatePrestationRepository): Response
+    public function download(Estimate $estimate, EntityManagerInterface $em, Pdf $pdf, EstimatePrestationRepository $estimatePrestationRepository): Response
     {
+
         $total = $estimate->getTotal($estimatePrestationRepository);
+
+        $company = $em->getRepository(Company::class)->findOneBy([
+            'id' => 1
+        ]);
         $estimatePrestations = $estimatePrestationRepository->findBy(['estimate' => $estimate]);
 
         $prestations = [];
@@ -245,12 +256,13 @@ class EstimateController extends AdminController
             'estimate' => $estimate,
             'customer' => $estimate->getCustomer(),
             'prestations' => $prestations,
-            'total' => $total
+            'total' => $total,
+            'company' => $company
         ]);
         
         return new PdfResponse(
             $pdf->getOutputFromHtml($html),
-            'file.pdf'
+            'devis.pdf'
         );
     }
 
