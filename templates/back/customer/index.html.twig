@@ -48,11 +48,6 @@
                                     <button type="button" class="button button-details">{{ 'edit' | trans({},'customer') }}</button>
                                 </a>
                             </td>
-                            {% if customer.isValidated != 1 %}
-                                <td>
-                                    {% include 'back/customer/_validate_form.html.twig'  with {'from': 'index'} %}
-                                </td>
-                            {% endif %}
                         </tr>
                     {% endif %}
                 {% endfor %}
