@@ -55,6 +55,9 @@ class Prestation
     #[ORM\ManyToOne(inversedBy: 'prestation')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
+
+    #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
+    private ?\DateTime $deletedAt = null;
     
     public function __construct()
     {
@@ -159,6 +162,18 @@ class Prestation
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTime $deletedAt): static
+    {
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }

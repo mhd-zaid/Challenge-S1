@@ -26,7 +26,9 @@ class PrestationController extends AdminController
     public function index(PrestationRepository $prestationRepository,CategoryRepository $categoryRepository): Response
     {
         return $this->render('back/prestation/index.html.twig', [
-            'prestations' => $prestationRepository->findAll(),
+            'prestations' => $prestationRepository->findBy(
+                ['deletedAt' => null],
+            ),
             'categories' => $categoryRepository->findAll()
         ]);
     }
@@ -153,7 +155,8 @@ class PrestationController extends AdminController
     public function delete(Request $request, Prestation $prestation, PrestationRepository $prestationRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$prestation->getId(), $request->request->get('_token'))) {
-            $prestationRepository->remove($prestation, true);
+            $prestation->setDeletedAt(new \DateTime());
+            $prestationRepository->save($prestation, true);
         }
 
         return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);
