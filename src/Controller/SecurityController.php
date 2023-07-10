@@ -32,8 +32,6 @@ class SecurityController extends AbstractController
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
-
-
         return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
     }
 
@@ -58,31 +56,40 @@ class SecurityController extends AbstractController
                 $em->getRepository(User::class)->save($user, true);
 
                 $email = (new TemplatedEmail())
-                ->from("zaidmouhamad@gmail.com")
-                ->to($user->getEmail())
-                ->subject('Reset Password')
-                ->htmlTemplate('security/forgetPassword/confirmReset.html.twig')
-                ->context([
-                    'user' => $user,
-                ]);
-    
+                    ->from("zaidmouhamad@gmail.com")
+                    ->to($user->getEmail())
+                    ->subject('Reset Password')
+                    ->htmlTemplate('security/forgetPassword/confirmReset.html.twig')
+                    ->context([
+                        'user' => $user,
+                    ]);
+
                 return $this->redirectToRoute('app_login');
             }else{
                 $customer->setValidationToken(Uuid::v4()->__toString());
                 $em->getRepository(Customer::class)->save($customer, true);
 
                 $email = (new TemplatedEmail())
-                ->from("zaidmouhamad@gmail.com")
-                ->to($customer->getEmail())
-                ->subject('Reset Password')
-                ->htmlTemplate('security/forgetPassword/confirmReset.html.twig')
-                ->context([
-                    'user' => $customer,
-                ]);
+                    ->from("zaidmouhamad@gmail.com")
+                    ->to($customer->getEmail())
+                    ->subject('Reset Password')
+                    ->htmlTemplate('security/forgetPassword/confirmReset.html.twig')
+                    ->context([
+                        'user' => $customer,
+                    ]);
                 $mailer->send($email);
-
             }
+            $this->addFlash(
+                'info',
+                'Un email vous a été envoyé pour réinitialiser votre mot de passe'
+            );
+        }elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash(
+                'error',
+                'L\'email n\'est pas valide'
+            );
         }
+
         dump($form);
         return $this->renderForm('security/forgetPassword/forget.html.twig', [
             'form' => $form
@@ -92,6 +99,7 @@ class SecurityController extends AbstractController
     #[Route(path: '/logout', name: 'app_logout')]
     public function logout(): void
     {
+        dump($_SESSION);
         throw new \LogicException('This method can be blank - it will be intercepted by the logout key on your firewall.');
     }
 
@@ -122,7 +130,20 @@ class SecurityController extends AbstractController
                 $customer->setPlainPassword($form->get('plainPassword')->getData());
                 $customerRepository->save($customer, true);
             }
+            $this->addFlash(
+                'success',
+                'Votre mot de passe a bien été modifié'
+            );
+            $this->addFlash(
+                'info',
+                'Votre mot de passe a bien été modifié'
+            );
             return $this->redirectToRoute('app_login');
+        }elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash(
+                'error',
+                'Le mot de passe n\'est pas valide'
+            );
         }
         return $this->renderForm('security/resetPassword/reset.html.twig', [
             'form' => $form

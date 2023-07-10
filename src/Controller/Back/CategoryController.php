@@ -26,7 +26,16 @@ class CategoryController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $categoryRepository->save($category, true);
+            $this->addFlash(
+                'info',
+                'Catégorie ajoutée'
+            );
             return $this->redirectToRoute('back_app_category_index', [], Response::HTTP_SEE_OTHER);
+        }elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash(
+                'error',
+                'Erreur lors de l\'ajout de la catégorie'
+            );
         }
 
         $category = $categoryRepository->findAll();
