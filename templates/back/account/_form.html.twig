@@ -73,7 +73,7 @@
     {{ form_row(form.zipCode) }}
     {{ form_row(form.country) }}
     {{ form_row(form.language) }}
-    {{ form_row(form.theme) }}
+    {# {{ form_row(form.theme) }} #}
 {% if entity =='customer' %}
 <a href="{{ path('back_app_customer_edit', {'id': customer.id}) }}">
 {% elseif entity =='user' %}
