@@ -48,7 +48,6 @@ class AccountController extends AdminController
             $form = $this->createForm(AccountType::class, $user);
             $form->handleRequest($request);
             if ($form->isSubmitted() && $form->isValid()) {
-                dump($user);
                 $em->getRepository(User::class)->save($user, true);
                 return $this->redirectToRoute('back_app_account_show', ['id'=>$user->getId()], Response::HTTP_SEE_OTHER);
             }
