@@ -46,6 +46,11 @@
                     <td>
                         {{  include('back/user/_delete_form.html.twig', {'id': user.id}) }}
                     </td>
+                    {% if user.isValidated != 1 %}
+                                <td>
+                                    {% include 'back/user/_validate_form.html.twig'  with {'from': 'index'} %}
+                                </td>
+                            {% endif %}
                 </tr>
                 {% endif %}
             {% else %}
