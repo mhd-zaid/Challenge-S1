@@ -8,6 +8,7 @@ use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use App\Entity\Product;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ProductQuantityType extends AbstractType
 {
@@ -20,7 +21,12 @@ class ProductQuantityType extends AbstractType
         'choice_label' => 'title',
     ])
     ->add('quantity', IntegerType::class, [
-        'label' => 'Quantité'
+        'label' => 'Quantité',
+        'constraints' => [
+            new Assert\Positive([
+                'message' => 'Veuille ajouter une quantité positive.',
+            ]),
+        ],
     ]);
 }
 }
