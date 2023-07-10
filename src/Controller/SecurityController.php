@@ -32,6 +32,8 @@ class SecurityController extends AbstractController
         // last username entered by the user
         $lastUsername = $authenticationUtils->getLastUsername();
 
+
+
         return $this->render('security/login.html.twig', ['last_username' => $lastUsername, 'error' => $error]);
     }
 
@@ -64,7 +66,7 @@ class SecurityController extends AbstractController
                     'user' => $user,
                 ]);
     
-                $mailer->send($email);
+                return $this->redirectToRoute('app_login');
             }else{
                 $customer->setValidationToken(Uuid::v4()->__toString());
                 $em->getRepository(Customer::class)->save($customer, true);
@@ -78,9 +80,10 @@ class SecurityController extends AbstractController
                     'user' => $customer,
                 ]);
                 $mailer->send($email);
+
             }
         }
-
+        dump($form);
         return $this->renderForm('security/forgetPassword/forget.html.twig', [
             'form' => $form
         ]);
@@ -119,7 +122,7 @@ class SecurityController extends AbstractController
                 $customer->setPlainPassword($form->get('plainPassword')->getData());
                 $customerRepository->save($customer, true);
             }
-
+            return $this->redirectToRoute('app_login');
         }
         return $this->renderForm('security/resetPassword/reset.html.twig', [
             'form' => $form
