@@ -95,6 +95,16 @@ class UserController extends AdminController
         ]);
     }
 
+    #[Route('/{id}/validate', name: 'app_user_validate', methods: ['POST'])]
+    #[Security('is_granted("ROLE_ADMIN")')]
+    public function validate(User $user, UserRepository $userRepository): Response
+    {
+        $user->setIsValidated(true);
+        $userRepository->save($user, true);
+        return $this->redirectToRoute('back_app_user_index', [], Response::HTTP_SEE_OTHER);
+    }
+    
+
     #[Route('/{id}', name: 'app_user_delete', methods: ['POST'])]
     public function delete(Request $request, User $user, UserRepository $userRepository): Response
     {

@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Entity\Traits\TimestampableTrait;
+use App\Entity\Traits\BlameableTrait;
 use App\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
@@ -24,11 +25,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2,minMessage:'Le nom doit comporter au moins 2 caractères')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
+        message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
+    )]  
     private ?string $lastname = null;
     
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2,minMessage:'Le prénom doit comporter au moins 2 caractères')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
+        message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
+    )]  
     private ?string $firstname = null;
 
     #[ORM\Column(length: 180, unique: true)]
@@ -42,7 +51,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?string $password = null;
 
-    #[Assert\Regex('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z\d\W]{8,}$/')]
+    #[Assert\Regex(pattern : '/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*\W)[a-zA-Z\d\W]{8,}$/',
+    message: '8 caractères requis avec au moins une majuscule, minuscule, un chiffre et un caractère spécial')]
     private ?string $plainPassword = null;
 
     #[ORM\Column]
@@ -56,6 +66,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private array $roles = [];
 
     #[ORM\Column (length: 25, nullable: true)]
+    #[Assert\Regex('/^\+?[0-9]+$/')]
     private ?string $phone = null;
 
     #[ORM\Column(length: 255, nullable: true)]

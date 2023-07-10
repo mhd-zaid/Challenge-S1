@@ -19,7 +19,6 @@ use Symfony\Component\Uid\Uuid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 #[Route('/customer')]
-#[Security('is_granted("ROLE_MECHANIC")')]
 class CustomerController extends AdminController
 {
     private $mailer;
@@ -30,6 +29,7 @@ class CustomerController extends AdminController
     }
 
     #[Route('/', name: 'app_customer_index', methods: ['GET'])]
+    #[Security('is_granted("ROLE_MECHANIC")')]
     public function index(CustomerRepository $customerRepository, PaginatorInterface $paginator, Request $request): Response
     {
         $customer = $customerRepository->findAll();
@@ -45,6 +45,7 @@ class CustomerController extends AdminController
     }
 
     #[Route('/{id}', name: 'app_customer_show', methods: ['GET'])]
+    #[Security('is_granted("ROLE_MECHANIC")')]
     public function show(Customer $customer): Response
     {
         return $this->render('back/customer/show.html.twig', [
@@ -53,6 +54,7 @@ class CustomerController extends AdminController
     }
 
     #[Route('/{id}/edit', name: 'app_customer_edit', methods: ['GET', 'POST'])]
+    #[Security('is_granted("ROLE_MECHANIC")')]
     public function edit(Request $request, Customer $customer, CustomerRepository $customerRepository): Response
     {
         $form = $this->createForm(AdminEditCustomerType::class, $customer);
@@ -70,22 +72,8 @@ class CustomerController extends AdminController
         ]);
     }
 
-    #[Route('/{id}/validate', name: 'app_customer_validate', methods: ['POST'])]
-    public function validate(Customer $customer, CustomerRepository $customerRepository, RequestStack $requestStack): Response
-    {
-        $customer->setIsValidated(true);
-        $request = $requestStack->getMainRequest();
-        $referer = $request->headers->get('referer');
-        if(str_contains($referer, $customer->getId())){
-            $customerRepository->save($customer, true);
-            return $this->redirectToRoute('back_app_customer_show', ['id'=>$customer->getId()] , Response::HTTP_SEE_OTHER);
-        }else{
-            $customerRepository->save($customer, true);
-            return $this->redirectToRoute('back_app_customer_index', [], Response::HTTP_SEE_OTHER);
-        }
-    }
-
     #[Route('/new/{token}', name: 'app_customer_new', methods: ['GET', 'POST'])]
+    #[Security('is_granted("ROLE_MECHANIC")')]
     public function new(Request $request, CustomerRepository $customerRepository,string $token): Response
     {
         $customer = new Customer();
@@ -110,6 +98,7 @@ class CustomerController extends AdminController
     }
 
     #[Route('/{id}', name: 'app_customer_delete', methods: ['POST'])]
+    #[Security('is_granted("ROLE_MECHANIC") or user === customer')]
     public function delete(Request $request, Customer $customer, CustomerRepository $customerRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$customer->getId(), $request->request->get('_token'))) {

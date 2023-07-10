@@ -50,13 +50,21 @@ class EstimateType extends AbstractType
                     'class' => '',
                 ],
                 'mapped' => false,
+                'constraints' => [
+                    new Assert\NotBlank([
+                        'message' => 'Vous devez ajouter au moins une prestation à un devis.',
+                    ]),
+                ],
             ])
             ->add('validityDate', DateType::class, [
                 'mapped' => false,
                 'label' => "Date de fin de validité du contrat",
                 'data' => new \DateTime("now"),
                 'constraints' => [
-                    new Assert\GreaterThan('today')
+                    new Assert\GreaterThan('today'),
+                    new Assert\NotBlank([
+                        'message' => 'Vous devez ajouter une date de fin de validité au devis.',
+                    ]),
                 ],
                 'attr' => [
                     'class' => 'datepicker',

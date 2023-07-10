@@ -24,7 +24,7 @@ class CompanyType extends AbstractType
             ->add('tva')
             ->add('language')
             ->add('currency')
-            ->add('theme')
+            // ->add('theme')
             ->add('description')
             ->add('companyImageFile', VichImageType::class, [
                 'required' => false,

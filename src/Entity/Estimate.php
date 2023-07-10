@@ -13,7 +13,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 class Estimate
 {
     use TimestampableTrait;
-    use BlameableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]

@@ -14,12 +14,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 class AccountController extends AdminController
 {
 
-    #[Route('/{id}', name: 'app_account_show', methods: ['GET'])]
-    #[Security('user === user')]
+    #[Route('/', name: 'app_account_show', methods: ['GET'])]
+    #[Security('user === user' )]
     public function show(EntityManagerInterface $em): Response
     {
-        $user = $em->getRepository(User::class)->findOneBy(['id' => $this->getUser()]);
-        $customer = $em->getRepository(Customer::class)->findOneBy(['id' => $this->getUser()]);
+        $user = $em->getRepository(User::class)->findOneBy([
+            'email' => $this->getUser()->getEmail()
+    ]);
+        $customer = $em->getRepository(Customer::class)->findOneBy(['email' => $this->getUser()->getEmail()]);
         if($user){
             return $this->render('back/account/show.html.twig', [
                 'user' => $user,
@@ -64,7 +66,7 @@ class AccountController extends AdminController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $em->getRepository(Customer::class)->save($customer, true);
-                return $this->redirectToRoute('back_app_account_show', ['id'=>$customer->getId()], Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('back_app_account_show', Response::HTTP_SEE_OTHER);
             }
             return $this->renderForm('back/account/edit.html.twig', [
                 'customer' => $customer,
