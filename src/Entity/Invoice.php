@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping as ORM;
 class Invoice
 {
     use TimestampableTrait;
-    use BlameableTrait;
     
     #[ORM\Id]
     #[ORM\GeneratedValue]
