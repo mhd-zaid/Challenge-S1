@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use App\Validator\EmailExist;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class UserType extends AbstractType
 {
@@ -31,6 +32,11 @@ class UserType extends AbstractType
             ->add('plainPassword', PasswordType::class, [
                 'label' => 'Password',
                 'required' => false,
+                'constraints' => [
+                    new Assert\NotBlank([
+                        'message' => 'Vous devez ajouter un mot de passe à votre Utilisateur.',
+                    ]),
+                ],
             ])
             ->add('roles', CollectionType::class, [
                 'label' => 'Roles',
