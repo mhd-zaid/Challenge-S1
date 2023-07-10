@@ -72,22 +72,6 @@ class CustomerController extends AdminController
         ]);
     }
 
-    #[Route('/{id}/validate', name: 'app_customer_validate', methods: ['POST'])]
-    #[Security('is_granted("ROLE_MECHANIC")')]
-    public function validate(Customer $customer, CustomerRepository $customerRepository, RequestStack $requestStack): Response
-    {
-        $customer->setIsValidated(true);
-        $request = $requestStack->getMainRequest();
-        $referer = $request->headers->get('referer');
-        if(str_contains($referer, $customer->getId())){
-            $customerRepository->save($customer, true);
-            return $this->redirectToRoute('back_app_customer_show', ['id'=>$customer->getId()] , Response::HTTP_SEE_OTHER);
-        }else{
-            $customerRepository->save($customer, true);
-            return $this->redirectToRoute('back_app_customer_index', [], Response::HTTP_SEE_OTHER);
-        }
-    }
-
     #[Route('/new/{token}', name: 'app_customer_new', methods: ['GET', 'POST'])]
     #[Security('is_granted("ROLE_MECHANIC")')]
     public function new(Request $request, CustomerRepository $customerRepository,string $token): Response
