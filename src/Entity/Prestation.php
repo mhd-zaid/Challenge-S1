@@ -12,15 +12,18 @@ use Doctrine\ORM\Mapping as ORM;
 use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
-
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: PrestationRepository::class)]
+#[UniqueEntity(
+    fields: 'name',
+    message: 'Ce titre existe déjà.',
+)]
 #[Vich\Uploadable]
 
 class Prestation
 {
     use TimestampableTrait;
-    use BlameableTrait;
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
@@ -34,11 +37,13 @@ class Prestation
     #[ORM\Column]
     #[Assert\NotBlank(message: 'L\'estimation de la Durée est obligatoire, elle doit être exprimée en minutes')]
     #[Assert\Type(type: 'integer', message: 'La Durée doit être un entier, elle doit être exprimée en minutes')]
+    #[Assert\Positive(message: 'Le Total HT doit être un nombre positif')]
     private ?int $duration = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
     #[Assert\NotBlank(message: 'La main d\'oeuvre est obligatoire')]
     #[Assert\Type(type: 'int', message: 'La main d\'oeuvre doit être un nombre')]
+    #[Assert\Positive(message: 'Le Total HT doit être un nombre positif')]
     private ?int $workforce = null;
 
     #[ORM\OneToMany(mappedBy: 'prestation', targetEntity: PrestationProduct::class, orphanRemoval: true, cascade: ['remove'])]
@@ -50,6 +55,9 @@ class Prestation
     #[ORM\ManyToOne(inversedBy: 'prestation')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
+
+    #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
+    private ?\DateTime $deletedAt = null;
     
     public function __construct()
     {
@@ -154,6 +162,18 @@ class Prestation
     public function setCategory(?Category $category): static
     {
         $this->category = $category;
+
+        return $this;
+    }
+
+    public function getDeletedAt(): ?\DateTime
+    {
+        return $this->deletedAt;
+    }
+
+    public function setDeletedAt(?\DateTime $deletedAt): static
+    {
+        $this->deletedAt = $deletedAt;
 
         return $this;
     }

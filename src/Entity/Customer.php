@@ -19,8 +19,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 class Customer implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableTrait;
-    use BlameableTrait;
-    
+        
     #[ORM\Id]
     #[ORM\Column]
     private ?int $id = null;
@@ -29,11 +28,19 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable : true)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2,minMessage:'Le nom doit comporter au moins 2 caractères')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
+        message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
+    )]    
     private ?string $lastname = null;
     
     #[ORM\Column(length: 255, nullable : true)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2,minMessage:'Le prénom doit comporter au moins 2 caractères')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
+        message: 'La valeur doit être une chaîne de caractères valide pour un prénom ou un nom de famille'
+    )]    
     private ?string $firstname = null;
 
     #[ORM\Column(length: 180, unique: true, nullable : true)]
@@ -56,6 +63,7 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     
     #[ORM\Column(length: 20, nullable : true)]
     #[Assert\Length(max: 20)]
+    #[Assert\Regex('/^\+?[0-9]+$/')]
     private ?string $phone = null;
 
     #[ORM\Column]
@@ -80,16 +88,24 @@ class Customer implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable : true)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2,minMessage:'Le nom de la ville doit comporter au moins 2 caractères')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z -]+$/',
+        message: 'La valeur doit être une chaîne de caractères valide pour une ville'
+    )]
     private ?string $city = null;
 
     #[ORM\Column(length: 255, nullable : true)]
     #[Assert\NotBlank]
     #[Assert\Length(min: 2,minMessage:'Le nom du pays doit comporter au moins 2 caractères')]
+    #[Assert\Regex(
+        pattern: '/^[a-zA-Z -]+$/',
+        message: 'La valeur doit être une chaîne de caractères valide pour un pays'
+    )]
     private ?string $country = null;
 
     #[ORM\Column(nullable : true)]
     #[Assert\NotBlank]
-    #[Assert\Length(min: 5,minMessage:'Le code postal doit comporter au moins 5 caractères')]
+    #[Assert\Regex(pattern: '/^\d{5}$/', message: 'Le code postal doit contenir exactement cinq chiffres')]
     private ?string $zipCode = null;
 
     #[ORM\Column(length: 255, nullable : true)]

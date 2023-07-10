@@ -53,19 +53,15 @@ class AccountType extends AbstractType
                 'choices'  => [
                     'Français' => 'fr',
                     'English' => 'en',
-                    'Deutch' => 'de',
-                    'Italiano' => 'it',
-                    'Espanõl' => 'es',
                 ],
-            ])
-            ->add('theme', ChoiceType::class, [
-                'label' => 'Thème',
-                'choices'  => [
-                    'Clair' => 'light',
-                    'Sombre' => 'dark',
-                ],
-            ])
-        ;
+            ]);
+            // ->add('theme', ChoiceType::class, [
+            //     'label' => 'Thème',
+            //     'choices'  => [
+            //         'Clair' => 'light',
+            //         'Sombre' => 'dark',
+            //     ],
+            // ])
     }
 
     public function configureOptions(OptionsResolver $resolver): void

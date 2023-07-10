@@ -6,6 +6,8 @@ use App\Entity\Customer;
 use App\Entity\Estimate;
 use App\Form\EstimateType;
 use App\Entity\Invoice;
+use App\Entity\Company;
+use App\Entity\CompanyRepository;
 use App\Entity\InvoicePrestation;
 use App\Entity\EstimatePrestation;
 use App\Repository\EstimateRepository;
@@ -83,7 +85,6 @@ class EstimateController extends AdminController
             $prestations = $form->get('estimatePrestations')->getData();
             $customer = $customerRepository->findOneBy([
                 'email' => $form->get('email')->getData(),
-                'isRegistered' => true
             ]);
 
                         
@@ -110,19 +111,37 @@ class EstimateController extends AdminController
             $prestations = $form->get('estimatePrestations')->getData();
 
             $emailCustomer = $form->get('email')->getData();
+
+            foreach($prestations as $prestation){
+                $estimatePrestation = new EstimatePrestation();
+                $estimatePrestation->setPrestation($prestation);
+                $estimatePrestation->setEstimate($estimate);
+                $estimatePrestationRepository->save($estimatePrestation, true);
+
+                $invoicePrestation = new InvoicePrestation();
+                $invoicePrestation->setPrestation($prestation);
+                $invoicePrestation->setInvoice($invoice);
+                $invoicePrestationRepository->save($invoicePrestation, true);
+
+            }
+
             $total = $estimate->getTotal($estimatePrestationRepository);
+            $company = $em->getRepository(Company::class)->findOneBy([
+                'id' => 1
+            ]);
             $html = $this->renderView('back/pdf/estimate.html.twig', [
                 'estimate' => $estimate,
                 'customer' => $customer,
                 'prestations' => $prestations,
                 'total' => $total,
+                'company' => $company
             ]);
             $pdfResponse = new PdfResponse(
                 $pdf->getOutputFromHtml($html),
                 'devis.pdf'
             );
             $pdfContent = $pdfResponse->getContent();
-            if($isCustomerExist){
+            if($isCustomerExist && !$customer->getIsRegistered()){
             $email = (new TemplatedEmail())
             ->from("zaidmouhamad@gmail.com")
             ->to($emailCustomer)
@@ -158,6 +177,7 @@ class EstimateController extends AdminController
                 $invoicePrestation = new InvoicePrestation();
                 $invoicePrestation->setPrestation($prestation);
                 $invoicePrestation->setInvoice($invoice);
+                $invoicePrestation->setPrestationName($prestation->getName());
                 $invoicePrestationRepository->save($invoicePrestation, true);
 
             }
@@ -232,9 +252,14 @@ class EstimateController extends AdminController
 
     #[Route('/{id}/download', name: 'app_estimate_download', methods: ['GET'])]
     #[Sec('user == estimate.getCustomer() or is_granted("ROLE_MECHANIC")')]
-    public function download(Estimate $estimate, Pdf $pdf, EstimatePrestationRepository $estimatePrestationRepository): Response
+    public function download(Estimate $estimate, EntityManagerInterface $em, Pdf $pdf, EstimatePrestationRepository $estimatePrestationRepository): Response
     {
+
         $total = $estimate->getTotal($estimatePrestationRepository);
+
+        $company = $em->getRepository(Company::class)->findOneBy([
+            'id' => 1
+        ]);
         $estimatePrestations = $estimatePrestationRepository->findBy(['estimate' => $estimate]);
 
         $prestations = [];
@@ -246,19 +271,23 @@ class EstimateController extends AdminController
             'estimate' => $estimate,
             'customer' => $estimate->getCustomer(),
             'prestations' => $prestations,
-            'total' => $total
+            'total' => $total,
+            'company' => $company
         ]);
         
         return new PdfResponse(
             $pdf->getOutputFromHtml($html),
-            'file.pdf'
+            'devis.pdf'
         );
     }
 
     #[Route('/{id}/show', name: 'app_estimate_show', methods: ['GET'])]
     #[Sec('user == estimate.getCustomer() or is_granted("ROLE_MECHANIC")')]
-    public function show(Estimate $estimate,EstimatePrestationRepository $estimatePrestationRepository): Response
+    public function show(Estimate $estimate,EstimatePrestationRepository $estimatePrestationRepository, EntityManagerInterface $em): Response
     {
+        $company = $em->getRepository(Company::class)->findOneBy([
+            'id' => 1
+        ]);
         $total = $estimate->getTotal($estimatePrestationRepository);
         $estimatePrestations = $estimatePrestationRepository->findBy(['estimate' => $estimate]);
 
@@ -266,7 +295,8 @@ class EstimateController extends AdminController
             'estimate' => $estimate,
             'customer' => $estimate->getCustomer(),
             'estimatePrestations' => $estimatePrestations,
-            'total' => $total
+            'total' => $total,
+            "company" => $company
         ]);
     }
 

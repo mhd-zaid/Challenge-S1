@@ -25,7 +25,7 @@ class PrestationType extends AbstractType
                 'choice_label' => 'name',
             ])
             ->add('duration',IntegerType::class)
-            ->add('workforce', IntegerType::class, [
+            ->add('workforce', NumberType::class, [
                 'label' => "Main d'oeuvre"
             ])
             ->add('productQuantities', CollectionType::class, [

@@ -36,7 +36,7 @@ class CompanyController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $companyRepository->save($company, true);
 
-            return $this->redirectToRoute('back_app_company_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('back_app_company_show', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('back/company/edit.html.twig', [
@@ -52,6 +52,6 @@ class CompanyController extends AbstractController
             $companyRepository->remove($company, true);
         }
 
-        return $this->redirectToRoute('back_app_company_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('back_app_company_show', [], Response::HTTP_SEE_OTHER);
     }
 }

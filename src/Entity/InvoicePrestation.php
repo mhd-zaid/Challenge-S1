@@ -21,6 +21,9 @@ class InvoicePrestation
     #[ORM\JoinColumn(nullable: false)]
     private ?Prestation $prestation = null;
 
+    #[ORM\Column(length: 255)]
+    private ?string $prestationName = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -46,6 +49,18 @@ class InvoicePrestation
     public function setPrestation(?Prestation $prestation): static
     {
         $this->prestation = $prestation;
+
+        return $this;
+    }
+
+    public function getPrestationName(): ?string
+    {
+        return $this->prestationName;
+    }
+
+    public function setPrestationName(string $prestationName): static
+    {
+        $this->prestationName = $prestationName;
 
         return $this;
     }

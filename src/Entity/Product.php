@@ -13,21 +13,25 @@ use Vich\UploaderBundle\Mapping\Annotation as Vich;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\Validator\Constraints as Assert;
 use App\Entity\PrestationProduct;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
+#[UniqueEntity(
+    fields: 'title',
+    message: 'Ce titre existe déjà.',
+)]
 #[Vich\Uploadable]
 
 class Product
 {
     use TimestampableTrait;
-    use BlameableTrait;
 
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 100)]
+    #[ORM\Column(length: 180, unique: true, nullable : false)]
     #[Assert\NotBlank(message: 'Le nom du Produit est obligatoire')]
     #[Assert\Type(type: 'string', message: 'Le nom du Produit doit être une chaîne de caractères')]
     private ?string $title = null;
@@ -35,16 +39,19 @@ class Product
     #[ORM\Column]
     #[Assert\NotNull(message: 'La quantité est obligatoire')]
     #[Assert\Type(type: 'integer', message: 'La quantité doit être un nombre entier')]
+    #[Assert\Positive(message: 'La quantité doit être un nombre positif')]
     private ?int $quantity = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
     #[Assert\NotBlank(message: 'Le Total HT est obligatoire')]
     #[Assert\Type(type: 'float', message: 'Le Total HT doit être un nombre décimal')]
+    #[Assert\Positive(message: 'Le Total HT doit être un nombre positif')]
     private ?float $totalHt = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
     #[Assert\NotBlank(message: 'Le Total TVA est obligatoire')]
     #[Assert\Type(type: 'float', message: 'Le Total TVA doit être un nombre décimal')]
+    #[Assert\Positive(message: 'Le Total TVA doit être un nombre positif')]
     private ?float $totalTva = null;
 
     #[ORM\Column(length: 255, nullable: true)]

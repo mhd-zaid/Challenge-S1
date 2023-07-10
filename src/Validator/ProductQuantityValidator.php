@@ -20,7 +20,7 @@ class ProductQuantityValidator extends ConstraintValidator
     {
         $productQuantities = $this->context->getValue();
         foreach($productQuantities as $productQuantity){
-            if ($productQuantity['quantity'] > $productQuantity['product']->getQuantity()) {
+            if ($productQuantity['quantity'] > $productQuantity['product']?->getQuantity()) {
                 
                 $this->context->buildViolation($constraint->message)
                 ->setParameter('{{ title }}', $productQuantity['product']->getTitle())

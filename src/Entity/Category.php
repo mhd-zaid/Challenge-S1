@@ -15,7 +15,6 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[UniqueEntity('name')]
 class Category
 {
-    use BlameableTrait;
     use TimestampableTrait; 
 
     #[ORM\Id]
@@ -25,7 +24,9 @@ class Category
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Valeur requise')]
-    private ?string $name = null;
+    #[Assert\Regex(
+        pattern: '/^[a-zA-ZÀ-ÿ -]+$/u',
+    )]    private ?string $name = null;
 
     #[ORM\OneToMany(mappedBy: 'prestation', targetEntity: Prestation::class)]
     private Collection $prestation;
