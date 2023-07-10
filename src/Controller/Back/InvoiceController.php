@@ -13,11 +13,13 @@ use App\Entity\Estimate;
 use App\Repository\InvoicePrestationRepository;
 use Knp\Bundle\SnappyBundle\Snappy\Response\PdfResponse;
 use Knp\Snappy\Pdf;
+use App\Entity\Company;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Security\Core\Security;
 use Knp\Component\Pager\PaginatorInterface;
+use Doctrine\ORM\EntityManagerInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as Sec;
 #[Route('/invoice')]
 class InvoiceController extends AdminController
@@ -55,16 +57,20 @@ class InvoiceController extends AdminController
 
     #[Route('/{id}/success', name: 'app_invoice_success', methods: ['GET'])]
     #[Sec('user == invoice.getCustomer() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
-    public function success(Invoice $invoice,Pdf $pdf,InvoicePrestationRepository $invoicePrestationRepository): Response
+    public function success(Invoice $invoice, EntityManagerInterface $em, Pdf $pdf,InvoicePrestationRepository $invoicePrestationRepository): Response
     {
         $invoicePrestations = $invoicePrestationRepository->findBy(['invoice' => $invoice]);
         $total = $invoice->getTotal($invoicePrestationRepository);
+        $company = $em->getRepository(Company::class)->findOneBy([
+            'id' => 1
+        ]);
 
         $html = $this->renderView('back/pdf/invoice.html.twig', [
             'invoice' => $invoice,
             'customer' => $invoice->getCustomer(),
             'invoicePrestations' => $invoicePrestations,
-            'total' => $total
+            'total' => $total,
+            'company' => $company
         ]);
 
         $pdfResponse = new PdfResponse(
@@ -91,16 +97,20 @@ class InvoiceController extends AdminController
 
     #[Route('/{id}/download', name: 'app_invoice_download', methods: ['GET'])]
     #[Sec('user == invoice.getCustomer() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
-    public function download(Invoice $invoice,Pdf $pdf,InvoicePrestationRepository $invoicePrestationRepository): Response
+    public function download(Invoice $invoice,Pdf $pdf,InvoicePrestationRepository $invoicePrestationRepository, EntityManagerInterface $em): Response
     {
    
+        $company = $em->getRepository(Company::class)->findOneBy([
+            'id' => 1
+        ]);
         $total = $invoice->getTotal($invoicePrestationRepository);
         $invoicePrestations = $invoicePrestationRepository->findBy(['invoice' => $invoice]);
         $html = $this->renderView('back/pdf/invoice.html.twig', [
             'invoice' => $invoice,
             'customer' => $invoice->getCustomer(),
             'invoicePrestations' => $invoicePrestations,
-            'total' => $total
+            'total' => $total,
+            'company' => $company
         ]);
         return new PdfResponse(
             $pdf->getOutputFromHtml($html),
@@ -110,16 +120,20 @@ class InvoiceController extends AdminController
 
     #[Route('/{id}/show', name: 'app_invoice_show', methods: ['GET'])]
     #[Sec('user == invoice.getCustomer() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
-    public function show(Invoice $invoice,InvoicePrestationRepository $invoicePrestationRepository): Response
+    public function show(Invoice $invoice,InvoicePrestationRepository $invoicePrestationRepository, EntityManagerInterface $em): Response
     {
         $total = $invoice->getTotal($invoicePrestationRepository);
         $invoicePrestations = $invoicePrestationRepository->findBy(['invoice' => $invoice]);
+        $company = $em->getRepository(Company::class)->findOneBy([
+            'id' => 1
+        ]);
 
         return $this->render('back/invoice/show.html.twig', [
             'invoice' => $invoice,
             'customer' => $invoice->getCustomer(),
             'invoicePrestations' => $invoicePrestations,
-            'total' => $total
+            'total' => $total,
+            'company' => $company
         ]);
     }
 
