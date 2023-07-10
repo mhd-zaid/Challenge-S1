@@ -79,7 +79,7 @@ class EstimateController extends AdminController
 
         $form = $this->createForm(EstimateType::class, $estimate);
         $form->handleRequest($request);
-        
+
 
         if ($form->isSubmitted() && $form->isValid()) {
             $prestations = $form->get('estimatePrestations')->getData();
@@ -87,7 +87,7 @@ class EstimateController extends AdminController
                 'email' => $form->get('email')->getData(),
             ]);
 
-                        
+
             $isCustomerExist = $customer ? true: false;
 
             if ($customer === null) {
@@ -107,7 +107,7 @@ class EstimateController extends AdminController
             $estimateRepository->save($estimate, true);
 
 
-            
+
             $prestations = $form->get('estimatePrestations')->getData();
 
             $emailCustomer = $form->get('email')->getData();
@@ -120,6 +120,7 @@ class EstimateController extends AdminController
 
                 $invoicePrestation = new InvoicePrestation();
                 $invoicePrestation->setPrestation($prestation);
+                $invoicePrestation->setPrestationName($prestation->getName());
                 $invoicePrestation->setInvoice($invoice);
                 $invoicePrestationRepository->save($invoicePrestation, true);
 
@@ -142,31 +143,33 @@ class EstimateController extends AdminController
             );
             $pdfContent = $pdfResponse->getContent();
             if($isCustomerExist && !$customer->getIsRegistered()){
-            $email = (new TemplatedEmail())
-            ->from("zaidmouhamad@gmail.com")
-            ->to($emailCustomer)
-            ->subject('Votre Devis
+                $email = (new TemplatedEmail())
+                    ->from("zaidmouhamad@gmail.com")
+                    ->to($emailCustomer)
+                    ->subject('Votre Devis
             ')
-            ->htmlTemplate('back/email/devisEmail.html.twig')
-            ->context([
-                'customer' => $customer,
-            ])
-            ->attach($pdfContent, 'file.pdf');
-            $this->mailer->send($email);
+                    ->htmlTemplate('back/email/devisEmail.html.twig')
+                    ->context([
+                        'customer' => $customer,
+                    ])
+                    ->attach($pdfContent, 'file.pdf');
+                $this->mailer->send($email);
+                $this->addFlash('success', 'Devis envoyé avec succès');
             }else{
                 $email = (new TemplatedEmail())
-                ->from("zaidmouhamad@gmail.com")
-                ->to($emailCustomer)
-                ->subject('Confirm email')
-                ->htmlTemplate('back/email/inscriptionEmail.html.twig')
-                ->context([
-                    'customer' => $customer,
-                    'token' => $customer->getValidationToken()
-                ])
-                ->attach($pdfContent, 'file.pdf');
+                    ->from("zaidmouhamad@gmail.com")
+                    ->to($emailCustomer)
+                    ->subject('Confirm email')
+                    ->htmlTemplate('back/email/inscriptionEmail.html.twig')
+                    ->context([
+                        'customer' => $customer,
+                        'token' => $customer->getValidationToken()
+                    ])
+                    ->attach($pdfContent, 'file.pdf');
                 $this->mailer->send($email);
+                $this->addFlash('success', 'Devis envoyé avec succès');
             }
-            
+
 
             foreach($prestations as $prestation){
                 $estimatePrestation = new EstimatePrestation();
@@ -182,7 +185,7 @@ class EstimateController extends AdminController
 
             }
 
-           return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('back/estimate/new.html.twig', [
@@ -199,7 +202,7 @@ class EstimateController extends AdminController
         {
             //Reset les quantity au product et delete le devis et la facture avec leurs devisProduit et factureProduit correspondant
             $estimatePrestations = $em->getRepository(EstimatePrestation::class)->findBy(['estimate' => $estimate]);
-    
+
             foreach($estimatePrestations as $estimatePrestation){
                 $prestation = $estimatePrestation->getPrestation();
                 foreach($prestation->getPrestationProducts() as $prestationProduct){
@@ -207,14 +210,14 @@ class EstimateController extends AdminController
                     $productUpdate->setQuantity($prestationProduct->getProduct()->getQuantity() + $prestationProduct->getQuantity());
                     $em->getRepository(Product::class)->save($productUpdate, true);
                 }
-                
+
             }
-            
+
             $estimate->setStatus('REFUSED');
             $em->getRepository(Estimate::class)->save($estimate, true);
             $invoice = $estimate->getInvoice();
             $invoice->setStatus('REFUSED');
-            $em->getRepository(Invoice::class)->save($invoice, true);  
+            $em->getRepository(Invoice::class)->save($invoice, true);
             return $this->render('back/estimate/index.html.twig', [
                 'estimates' => $em->getRepository(Estimate::class)->findAll(),
                 'isUser' => false
@@ -228,7 +231,7 @@ class EstimateController extends AdminController
     {
         if ($estimate->getStatus() != "PAID") {
             $estimatePrestations = $em->getRepository(EstimatePrestation::class)->findBy(['estimate' => $estimate]);
-    
+
             foreach($estimatePrestations as $estimatePrestation){
                 $prestation = $estimatePrestation->getPrestation();
                 foreach($prestation->getPrestationProducts() as $prestationProduct){
@@ -236,7 +239,7 @@ class EstimateController extends AdminController
                     $productUpdate->setQuantity($prestationProduct->getProduct()->getQuantity() + $prestationProduct->getQuantity());
                     $em->getRepository(Product::class)->save($productUpdate, true);
                 }
-                
+
             }
         }
 
@@ -245,6 +248,9 @@ class EstimateController extends AdminController
                 $em->getRepository(Invoice::class)->remove($estimate->getInvoice(), true);
             }
             $em->getRepository(Estimate::class)->remove($estimate, true);
+            $this->addFlash('success', 'Devis supprimé avec succès');
+        }else{
+            $this->addFlash('error', 'Une erreur est survenue');
         }
 
         return $this->redirectToRoute('app_estimate_index', [], Response::HTTP_SEE_OTHER);
@@ -274,7 +280,7 @@ class EstimateController extends AdminController
             'total' => $total,
             'company' => $company
         ]);
-        
+
         return new PdfResponse(
             $pdf->getOutputFromHtml($html),
             'devis.pdf'
@@ -326,8 +332,8 @@ class EstimateController extends AdminController
         $customer->setLastname($form->get('lastname')->getData());
         $customer->setFirstname($form->get('firstname')->getData());
         $customer->setEmail($form->get('email')->getData());
-        $customer->setValidationToken(Uuid::v4()->__toString());        
-    
+        $customer->setValidationToken(Uuid::v4()->__toString());
+
         $customerRepository->save($customer,true);
 
         return $customer;

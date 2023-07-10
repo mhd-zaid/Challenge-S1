@@ -32,8 +32,10 @@ class ProductController extends AdminController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $productRepository->save($product, true);
-
+            $this->addFlash('success', 'Le produit a bien été ajouté');
             return $this->redirectToRoute('back_app_product_index', [], Response::HTTP_SEE_OTHER);
+        }elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Le produit n\'a pas été ajouté');
         }
 
         return $this->renderForm('back/product/new.html.twig', [
@@ -58,8 +60,10 @@ class ProductController extends AdminController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $productRepository->save($product, true);
-
+            $this->addFlash('success', 'Le produit a bien été modifié');
             return $this->redirectToRoute('back_app_product_index', [], Response::HTTP_SEE_OTHER);
+        }elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash('error', 'Le produit n\'a pas été modifié');
         }
         return $this->renderForm('back/product/edit.html.twig', [
             'product' => $product,
@@ -72,6 +76,9 @@ class ProductController extends AdminController
     {
         if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
             $productRepository->remove($product, true);
+            $this->addFlash('success', 'Le produit a bien été supprimé');
+        }else{
+            $this->addFlash('error', 'Le produit n\'a pas été supprimé');
         }
 
         return $this->redirectToRoute('back_app_product_index', [], Response::HTTP_SEE_OTHER);

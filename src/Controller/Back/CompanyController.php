@@ -35,8 +35,16 @@ class CompanyController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $companyRepository->save($company, true);
-
+            $this->addFlash(
+                'success',
+                'La société a bien été modifiée'
+            );
             return $this->redirectToRoute('back_app_company_show', [], Response::HTTP_SEE_OTHER);
+        }elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash(
+                'error',
+                'La société n\'a pas été modifiée'
+            );
         }
 
         return $this->renderForm('back/company/edit.html.twig', [
@@ -50,6 +58,15 @@ class CompanyController extends AbstractController
     {
         if ($this->isCsrfTokenValid('delete'.$company->getId(), $request->request->get('_token'))) {
             $companyRepository->remove($company, true);
+            $this->addFlash(
+                'success',
+                'La société a bien été supprimée'
+            );
+        }else{
+            $this->addFlash(
+                'error',
+                'La société n\'a pas été supprimée'
+            );
         }
 
         return $this->redirectToRoute('back_app_company_show', [], Response::HTTP_SEE_OTHER);
