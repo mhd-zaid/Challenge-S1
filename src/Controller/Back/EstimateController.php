@@ -83,7 +83,6 @@ class EstimateController extends AdminController
             $prestations = $form->get('estimatePrestations')->getData();
             $customer = $customerRepository->findOneBy([
                 'email' => $form->get('email')->getData(),
-                'isRegistered' => true
             ]);
 
                         
@@ -122,7 +121,7 @@ class EstimateController extends AdminController
                 'devis.pdf'
             );
             $pdfContent = $pdfResponse->getContent();
-            if($isCustomerExist){
+            if($isCustomerExist && !$customer->getIsRegistered()){
             $email = (new TemplatedEmail())
             ->from("zaidmouhamad@gmail.com")
             ->to($emailCustomer)
