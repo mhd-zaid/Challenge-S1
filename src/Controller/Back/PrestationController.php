@@ -104,6 +104,39 @@ class PrestationController extends AdminController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $data = $form->get('productQuantities')->getData();
+
+            $isDataChanged = $data !== $productQuantitiesData;
+
+            if ($isDataChanged) {
+                $prestationProducts = $form->get('productQuantities')->getData();
+                foreach($prestationProducts as $prestationProduct){
+                    $product = $prestationProduct['product'] != null ? $prestationProductRepository->findBy(
+                        [
+                            'prestation' => $form->getData(),
+                            'product' => $prestationProduct['product']
+                        ]
+                    ) : null;
+                    
+                    if (!empty($product)) {
+                        
+                        foreach($product as $value){
+                            $prestationProductRepository->remove($value, true);
+                        }
+                    }
+                   
+                    if($prestationProduct['product'] != null){
+                        $product = new PrestationProduct();
+                        $product->setPrestation($form->getData());
+                        $product->setProduct($prestationProduct['product']);
+                        $product->setTotalHt($prestationProduct['product']->getTotalHt());
+                        $product->setTotalTva($prestationProduct['product']->getTotalTva());
+                        $product->setQuantity($prestationProduct['quantity']);
+                        $product->setWorkforce($form->getData()->getWorkforce());
+                        $prestationProductRepository->save($product, true);
+                    }
+                }
+            }
             $prestationRepository->save($prestation, true);
             
             return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);
