@@ -55,7 +55,8 @@
     <div class="container">
         <h1>{{ 'invoice'|trans({},'invoice') }}</h1>
         <div class="info">
-            <p>{{ 'company information'|trans({}, 'invoice') }} : (nom et adresse)</p>
+            <p>Société : {{company.name}}</p>
+            <p>Addrese : {{company.address}}</p>
             <p>{{ 'today\'s date'|trans({}, 'invoice') }} : {{ "now"|date("d-m-Y") }}</p>
             <p>{{ 'lastname'|trans({}, 'invoice') }} : {{ customer.lastname }}</p>
             <p>{{ 'firstname'|trans({}, 'invoice') }} : {{ customer.firstname }}</p>
