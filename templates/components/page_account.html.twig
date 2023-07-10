@@ -37,10 +37,13 @@
     <div class="border-gray-200 bg-white shadow-md shadow-gray-400 rounded-lg p-6 mt-14">
         <div class="flex justify-between items-center">
             <p class="text-main mb-3">Informations personnels</p>
-            {% if type=='customer' %}
+{#            {% if type=='customer' %}#}
+            {% if is_granted("ROLE_MECHANIC") and type == 'customer'%}
             <a class="no-underline" href="{{ path('back_app_customer_edit', {'id': user.id}) }}">
-            {% elseif type=='user' %}
+            {% elseif user.id == app.user.id %}
             <a class="no-underline" href="{{ path('back_app_account_edit', {'id': user.id}) }}">
+            {% else %}
+            <a class="no-underline" href="{{ path('back_app_user_edit', {'id': user.id}) }}">
             {% endif %}
                 <button type="button" class="button button-edit flex items-center">
                     <iconify-icon class="mr-3" icon="iconamoon:edit-bold" style="color: white;" width="24" height="24"></iconify-icon>

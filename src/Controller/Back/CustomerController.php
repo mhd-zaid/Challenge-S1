@@ -8,6 +8,7 @@ use App\Form\AdminEditCustomerType;
 use App\Form\CustomerType;
 use App\Repository\CustomerRepository;
 use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as Sec;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;

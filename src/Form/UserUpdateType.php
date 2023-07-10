@@ -29,18 +29,16 @@ class UserUpdateType extends AbstractType
                 'constraints' => [new EmailExist]
             ])
 
-            ->add('roles', CollectionType::class, [
+            ->add('roles', ChoiceType::class, [
                 'label' => 'Roles',
-                'entry_type' => ChoiceType::class,
-                'entry_options' => [
-                    'label' => false,
-                    'choices'  => [
-                        'ROLE_ADMIN' => 'ROLE_ADMIN',
-                        'ROLE_CUSTOMER' => 'ROLE_CUSTOMER',
-                        'ROLE_MECHANIC' => 'ROLE_MECHANIC',
-                        'ROLE_ACCOUNTANT' => 'ROLE_ACCOUNTANT',
-                    ],
-                ]
+                'multiple' => true,
+                'expanded' => true,
+                'choices' => [
+                    'ROLE_ADMIN' => 'ROLE_ADMIN',
+                    'ROLE_CUSTOMER' => 'ROLE_CUSTOMER',
+                    'ROLE_MECHANIC' => 'ROLE_MECHANIC',
+                    'ROLE_ACCOUNTANT' => 'ROLE_ACCOUNTANT',
+                ],
             ])
             
         ;

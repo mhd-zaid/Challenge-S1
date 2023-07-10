@@ -1,9 +1,11 @@
-{% extends 'base.html.twig' %}
+{% extends 'front/base.html.twig' %}
 
-{% block title %}Forget Password{% endblock %}
+{% block title %}Presta Auto - Connexion{% endblock %}
 
-{% block body %}
-    <h1>Forget Password</h1>
+{% block main %}
 
-    {{ include('security/forgetPassword/_form.html.twig') }}
+    <div class="card flex justify-center items-center">
+        {{ include('security/forgetPassword/_form.html.twig') }}
+    </div>
+
 {% endblock %}
