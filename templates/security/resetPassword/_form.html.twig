@@ -1,4 +1,24 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
-    <button class="btn">{{ button_label|default('Save') }}</button>
-{{ form_end(form) }}
+{#{{ form_start(form) }}#}
+{#    {{ form_widget(form) }}#}
+{#    <button class="btn">{{ button_label|default('Save') }}</button>#}
+{#{{ form_end(form) }}#}
+
+<div class="flex flex-col items-center">
+    <h1>Mot de passe oublié ?</h1>
+    <p>Saisissez votre email pour recevoir un lien de réinitiation</p>
+</div>
+<div class="mt-4 w-[406px]">
+    {{ form_start(form, {'attr': {'class': 'space-y-4'}}) }}
+    <div class="flex space-x-4">
+        {{ form_label(form.password, 'Mot de passe', {'label_attr': {'class': 'flex justify-center items-center mb-0'}} ) }}
+        {{ form_widget(form.password, {'attr': {'class': 'form-control w-auto'}}) }}
+    </div>
+    <div class="flex space-x-4">
+        {{ form_label(form.plainPassword, 'Confirmation', {'label_attr': {'class': 'flex justify-center items-center mb-0'}} ) }}
+        {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control w-auto'}}) }}
+    </div>
+    <div class="mt-4 w-full">
+        <button class="button button-details w-full">{{ button_label|default('Save') }}</button>
+        {{ form_end(form) }}
+    </div>
+</div>

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\CustomerRegisterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -56,29 +57,38 @@ class SecurityController extends AbstractController
                 $em->getRepository(User::class)->save($user, true);
 
                 $email = (new TemplatedEmail())
-                ->from("zaidmouhamad@gmail.com")
-                ->to($user->getEmail())
-                ->subject('Reset Password')
-                ->htmlTemplate('security/forgetPassword/confirmReset.html.twig')
-                ->context([
-                    'user' => $user,
-                ]);
-    
-                $mailer->send($email);
+                    ->from("zaidmouhamad@gmail.com")
+                    ->to($user->getEmail())
+                    ->subject('Reset Password')
+                    ->htmlTemplate('security/forgetPassword/confirmReset.html.twig')
+                    ->context([
+                        'user' => $user,
+                    ]);
+
+                return $this->redirectToRoute('app_login');
             }else{
                 $customer->setValidationToken(Uuid::v4()->__toString());
                 $em->getRepository(Customer::class)->save($customer, true);
 
                 $email = (new TemplatedEmail())
-                ->from("zaidmouhamad@gmail.com")
-                ->to($customer->getEmail())
-                ->subject('Reset Password')
-                ->htmlTemplate('security/forgetPassword/confirmReset.html.twig')
-                ->context([
-                    'user' => $customer,
-                ]);
+                    ->from("zaidmouhamad@gmail.com")
+                    ->to($customer->getEmail())
+                    ->subject('Reset Password')
+                    ->htmlTemplate('security/forgetPassword/confirmReset.html.twig')
+                    ->context([
+                        'user' => $customer,
+                    ]);
                 $mailer->send($email);
             }
+            $this->addFlash(
+                'info',
+                'Un email vous a été envoyé pour réinitialiser votre mot de passe'
+            );
+        }elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash(
+                'error',
+                'L\'email n\'est pas valide'
+            );
         }
 
         return $this->renderForm('security/forgetPassword/forget.html.twig', [
@@ -119,12 +129,50 @@ class SecurityController extends AbstractController
                 $customer->setPlainPassword($form->get('plainPassword')->getData());
                 $customerRepository->save($customer, true);
             }
-
+            $this->addFlash(
+                'success',
+                'Votre mot de passe a bien été modifié'
+            );
+            return $this->redirectToRoute('app_login');
+        }elseif ($form->isSubmitted() && !$form->isValid()) {
+            $this->addFlash(
+                'error',
+                'Le mot de passe n\'est pas valide'
+            );
         }
         return $this->renderForm('security/resetPassword/reset.html.twig', [
             'form' => $form
         ]);
 
         // return $this->redirectToRoute('back_default_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/new/{token}', name: 'app_customer_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, CustomerRepository $customerRepository,string $token): Response
+    {
+        $customer = new Customer();
+        $form = $this->createForm(CustomerRegisterType::class,['token' =>$token]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $customer = $customerRepository->find($form->get('id')->getData());
+            $customer->setIsValidated(true);
+            $customer->setLanguage('fr');
+            $customer->setId(intval($form->get('id')->getData()));
+            $customer->setPlainPassword($form->get('plainPassword')->getData());
+            $customer->setIsRegistered(true);
+
+            $customerRepository->save($customer, true);
+            $this->addFlash(
+                'success',
+                'Client ajouté'
+            );
+            return $this->redirectToRoute('front_default_index', [], Response::HTTP_SEE_OTHER);
+        }
+        return $this->renderForm('front/customer/new.html.twig', [
+            'customer' => $customer,
+            'form' => $form,
+        ]);
     }
 }

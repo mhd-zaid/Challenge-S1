@@ -8,6 +8,7 @@ use App\Form\AdminEditCustomerType;
 use App\Form\CustomerType;
 use App\Repository\CustomerRepository;
 use Knp\Component\Pager\PaginatorInterface;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security as Sec;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -61,37 +62,15 @@ class CustomerController extends AdminController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-
             $customerRepository->save($customer, true);
+            $this->addFlash(
+                'success',
+                'Client modifié'
+            );
             return $this->redirectToRoute('back_app_customer_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('back/customer/edit.html.twig', [
-            'customer' => $customer,
-            'form' => $form,
-        ]);
-    }
-
-    #[Route('/new/{token}', name: 'app_customer_new', methods: ['GET', 'POST'])]
-    #[Security('is_granted("ROLE_MECHANIC")')]
-    public function new(Request $request, CustomerRepository $customerRepository,string $token): Response
-    {
-        $customer = new Customer();
-        $form = $this->createForm(CustomerRegisterType::class,['token' =>$token]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            
-            $customer = $customerRepository->find($form->get('id')->getData());
-            $customer->setIsValidated(true);
-            $customer->setId(intval($form->get('id')->getData()));
-            $customer->setPlainPassword($form->get('plainPassword')->getData());
-            $customer->setIsRegistered(true);
-            
-            $customerRepository->save($customer, true);
-            return $this->redirectToRoute('front_default_index', [], Response::HTTP_SEE_OTHER);
-        }
-        return $this->renderForm('front/customer/new.html.twig', [
             'customer' => $customer,
             'form' => $form,
         ]);
@@ -103,6 +82,15 @@ class CustomerController extends AdminController
     {
         if ($this->isCsrfTokenValid('delete'.$customer->getId(), $request->request->get('_token'))) {
             $customerRepository->remove($customer, true);
+            $this->addFlash(
+                'success',
+                'Client supprimé'
+            );
+        }else{
+            $this->addFlash(
+                'error',
+                'Erreur lors de la suppression'
+            );
         }
 
         return $this->redirectToRoute('back_app_customer_index', [], Response::HTTP_SEE_OTHER);

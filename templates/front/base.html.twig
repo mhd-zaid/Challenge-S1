@@ -1,0 +1,14 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <main class="p-4 mt-10 h-full">
+        <div class="p-4 dark:border-gray-700 mt-14 container mx-auto">
+            <div class="grid grid-cols-2">
+                <div>
+                    <img src="{{app.request.baseURL}}/uploads/images/global/car_1.svg" alt="">
+                </div>
+                {% block main %}
+                {% endblock %}
+            </div>
+        </div>
+    </main>
+{% endblock %}

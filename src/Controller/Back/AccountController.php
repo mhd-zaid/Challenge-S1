@@ -44,16 +44,23 @@ class AccountController extends AdminController
     {
         $user = $em->getRepository(User::class)->findOneBy(['id' => $this->getUser()]);
         $customer = $em->getRepository(Customer::class)->findOneBy(['id' => $this->getUser()]);
-
         if($user){
             $form = $this->createForm(AccountType::class, $user);
             $form->handleRequest($request);
-
             if ($form->isSubmitted() && $form->isValid()) {
                 $em->getRepository(User::class)->save($user, true);
+                $this->addFlash(
+                    'success',
+                    'L\'utilisateur a bien été modifié'
+                );
                 return $this->redirectToRoute('back_app_account_show', ['id'=>$user->getId()], Response::HTTP_SEE_OTHER);
-            }
 
+            }elseif ($form->isSubmitted() && !$form->isValid()) {
+                $this->addFlash(
+                    'error',
+                    'Une erreur est survenue lors de la modification de l\'utilisateur'
+                );
+            }
             return $this->renderForm('back/account/edit.html.twig', [
                 'user' => $user,
                 'form' => $form,
@@ -66,8 +73,18 @@ class AccountController extends AdminController
 
             if ($form->isSubmitted() && $form->isValid()) {
                 $em->getRepository(Customer::class)->save($customer, true);
-                return $this->redirectToRoute('back_app_account_show', Response::HTTP_SEE_OTHER);
+                $this->addFlash(
+                    'success',
+                    'Le client a bien été modifié'
+                );
+                return $this->redirectToRoute('back_app_account_show', [],Response::HTTP_SEE_OTHER);
+            }elseif ($form->isSubmitted() && !$form->isValid()) {
+                $this->addFlash(
+                    'error',
+                    'Une erreur est survenue lors de la modification du client'
+                );
             }
+
             return $this->renderForm('back/account/edit.html.twig', [
                 'customer' => $customer,
                 'form' => $form,

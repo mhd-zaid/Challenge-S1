@@ -4,6 +4,7 @@ namespace App\Controller\Back;
 
 use App\Entity\Customer;
 use App\Entity\Estimate;
+use App\Entity\Product;
 use App\Form\EstimateType;
 use App\Entity\Invoice;
 use App\Entity\Company;
@@ -79,7 +80,7 @@ class EstimateController extends AdminController
 
         $form = $this->createForm(EstimateType::class, $estimate);
         $form->handleRequest($request);
-        
+
 
         if ($form->isSubmitted() && $form->isValid()) {
             $prestations = $form->get('estimatePrestations')->getData();
@@ -87,7 +88,7 @@ class EstimateController extends AdminController
                 'email' => $form->get('email')->getData(),
             ]);
 
-                        
+
             $isCustomerExist = $customer ? true: false;
 
             if ($customer === null) {
@@ -107,7 +108,7 @@ class EstimateController extends AdminController
             $estimateRepository->save($estimate, true);
 
 
-            
+
             $prestations = $form->get('estimatePrestations')->getData();
 
             $emailCustomer = $form->get('email')->getData();
@@ -120,7 +121,9 @@ class EstimateController extends AdminController
 
                 $invoicePrestation = new InvoicePrestation();
                 $invoicePrestation->setPrestation($prestation);
+                $invoicePrestation->setPrestationName($prestation->getName());
                 $invoicePrestation->setInvoice($invoice);
+                $invoicePrestation->setPrestationName($prestation->getName());
                 $invoicePrestationRepository->save($invoicePrestation, true);
 
             }
@@ -141,32 +144,36 @@ class EstimateController extends AdminController
                 'devis.pdf'
             );
             $pdfContent = $pdfResponse->getContent();
-            if($isCustomerExist && !$customer->getIsRegistered()){
-            $email = (new TemplatedEmail())
-            ->from("zaidmouhamad@gmail.com")
-            ->to($emailCustomer)
-            ->subject('Votre Devis
-            ')
-            ->htmlTemplate('back/email/devisEmail.html.twig')
-            ->context([
-                'customer' => $customer,
-            ])
-            ->attach($pdfContent, 'file.pdf');
-            $this->mailer->send($email);
-            }else{
+            if($isCustomerExist && $customer->getIsRegistered()){
                 $email = (new TemplatedEmail())
-                ->from("zaidmouhamad@gmail.com")
-                ->to($emailCustomer)
-                ->subject('Confirm email')
-                ->htmlTemplate('back/email/inscriptionEmail.html.twig')
-                ->context([
-                    'customer' => $customer,
-                    'token' => $customer->getValidationToken()
-                ])
-                ->attach($pdfContent, 'file.pdf');
+                    ->from("zaidmouhamad@gmail.com")
+                    ->to($emailCustomer)
+                    ->subject('Votre Devis
+            ')
+                    ->htmlTemplate('back/email/devisEmail.html.twig')
+                    ->context([
+                        'customer' => $customer,
+                    ])
+                    ->attach($pdfContent, 'devis.pdf');
                 $this->mailer->send($email);
+                $this->addFlash('success', 'Devis envoyé avec succès');
+            }else{
+                $customer->setValidationToken(Uuid::v4()->__toString());
+                $customerRepository->save($customer, true);
+                $email = (new TemplatedEmail())
+                    ->from("zaidmouhamad@gmail.com")
+                    ->to($emailCustomer)
+                    ->subject('Confirm email')
+                    ->htmlTemplate('back/email/inscriptionEmail.html.twig')
+                    ->context([
+                        'customer' => $customer,
+                        'token' => $customer->getValidationToken()
+                    ])
+                    ->attach($pdfContent, 'devis.pdf');
+                $this->mailer->send($email);
+                $this->addFlash('success', 'Devis envoyé avec succès');
             }
-            
+
 
             foreach($prestations as $prestation){
                 $estimatePrestation = new EstimatePrestation();
@@ -182,7 +189,7 @@ class EstimateController extends AdminController
 
             }
 
-           return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
         }
 
         return $this->renderForm('back/estimate/new.html.twig', [
@@ -192,14 +199,14 @@ class EstimateController extends AdminController
     }
 
     #[Route('/decline/{id}', name: 'app_estimate_decline', methods: ['GET'])]
-    #[Sec('user == estimate.getCustomer() or is_granted("ROLE_MECHANIC") and estimate.getStatus() == "PENDING"')]
+//    #[Sec('(user == estimate.getCustomer() or is_granted("ROLE_ADMIN")) and estimate.getStatus() == "PENDING"')]
     public function decline(Estimate $estimate, EntityManagerInterface $em): Response
     {
         if($estimate->getStatus() == "PENDING")
         {
             //Reset les quantity au product et delete le devis et la facture avec leurs devisProduit et factureProduit correspondant
             $estimatePrestations = $em->getRepository(EstimatePrestation::class)->findBy(['estimate' => $estimate]);
-    
+
             foreach($estimatePrestations as $estimatePrestation){
                 $prestation = $estimatePrestation->getPrestation();
                 foreach($prestation->getPrestationProducts() as $prestationProduct){
@@ -207,28 +214,26 @@ class EstimateController extends AdminController
                     $productUpdate->setQuantity($prestationProduct->getProduct()->getQuantity() + $prestationProduct->getQuantity());
                     $em->getRepository(Product::class)->save($productUpdate, true);
                 }
-                
+
             }
-            
+
             $estimate->setStatus('REFUSED');
             $em->getRepository(Estimate::class)->save($estimate, true);
             $invoice = $estimate->getInvoice();
             $invoice->setStatus('REFUSED');
-            $em->getRepository(Invoice::class)->save($invoice, true);  
-            return $this->render('back/estimate/index.html.twig', [
-                'estimates' => $em->getRepository(Estimate::class)->findAll(),
-                'isUser' => false
-            ]);
+            $em->getRepository(Invoice::class)->save($invoice, true);
+            return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
         }
+        return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/delete/{id}', name: 'app_estimate_delete', methods: ['POST'])]
-    #[Sec('is_granted("ROLE_MECHANIC")')]
+    #[Route('/delete/{id}', name: 'app_estimate_delete', methods: ['POST', 'GET'])]
+    #[Sec('is_granted("ROLE_MECHANIC") and estimate.getStatus() != "PAID" ')]
     public function delete(Request $request, Estimate $estimate, EntityManagerInterface $em): Response
     {
         if ($estimate->getStatus() != "PAID") {
             $estimatePrestations = $em->getRepository(EstimatePrestation::class)->findBy(['estimate' => $estimate]);
-    
+
             foreach($estimatePrestations as $estimatePrestation){
                 $prestation = $estimatePrestation->getPrestation();
                 foreach($prestation->getPrestationProducts() as $prestationProduct){
@@ -236,18 +241,18 @@ class EstimateController extends AdminController
                     $productUpdate->setQuantity($prestationProduct->getProduct()->getQuantity() + $prestationProduct->getQuantity());
                     $em->getRepository(Product::class)->save($productUpdate, true);
                 }
-                
+                $em->getRepository(EstimatePrestation::class)->remove($estimatePrestation, true);
             }
         }
-
-        if ($this->isCsrfTokenValid('delete'.$estimate->getId(), $request->request->get('_token'))) {
-            if ($estimate->getStatus() != "PAID") {
-                $em->getRepository(Invoice::class)->remove($estimate->getInvoice(), true);
-            }
+        if ($estimate->getStatus() != "PAID") {
+            $em->getRepository(Estimate::class)->remove($estimate, true);
+            $em->getRepository(Invoice::class)->remove($estimate->getInvoice(), true);
+        }else{
             $em->getRepository(Estimate::class)->remove($estimate, true);
         }
 
-        return $this->redirectToRoute('app_estimate_index', [], Response::HTTP_SEE_OTHER);
+
+        return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/download', name: 'app_estimate_download', methods: ['GET'])]
@@ -274,7 +279,7 @@ class EstimateController extends AdminController
             'total' => $total,
             'company' => $company
         ]);
-        
+
         return new PdfResponse(
             $pdf->getOutputFromHtml($html),
             'devis.pdf'
@@ -326,8 +331,8 @@ class EstimateController extends AdminController
         $customer->setLastname($form->get('lastname')->getData());
         $customer->setFirstname($form->get('firstname')->getData());
         $customer->setEmail($form->get('email')->getData());
-        $customer->setValidationToken(Uuid::v4()->__toString());        
-    
+        $customer->setValidationToken(Uuid::v4()->__toString());
+
         $customerRepository->save($customer,true);
 
         return $customer;

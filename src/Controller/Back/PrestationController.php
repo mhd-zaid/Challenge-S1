@@ -67,7 +67,10 @@ class PrestationController extends AdminController
                 $em->getRepository(PrestationProduct::class)->save($prestationProduct, true);
 
             }
+            $this->addFlash('success', 'Prestation ajoutée avec succès');
             return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);
+        }else{
+            $this->addFlash('danger', 'Une erreur est survenue lors de l\'ajout de la prestation');
         }
 
         return $this->renderForm('back/prestation/new.html.twig', [
@@ -140,7 +143,7 @@ class PrestationController extends AdminController
                 }
             }
             $prestationRepository->save($prestation, true);
-            
+            $this->addFlash('success', 'Prestation modifiée avec succès');
             return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);
         }
 
@@ -157,6 +160,9 @@ class PrestationController extends AdminController
         if ($this->isCsrfTokenValid('delete'.$prestation->getId(), $request->request->get('_token'))) {
             $prestation->setDeletedAt(new \DateTime());
             $prestationRepository->save($prestation, true);
+            $this->addFlash('success', 'Prestation supprimée avec succès');
+        }else{
+            $this->addFlash('error', 'Une erreur est survenue lors de la suppression de la prestation');
         }
 
         return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);

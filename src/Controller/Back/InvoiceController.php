@@ -89,17 +89,16 @@ class InvoiceController extends AdminController
         ])
         ->attach($pdfContent, 'file.pdf');
         $this->mailer->send($email);
-        
-        return $this->render('back/invoice/success.html.twig', [
-            'invoice' => $invoice
-        ]);
+        $this->addFlash('success', 'Le paiement a été effectué, la facture a été envoyée avec succès');
+
+
     }
 
     #[Route('/{id}/download', name: 'app_invoice_download', methods: ['GET'])]
     #[Sec('user == invoice.getCustomer() or is_granted("ROLE_MECHANIC") or is_granted("ROLE_ACCOUNTANT")')]
     public function download(Invoice $invoice,Pdf $pdf,InvoicePrestationRepository $invoicePrestationRepository, EntityManagerInterface $em): Response
     {
-   
+
         $company = $em->getRepository(Company::class)->findOneBy([
             'id' => 1
         ]);
@@ -149,11 +148,11 @@ class InvoiceController extends AdminController
 
         $invoice->setStatus('PAID');
         $invoiceRepository->save($invoice, true);
-        return $this->redirectToRoute('back_app_invoice_success', ['id' => $invoice->getId()], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('back_app_invoice_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}', name: 'app_invoice_delete', methods: ['POST'])]
-    #[Security('is_granted("ROLE_ADMIN")')]
+    #[Sec('is_granted("ROLE_ADMIN")')]
     public function delete(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$invoice->getId(), $request->request->get('_token'))) {
