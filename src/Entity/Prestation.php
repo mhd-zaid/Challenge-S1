@@ -56,7 +56,7 @@ class Prestation
     #[ORM\JoinColumn(nullable: false)]
     private ?Category $category = null;
 
-    #[ORM\Column(type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
+    #[ORM\Column(nullable: true, type: 'datetime', options: ['default' => 'CURRENT_TIMESTAMP'])]
     private ?\DateTime $deletedAt = null;
     
     public function __construct()

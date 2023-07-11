@@ -25,6 +25,7 @@ class CategoryController extends AbstractController
 
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $category->setisActive(true);
             $categoryRepository->save($category, true);
             $this->addFlash(
                 'success',
@@ -38,14 +39,18 @@ class CategoryController extends AbstractController
             );
         }
 
-        $category = $categoryRepository->findAll();
+        $category = $categoryRepository->findBy([
+            'isActive' => true
+        ]);
         $categoriesPagination = $paginator->paginate(
             $category, /* query NOT result */
             $request->query->getInt('page', 1), /*page number*/
             5 /*limit per page*/
         );
         return $this->renderForm('back/category/index.html.twig', [
-            'categories' => $categoryRepository->findAll(),
+            'categories' => $categoryRepository->findBy([
+                'isActive' => true
+            ]),
             'category' => $category,
             'form' => $form,
             'categoriesPagination' => $categoriesPagination
@@ -82,7 +87,8 @@ class CategoryController extends AbstractController
     public function delete(Request $request, Category $category, CategoryRepository $categoryRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$category->getId(), $request->request->get('_token'))) {
-            $categoryRepository->remove($category, true);
+            $category->setisActive(false);
+            $categoryRepository->save($category, true);
             $this->addFlash(
                 'success',
                 'Catégorie supprimée avec succès'

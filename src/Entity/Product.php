@@ -16,10 +16,6 @@ use App\Entity\PrestationProduct;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[UniqueEntity(
-    fields: 'title',
-    message: 'Ce titre existe déjà.',
-)]
 #[Vich\Uploadable]
 
 class Product
@@ -71,6 +67,9 @@ class Product
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: PrestationProduct::class)]
     private Collection $prestationProducts;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isActive = null;
 
     public function __construct()
     {
@@ -214,6 +213,18 @@ class Product
                 $prestationProduct->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isIsActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(?bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }
