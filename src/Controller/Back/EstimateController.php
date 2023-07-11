@@ -227,8 +227,8 @@ class EstimateController extends AdminController
         return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
     }
 
-    #[Route('/delete/{id}', name: 'app_estimate_delete', methods: ['GET','POST'])]
-    #[Sec('is_granted("ROLE_MECHANIC")')]
+    #[Route('/delete/{id}', name: 'app_estimate_delete', methods: ['POST', 'GET'])]
+    #[Sec('is_granted("ROLE_MECHANIC") and estimate.getStatus() != "PAID" ')]
     public function delete(Request $request, Estimate $estimate, EntityManagerInterface $em): Response
     {
         if ($estimate->getStatus() != "PAID") {
@@ -241,19 +241,16 @@ class EstimateController extends AdminController
                     $productUpdate->setQuantity($prestationProduct->getProduct()->getQuantity() + $prestationProduct->getQuantity());
                     $em->getRepository(Product::class)->save($productUpdate, true);
                 }
-
+                $em->getRepository(EstimatePrestation::class)->remove($estimatePrestation, true);
             }
         }
-
-        if ($this->isCsrfTokenValid('delete'.$estimate->getId(), $request->request->get('_token'))) {
-            if ($estimate->getStatus() != "PAID") {
-                $em->getRepository(Invoice::class)->remove($estimate->getInvoice(), true);
-            }
+        if ($estimate->getStatus() != "PAID") {
             $em->getRepository(Estimate::class)->remove($estimate, true);
-            $this->addFlash('success', 'Devis supprimé avec succès');
+            $em->getRepository(Invoice::class)->remove($estimate->getInvoice(), true);
         }else{
-            $this->addFlash('error', 'Une erreur est survenue');
+            $em->getRepository(Estimate::class)->remove($estimate, true);
         }
+
 
         return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
     }

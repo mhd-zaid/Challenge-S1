@@ -83,11 +83,9 @@
                         <button type="button" class="button button-details"><iconify-icon icon="material-symbols:download" style="color: white;" width="24" height="24"></iconify-icon></button>
                     </a>
                 </td>
-                {% if is_granted('ROLE_MECHANIC') %}
+                {% if is_granted('ROLE_MECHANIC') and estimate.status != "PAID" %}
                     <td>
-                        <a href="{{ path('back_app_estimate_delete', {'id': estimate.id}) }}">
-                            <button type="button" class="button button-details">{{ 'delete'|trans({}, 'estimate') }}</iconify-icon></button>
-                        </a>
+                        {{ include('back/estimate/_delete_form.html.twig', {'id': estimate.id}) }}
                     </td>
                 {% endif %}
                 {% if  (estimate.customer == app.user or is_granted('ROLE_MECHANIC')) and  estimate.status == "PENDING" %}
