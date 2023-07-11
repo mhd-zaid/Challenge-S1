@@ -153,7 +153,7 @@ class InvoiceController extends AdminController
     }
 
     #[Route('/{id}', name: 'app_invoice_delete', methods: ['POST'])]
-    #[Security('is_granted("ROLE_ADMIN")')]
+    #[Sec('is_granted("ROLE_ADMIN")')]
     public function delete(Request $request, Invoice $invoice, InvoiceRepository $invoiceRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$invoice->getId(), $request->request->get('_token'))) {
