@@ -19,7 +19,12 @@ class ProductQuantityType extends AbstractType
     ->add('product', EntityType::class, [
         'label' => 'Produit',
         'class' => Product::class,
-        'choice_label' => 'title'
+        'choice_label' => 'title',
+        'query_builder' => function (ProductRepository $er) {
+            return $er->createQueryBuilder('c')
+                ->where('c.isActive = :isActive')
+                ->setParameter('isActive', true);
+        },
     ])
     ->add('quantity', IntegerType::class, [
         'label' => 'Quantité',

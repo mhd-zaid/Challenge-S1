@@ -85,86 +85,86 @@ class PrestationController extends AdminController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_prestation_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Prestation $prestation, PrestationRepository $prestationRepository, PrestationProductRepository $prestationProductRepository): Response
-    {
-        $form = $this->createForm(PrestationType::class, $prestation);
+    // #[Route('/{id}/edit', name: 'app_prestation_edit', methods: ['GET', 'POST'])]
+    // public function edit(Request $request, Prestation $prestation, PrestationRepository $prestationRepository, PrestationProductRepository $prestationProductRepository): Response
+    // {
+    //     $form = $this->createForm(PrestationType::class, $prestation);
         
-        $prestationProducts = $prestationProductRepository->findBy([
-            'prestation' => $prestation
-        ]);
+    //     $prestationProducts = $prestationProductRepository->findBy([
+    //         'prestation' => $prestation
+    //     ]);
         
-        $productQuantitiesData = [];
+    //     $productQuantitiesData = [];
 
-        foreach ($prestationProducts as $prestationProduct) {
-            $productQuantitiesData[] = [
-                'product' => $prestationProduct->getProduct(),
-                'quantity' => $prestationProduct->getQuantity(),
-            ];
-        }
-        $form->get('productQuantities')->setData($productQuantitiesData);
+    //     foreach ($prestationProducts as $prestationProduct) {
+    //         $productQuantitiesData[] = [
+    //             'product' => $prestationProduct->getProduct(),
+    //             'quantity' => $prestationProduct->getQuantity(),
+    //         ];
+    //     }
+    //     $form->get('productQuantities')->setData($productQuantitiesData);
 
-        $form->handleRequest($request);
+    //     $form->handleRequest($request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $data = $form->get('productQuantities')->getData();
+    //     if ($form->isSubmitted() && $form->isValid()) {
+    //         $data = $form->get('productQuantities')->getData();
 
-            $isDataChanged = $data !== $productQuantitiesData;
-
-            if ($isDataChanged) {
-                $prestationProducts = $form->get('productQuantities')->getData();
-                foreach($prestationProducts as $prestationProduct){
-                    $product = $prestationProduct['product'] != null ? $prestationProductRepository->findBy(
-                        [
-                            'prestation' => $form->getData(),
-                            'product' => $prestationProduct['product']
-                        ]
-                    ) : null;
+    //         $isDataChanged = $data !== $productQuantitiesData;
+            
+    //         if ($isDataChanged) {
+    //             $prestationProducts = $form->get('productQuantities')->getData();
+                
+    //             foreach($prestationProducts as $prestationProduct){
+    //                 $product = $prestationProduct['product'] != null ? $prestationProductRepository->findBy(
+    //                     [
+    //                         'prestation' => $form->getData(),
+    //                         'product' => $prestationProduct['product']
+    //                     ]
+    //                 ) : null;
                     
-                    if (!empty($product)) {
-                        
-                        foreach($product as $value){
-                            $prestationProductRepository->remove($value, true);
-                        }
-                    }
-                   
-                    if($prestationProduct['product'] != null){
-                        $product = new PrestationProduct();
-                        $product->setPrestation($form->getData());
-                        $product->setProduct($prestationProduct['product']);
-                        $product->setTotalHt($prestationProduct['product']->getTotalHt());
-                        $product->setTotalTva($prestationProduct['product']->getTotalTva());
-                        $product->setQuantity($prestationProduct['quantity']);
-                        $product->setWorkforce($form->getData()->getWorkforce());
-                        $prestationProductRepository->save($product, true);
-                    }
-                }
-            }
-            $prestationRepository->save($prestation, true);
-            $this->addFlash('success', 'Prestation modifiée avec succès');
-            return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);
-        }
+    //                 if (!empty($product)) {
+    //                     foreach($product as $value){
+    //                         $prestationProductRepository->remove($value, true);
+    //                     }
+    //                 }
+    //                dump($data);
+    //                 if($data != null){
+    //                     $product = new PrestationProduct();
+    //                     $product->setPrestation($form->getData());
+    //                     $product->setProduct($data['product']);
+    //                     $product->setTotalHt($data['product']->getTotalHt());
+    //                     $product->setTotalTva($data['product']->getTotalTva());
+    //                     $product->setQuantity($data['quantity']);
+    //                     $product->setWorkforce($form->getData()->getWorkforce());
+    //                     $prestationProductRepository->save($product, true);
+    //                 }
+    //             }
+    //         }
+    //         $prestationRepository->save($prestation, true);
+    //         $this->addFlash('success', 'Prestation modifiée avec succès');
+    //         return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);
+    //     }
 
-        return $this->renderForm('back/prestation/edit.html.twig', [
-            'prestation' => $prestation,
-            'form' => $form,
-        ]);
-    }
+    //     return $this->renderForm('back/prestation/edit.html.twig', [
+    //         'prestation' => $prestation,
+    //         'form' => $form,
+    //     ]);
+    // }
 
-    #[Route('/{id}/delete', name: 'app_prestation_delete', methods: ['POST'])]
-    #[Security('is_granted("ROLE_MECHANIC")')]
-    public function delete(Request $request, Prestation $prestation, PrestationRepository $prestationRepository): Response
-    {
-        if ($this->isCsrfTokenValid('delete'.$prestation->getId(), $request->request->get('_token'))) {
-            $prestation->setDeletedAt(new \DateTime());
-            $prestationRepository->save($prestation, true);
-            $this->addFlash('success', 'Prestation supprimée avec succès');
-        }else{
-            $this->addFlash('error', 'Une erreur est survenue lors de la suppression de la prestation');
-        }
+    // #[Route('/{id}/delete', name: 'app_prestation_delete', methods: ['POST'])]
+    // #[Security('is_granted("ROLE_MECHANIC")')]
+    // public function delete(Request $request, Prestation $prestation, PrestationRepository $prestationRepository): Response
+    // {
+    //     if ($this->isCsrfTokenValid('delete'.$prestation->getId(), $request->request->get('_token'))) {
+    //         $prestation->setDeletedAt(new \DateTime());
+    //         $prestationRepository->save($prestation, true);
+    //         $this->addFlash('success', 'Prestation supprimée avec succès');
+    //     }else{
+    //         $this->addFlash('error', 'Une erreur est survenue lors de la suppression de la prestation');
+    //     }
 
-        return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);
-    }
+    //     return $this->redirectToRoute('back_app_prestation_index', [], Response::HTTP_SEE_OTHER);
+    // }
 
     #[Route('/filter', name: 'app_prestation_filter', methods: ['GET'])]
     public function filter(Request $request,EntityManagerInterface $em): Response
