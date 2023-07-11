@@ -13,7 +13,6 @@
         {% if type == "estimate" %}
         <th scope="col">{{ 'car'|trans({}, 'estimate') }}</th>
         {% endif %}
-        <th scope="col">{{ 'customer no.'|trans({}, 'estimate') }}</th>
         <th scope="col">{{ 'estimate date'|trans({}, 'estimate') }}</th>
         <th scope="col">{{ 'amount'|trans({}, 'estimate') }}</th>
             {% if type == "invoice" %}
@@ -57,7 +56,6 @@
             <tr>
                 <td>{{ estimate.id }}</td>
                 <td>{{ estimate.carId }}</td>
-                <td>{{ estimate.createdAt|date('d/m/Y')  }}</td>
                 <td>{{ estimate.validityDate|date('d/m/Y') }}</td>
                 {%  for total in estimatesTotal %}
                     {% if estimate.id == total.id %}
