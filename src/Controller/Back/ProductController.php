@@ -19,7 +19,9 @@ class ProductController extends AdminController
     public function index(ProductRepository $productRepository): Response
     {
         return $this->render('back/product/index.html.twig', [
-            'products' => $productRepository->findAll(),
+            'products' => $productRepository->findBy([
+                'isActive' => true
+            ]),
         ]);
     }
 
@@ -31,6 +33,7 @@ class ProductController extends AdminController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $product->setisActive(true);
             $productRepository->save($product, true);
             $this->addFlash('success', 'Le produit a bien été ajouté');
             return $this->redirectToRoute('back_app_product_index', [], Response::HTTP_SEE_OTHER);
@@ -45,6 +48,7 @@ class ProductController extends AdminController
     }
 
     #[Route('/{id}', name: 'app_product_show', methods: ['GET'])]
+    #[Security('product.isActive() == true')]
     public function show(Product $product): Response
     {
         return $this->render('back/product/show.html.twig', [
@@ -53,6 +57,7 @@ class ProductController extends AdminController
     }
 
     #[Route('/{id}/edit', name: 'app_product_edit', methods: ['GET', 'POST'])]
+    #[Security('product.isActive() == true')]
     public function edit(Request $request, Product $product, ProductRepository $productRepository): Response
     {
         $form = $this->createForm(ProductType::class, $product);
@@ -72,10 +77,12 @@ class ProductController extends AdminController
     }
 
     #[Route('/{id}', name: 'app_product_delete', methods: ['POST'])]
+    #[Security('product.isActive() == true')]
     public function delete(Request $request, Product $product, ProductRepository $productRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$product->getId(), $request->request->get('_token'))) {
-            $productRepository->remove($product, true);
+            $product->setisActive(false);
+            $productRepository->save($product, true);
             $this->addFlash('success', 'Le produit a bien été supprimé');
         }else{
             $this->addFlash('error', 'Le produit n\'a pas été supprimé');

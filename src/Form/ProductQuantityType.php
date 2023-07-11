@@ -9,6 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use App\Entity\Product;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Repository\ProductRepository;
 
 class ProductQuantityType extends AbstractType
 {
@@ -19,6 +20,11 @@ class ProductQuantityType extends AbstractType
         'label' => 'Produit',
         'class' => Product::class,
         'choice_label' => 'title',
+        'query_builder' => function (ProductRepository $er) {
+            return $er->createQueryBuilder('c')
+                ->where('c.isActive = :isActive')
+                ->setParameter('isActive', true);
+        },
     ])
     ->add('quantity', IntegerType::class, [
         'label' => 'Quantité',

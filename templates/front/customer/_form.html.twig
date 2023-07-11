@@ -4,6 +4,9 @@
     <p class="text-main mb-3">{{ 'personal informations' | trans({},'customer') }}</p>
     <div class="grid gap-6 mb-6 md:grid-cols-2">
         <div>
+            {{ form_row(form.id) }}
+        </div>
+        <div>
             {{ form_row(form.password) }}
         </div>
         <div>

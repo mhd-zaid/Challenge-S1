@@ -23,12 +23,12 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 #[Route('/stripe')]
-#[Security('user === estimate.getCustomer()')]
+#[Security('user === estimate.getCustomer() and estimate.getStatus() == "PENDING" ')]
 class StripeController extends AdminController
 {
 
     #[Route('/{id}', name: 'app_stripe_buy', methods: ['GET'])]
-    public function download(Estimate $estimate, Pdf $pdf, EstimatePrestationRepository $estimatePrestationRepository, ProductRepository $productRepository, EstimateRepository $estimateRepository): Response
+    public function buy(Estimate $estimate, Pdf $pdf, EstimatePrestationRepository $estimatePrestationRepository, ProductRepository $productRepository, EstimateRepository $estimateRepository): Response
     {
         $total = $estimate->getTotal($estimatePrestationRepository);
 

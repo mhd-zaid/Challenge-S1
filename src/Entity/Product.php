@@ -16,10 +16,6 @@ use App\Entity\PrestationProduct;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: ProductRepository::class)]
-#[UniqueEntity(
-    fields: 'title',
-    message: 'Ce titre existe déjà.',
-)]
 #[Vich\Uploadable]
 
 class Product
@@ -42,16 +38,26 @@ class Product
     #[Assert\Positive(message: 'La quantité doit être un nombre positif')]
     private ?int $quantity = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 8, scale: 3)]
     #[Assert\NotBlank(message: 'Le Total HT est obligatoire')]
     #[Assert\Type(type: 'float', message: 'Le Total HT doit être un nombre décimal')]
     #[Assert\Positive(message: 'Le Total HT doit être un nombre positif')]
+    #[Assert\Range(
+        min: 1,
+        max: 9999,
+        notInRangeMessage: 'Le prix doit être comprise entre {{ min }} et {{ max }} maximum',
+    )]
     private ?float $totalHt = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
     #[Assert\NotBlank(message: 'Le Total TVA est obligatoire')]
     #[Assert\Type(type: 'float', message: 'Le Total TVA doit être un nombre décimal')]
     #[Assert\Positive(message: 'Le Total TVA doit être un nombre positif')]
+    #[Assert\Range(
+        min: 1,
+        max: 30,
+        notInRangeMessage: 'La TVA doit être comprise entre {{ min }} et {{ max }} maximum',
+    )]
     private ?float $totalTva = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -71,6 +77,9 @@ class Product
 
     #[ORM\OneToMany(mappedBy: 'product', targetEntity: PrestationProduct::class)]
     private Collection $prestationProducts;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isActive = null;
 
     public function __construct()
     {
@@ -214,6 +223,18 @@ class Product
                 $prestationProduct->setProduct(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(?bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }

@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use App\Entity\Category;
+use App\Repository\CategoryRepository;
 
 class PrestationType extends AbstractType
 {
@@ -23,6 +24,11 @@ class PrestationType extends AbstractType
                 'label' => 'Category',
                 'class' => Category::class,
                 'choice_label' => 'name',
+                'query_builder' => function (CategoryRepository $er) {
+                    return $er->createQueryBuilder('c')
+                        ->where('c.isActive = :isActive')
+                        ->setParameter('isActive', true);
+                },
             ])
             ->add('duration',IntegerType::class)
             ->add('workforce', NumberType::class, [

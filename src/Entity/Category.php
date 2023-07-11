@@ -12,7 +12,6 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: CategoryRepository::class)]
-#[UniqueEntity('name')]
 class Category
 {
     use TimestampableTrait; 
@@ -30,6 +29,9 @@ class Category
 
     #[ORM\OneToMany(mappedBy: 'prestation', targetEntity: Prestation::class)]
     private Collection $prestation;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $isActive = null;
 
     public function __construct()
     {
@@ -79,6 +81,18 @@ class Category
                 $prestation->setCategory(null);
             }
         }
+
+        return $this;
+    }
+
+    public function isActive(): ?bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(?bool $isActive): static
+    {
+        $this->isActive = $isActive;
 
         return $this;
     }
