@@ -4,6 +4,7 @@ namespace App\Controller\Back;
 
 use App\Entity\Customer;
 use App\Entity\Estimate;
+use App\Entity\Product;
 use App\Form\EstimateType;
 use App\Entity\Invoice;
 use App\Entity\Company;
@@ -226,7 +227,7 @@ class EstimateController extends AdminController
         }
     }
 
-    #[Route('/delete/{id}', name: 'app_estimate_delete', methods: ['POST'])]
+    #[Route('/delete/{id}', name: 'app_estimate_delete', methods: ['GET','POST'])]
     #[Sec('is_granted("ROLE_MECHANIC")')]
     public function delete(Request $request, Estimate $estimate, EntityManagerInterface $em): Response
     {
@@ -254,7 +255,7 @@ class EstimateController extends AdminController
             $this->addFlash('error', 'Une erreur est survenue');
         }
 
-        return $this->redirectToRoute('app_estimate_index', [], Response::HTTP_SEE_OTHER);
+        return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/{id}/download', name: 'app_estimate_download', methods: ['GET'])]

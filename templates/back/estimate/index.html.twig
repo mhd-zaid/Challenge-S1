@@ -27,7 +27,7 @@
         </div>
     </div>
     <div class="pagination mt-4 flex justify-between">
-        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MECANICIAN') or is_granted('ROLE_ACCOUNTANT') %}
+        {% if is_granted('ROLE_ADMIN') or is_granted('ROLE_MECHANIC') or is_granted('ROLE_ACCOUNTANT') %}
             <a class="no-underline" href="{{ path('back_app_estimate_new') }}">
                 <button type="button" class="button button-details">{{ 'new estimate'|trans({}, 'estimate') }}</button>
             </a>
