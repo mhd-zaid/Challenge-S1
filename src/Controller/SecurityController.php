@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Form\CustomerRegisterType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -144,5 +145,34 @@ class SecurityController extends AbstractController
         ]);
 
         // return $this->redirectToRoute('back_default_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    #[Route('/new/{token}', name: 'app_customer_new', methods: ['GET', 'POST'])]
+    public function new(Request $request, CustomerRepository $customerRepository,string $token): Response
+    {
+        $customer = new Customer();
+        $form = $this->createForm(CustomerRegisterType::class,['token' =>$token]);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $customer = $customerRepository->find($form->get('id')->getData());
+            $customer->setIsValidated(true);
+            $customer->setLanguage('fr');
+            $customer->setId(intval($form->get('id')->getData()));
+            $customer->setPlainPassword($form->get('plainPassword')->getData());
+            $customer->setIsRegistered(true);
+
+            $customerRepository->save($customer, true);
+            $this->addFlash(
+                'success',
+                'Client ajouté'
+            );
+            return $this->redirectToRoute('front_default_index', [], Response::HTTP_SEE_OTHER);
+        }
+        return $this->renderForm('front/customer/new.html.twig', [
+            'customer' => $customer,
+            'form' => $form,
+        ]);
     }
 }

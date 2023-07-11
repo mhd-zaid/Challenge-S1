@@ -35,7 +35,11 @@
                     <td>{{ total.total }}</td>
                 {% endif %}
                 {% endfor %}
+                {% if invoice.status == 'PENDING' %}
                 <td><iconify-icon icon="material-symbols:pending" style="color: orange;" width="35"></iconify-icon></td>
+                {% else %}
+                <td><iconify-icon icon="flat-color-icons:ok" width="35px"></iconify-icon></td>
+                {% endif %}
                 <td>
                     <a href="{{ path('back_app_invoice_show', {'id': invoice.id}) }}">
                         <button type="button" class="button button-details">{{ 'details'|trans({}, 'invoice') }}</button>
@@ -93,7 +97,7 @@
                         </a>
                     </td>
                 {% endif %}
-                {% if estimate.customer == app.user %}
+                {% if estimate.customer == app.user and estimate.status == 'PENDING'%}
                     <td>
                         <a href="{{ path('back_app_stripe_buy', {'id': estimate.id}) }}">
                             <button type="button" class="button button-details">{{ 'paid'|trans({}, 'estimate') }}</iconify-icon></button>

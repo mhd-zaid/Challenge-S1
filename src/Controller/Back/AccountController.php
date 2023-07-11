@@ -77,7 +77,7 @@ class AccountController extends AdminController
                     'success',
                     'Le client a bien été modifié'
                 );
-                return $this->redirectToRoute('back_app_account_show', Response::HTTP_SEE_OTHER);
+                return $this->redirectToRoute('back_app_account_show', [],Response::HTTP_SEE_OTHER);
             }elseif ($form->isSubmitted() && !$form->isValid()) {
                 $this->addFlash(
                     'error',

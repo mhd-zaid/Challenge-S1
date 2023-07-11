@@ -49,7 +49,7 @@
                 </a>
             </li>
             {% endif %}
-            {% if is_granted('ROLE_CUSTOMER') and not is_granted('ROLE_ACCOUNTANT') or is_granted('ROLE_ADMIN') %}
+            {% if is_granted('ROLE_MECHANIC') %}
             <li>
                 <a href="{{path('back_app_prestation_index')}}" class="flex items-start p-2 space-x-2 text-gray-900 rounded-lg dark:text-white hover:bg-gray-100 dark:hover:bg-gray-700">
                     <img src="{{app.request.baseURL}}/uploads/images/global/prestation.svg" class="ml-1 h-6" alt="Prestation" />

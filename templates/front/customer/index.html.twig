@@ -1,0 +1,66 @@
+{% extends 'back/base.html.twig' %}
+
+{% block title %}{{ 'customer index' | trans({},'customer') }}{% endblock %}
+
+{% block main %}
+    {% include 'components/page_header.html.twig' with {'title': 'list of customer' | trans({},'customer') , 'link': path('back_default_index')} %}
+
+    <div class="card">
+        <table>
+            <thead>
+            <tr>
+                <th scope="col" class="px-6 py-3 text-center">
+                    {{ knp_pagination_sortable(customersPagination, 'customer no.' | trans({},'customer'), 'id') }}
+                </th>
+                <th scope="col">{{ 'lastname' | trans({},'customer') }}</th>
+                <th scope="col">{{ 'firstname' | trans({},'customer') }}</th>
+                <th scope="col">{{ 'email' | trans({},'customer') }}</th>
+                <th scope="col">
+                    {{ knp_pagination_sortable(customersPagination, 'status' | trans({},'customer'), 'isValidated') }}
+                </th>
+            </tr>
+            </thead>
+            <tbody>
+            {% if customersPagination is not empty %}
+                {% for customer in customersPagination %}
+                    {% if customer.firstname != "" and customer.lastname != "" %}
+                        <tr>
+                            <td>{{ customer.id }}</td>
+                            <td>{{ customer.lastname }}</td>
+                            <td>{{ customer.firstname }}</td>
+                            <td>{{ customer.email }}</td>
+                            {% if customer.isValidated == 1 %}
+                                <td>
+                                    <iconify-icon icon="flat-color-icons:ok" width="35px"></iconify-icon>
+                                </td>
+                            {% else %}
+                                <td>
+                                    <iconify-icon icon="flat-color-icons:cancel" width="35px"></iconify-icon>
+                                </td>
+                            {% endif %}
+                            <td>
+                                <a class="no-underline" href="{{ path('back_app_customer_show', {'id': customer.id}) }}">
+                                    <button type="button" class="button button-details">{{ 'details' | trans({},'customer') }}</button>
+                                </a>
+                            </td>
+                            <td>
+                                <a class="no-underline" href="{{ path('back_app_customer_edit', {'id': customer.id}) }}">
+                                    <button type="button" class="button button-details">{{ 'edit' | trans({},'customer') }}</button>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endif %}
+                {% endfor %}
+            {% else %}
+                <tr>
+                    <td colspan="7">{{ 'no customer' | trans({},'customer') }}</td>
+                </tr>
+            {% endif %}
+            </tbody>
+        </table>
+    </div>
+    <div class="pagination mt-4 flex justify-between">
+        {{ knp_pagination_render(customersPagination) }}
+    </div>
+
+{% endblock %}

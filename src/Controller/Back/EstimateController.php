@@ -144,7 +144,7 @@ class EstimateController extends AdminController
                 'devis.pdf'
             );
             $pdfContent = $pdfResponse->getContent();
-            if($isCustomerExist && !$customer->getIsRegistered()){
+            if($isCustomerExist && $customer->getIsRegistered()){
                 $email = (new TemplatedEmail())
                     ->from("zaidmouhamad@gmail.com")
                     ->to($emailCustomer)
@@ -154,10 +154,12 @@ class EstimateController extends AdminController
                     ->context([
                         'customer' => $customer,
                     ])
-                    ->attach($pdfContent, 'file.pdf');
+                    ->attach($pdfContent, 'devis.pdf');
                 $this->mailer->send($email);
                 $this->addFlash('success', 'Devis envoyé avec succès');
             }else{
+                $customer->setValidationToken(Uuid::v4()->__toString());
+                $customerRepository->save($customer, true);
                 $email = (new TemplatedEmail())
                     ->from("zaidmouhamad@gmail.com")
                     ->to($emailCustomer)
@@ -167,7 +169,7 @@ class EstimateController extends AdminController
                         'customer' => $customer,
                         'token' => $customer->getValidationToken()
                     ])
-                    ->attach($pdfContent, 'file.pdf');
+                    ->attach($pdfContent, 'devis.pdf');
                 $this->mailer->send($email);
                 $this->addFlash('success', 'Devis envoyé avec succès');
             }
@@ -197,7 +199,7 @@ class EstimateController extends AdminController
     }
 
     #[Route('/decline/{id}', name: 'app_estimate_decline', methods: ['GET'])]
-    #[Sec('user == estimate.getCustomer() or is_granted("ROLE_MECHANIC") and estimate.getStatus() == "PENDING"')]
+//    #[Sec('(user == estimate.getCustomer() or is_granted("ROLE_ADMIN")) and estimate.getStatus() == "PENDING"')]
     public function decline(Estimate $estimate, EntityManagerInterface $em): Response
     {
         if($estimate->getStatus() == "PENDING")
@@ -220,11 +222,9 @@ class EstimateController extends AdminController
             $invoice = $estimate->getInvoice();
             $invoice->setStatus('REFUSED');
             $em->getRepository(Invoice::class)->save($invoice, true);
-            return $this->render('back/estimate/index.html.twig', [
-                'estimates' => $em->getRepository(Estimate::class)->findAll(),
-                'isUser' => false
-            ]);
+            return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
         }
+        return $this->redirectToRoute('back_app_estimate_index', [], Response::HTTP_SEE_OTHER);
     }
 
     #[Route('/delete/{id}', name: 'app_estimate_delete', methods: ['GET','POST'])]

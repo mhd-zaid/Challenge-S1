@@ -45,6 +45,7 @@ class UserController extends AdminController
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
             $user->setValidationToken(Uuid::v4()->__toString());
+            $user->setLanguage('fr');
             $userRepository->save($user, true);
 
             $email = (new TemplatedEmail())

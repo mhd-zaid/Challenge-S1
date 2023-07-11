@@ -76,40 +76,6 @@ class CustomerController extends AdminController
         ]);
     }
 
-    #[Route('/new/{token}', name: 'app_customer_new', methods: ['GET', 'POST'])]
-    #[Security('is_granted("ROLE_MECHANIC")')]
-    public function new(Request $request, CustomerRepository $customerRepository,string $token): Response
-    {
-        $customer = new Customer();
-        $form = $this->createForm(CustomerRegisterType::class,['token' =>$token]);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            
-            $customer = $customerRepository->find($form->get('id')->getData());
-            $customer->setIsValidated(true);
-            $customer->setId(intval($form->get('id')->getData()));
-            $customer->setPlainPassword($form->get('plainPassword')->getData());
-            $customer->setIsRegistered(true);
-            
-            $customerRepository->save($customer, true);
-            $this->addFlash(
-                'success',
-                'Client ajouté'
-            );
-            return $this->redirectToRoute('front_default_index', [], Response::HTTP_SEE_OTHER);
-        }else{
-            $this->addFlash(
-                'error',
-                'Erreur lors de l\'ajout'
-            );
-        }
-        return $this->renderForm('front/customer/new.html.twig', [
-            'customer' => $customer,
-            'form' => $form,
-        ]);
-    }
-
     #[Route('/{id}', name: 'app_customer_delete', methods: ['POST'])]
     #[Security('is_granted("ROLE_MECHANIC") or user === customer')]
     public function delete(Request $request, Customer $customer, CustomerRepository $customerRepository): Response

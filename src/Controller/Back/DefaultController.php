@@ -145,7 +145,7 @@ class DefaultController extends AdminController
 
     public function getSalesFigures(EntityManagerInterface $em): float
     {
-        $invoices = $em->getRepository(Invoice::class)->findAll();
+        $invoices = $em->getRepository(Invoice::class)->findBy(['status'=>'PAID']);
         $salesFigures = [];
         foreach ($invoices as $invoice) {
             $salesFigures[] = $invoice->getTotal($em->getRepository(InvoicePrestation::class));
