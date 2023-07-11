@@ -89,11 +89,10 @@ class InvoiceController extends AdminController
         ])
         ->attach($pdfContent, 'file.pdf');
         $this->mailer->send($email);
-        $this->addFlash('success', 'Votre facture a été envoyé par email');
-        
-        return $this->render('back/invoice/success.html.twig', [
-            'invoice' => $invoice
-        ]);
+        $this->addFlash('success', 'Le paiement a été effectué, la facture a été envoyée avec succès');
+
+        return $this->redirectToRoute('app_invoice_index', [], Response::HTTP_SEE_OTHER);
+
     }
 
     #[Route('/{id}/download', name: 'app_invoice_download', methods: ['GET'])]
@@ -159,9 +158,6 @@ class InvoiceController extends AdminController
     {
         if ($this->isCsrfTokenValid('delete'.$invoice->getId(), $request->request->get('_token'))) {
             $invoiceRepository->remove($invoice, true);
-            $this->addFlash('success', 'La facture a été supprimé avec succès');
-        }else{
-            $this->addFlash('error', 'La facture n\'a pas été supprimé');
         }
 
         return $this->redirectToRoute('app_invoice_index', [], Response::HTTP_SEE_OTHER);
