@@ -122,6 +122,7 @@ class EstimateController extends AdminController
                 $invoicePrestation->setPrestation($prestation);
                 $invoicePrestation->setPrestationName($prestation->getName());
                 $invoicePrestation->setInvoice($invoice);
+                $invoicePrestation->setPrestationName($prestation->getName());
                 $invoicePrestationRepository->save($invoicePrestation, true);
 
             }
