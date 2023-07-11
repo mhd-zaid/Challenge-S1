@@ -38,16 +38,26 @@ class Product
     #[Assert\Positive(message: 'La quantité doit être un nombre positif')]
     private ?int $quantity = null;
 
-    #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
+    #[ORM\Column(type: Types::DECIMAL, precision: 8, scale: 3)]
     #[Assert\NotBlank(message: 'Le Total HT est obligatoire')]
     #[Assert\Type(type: 'float', message: 'Le Total HT doit être un nombre décimal')]
     #[Assert\Positive(message: 'Le Total HT doit être un nombre positif')]
+    #[Assert\Range(
+        min: 1,
+        max: 9999,
+        notInRangeMessage: 'Le prix doit être comprise entre {{ min }} et {{ max }} maximum',
+    )]
     private ?float $totalHt = null;
 
     #[ORM\Column(type: Types::DECIMAL, precision: 5, scale: 2)]
     #[Assert\NotBlank(message: 'Le Total TVA est obligatoire')]
     #[Assert\Type(type: 'float', message: 'Le Total TVA doit être un nombre décimal')]
     #[Assert\Positive(message: 'Le Total TVA doit être un nombre positif')]
+    #[Assert\Range(
+        min: 1,
+        max: 30,
+        notInRangeMessage: 'La TVA doit être comprise entre {{ min }} et {{ max }} maximum',
+    )]
     private ?float $totalTva = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -217,7 +227,7 @@ class Product
         return $this;
     }
 
-    public function isIsActive(): ?bool
+    public function isActive(): ?bool
     {
         return $this->isActive;
     }

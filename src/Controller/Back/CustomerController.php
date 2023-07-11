@@ -33,7 +33,11 @@ class CustomerController extends AdminController
     #[Security('is_granted("ROLE_MECHANIC")')]
     public function index(CustomerRepository $customerRepository, PaginatorInterface $paginator, Request $request): Response
     {
-        $customer = $customerRepository->findAll();
+        $customer = $customerRepository->createQueryBuilder('c')
+        ->where('c.email <> :email')
+        ->setParameter('email', '')
+        ->getQuery()
+        ->getResult();
         $customerPagination = $paginator->paginate(
             $customer, /* query NOT result */
             $request->query->getInt('page', 1), /*page number*/
@@ -81,7 +85,9 @@ class CustomerController extends AdminController
     public function delete(Request $request, Customer $customer, CustomerRepository $customerRepository): Response
     {
         if ($this->isCsrfTokenValid('delete'.$customer->getId(), $request->request->get('_token'))) {
-            $customerRepository->remove($customer, true);
+            $customer->setEmail("");
+            $customer->setPassword("");
+            $customerRepository->save($customer, true);
             $this->addFlash(
                 'success',
                 'Client supprimé'
